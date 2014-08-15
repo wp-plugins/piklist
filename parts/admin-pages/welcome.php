@@ -368,7 +368,7 @@ get_currentuserinfo();
     <div class="col-1">
       <h2 class="about-headline-callout"><?php _e('Get Started','piklist');?></h2>
       <p class="about-description"><?php _e('The built in demos is a great way to see what Piklist can do, and comes with tons of sample code.','piklist');?></p>
-      <a href="<?php echo admin_url('admin.php?page=piklist-core-settings&tab=add-ons');?>"><?php printf(__('Activate Demos %s','piklist'),'→');?></a>
+      <a href="<?php echo admin_url('admin.php?page=piklist-core-addons');?>"><?php printf(__('Activate Demos %s','piklist'),'→');?></a>
     </div>
     <div class="col-2">
       <h2 class="about-headline-callout"><?php _e('Get Help','piklist');?></h2>
