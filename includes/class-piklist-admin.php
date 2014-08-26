@@ -290,6 +290,7 @@ class PikList_Admin
 
       piklist::render('shared/admin-page', array(
         'section' => $page['menu_slug']
+        ,'notice' => !in_array($page['sub_menu'], array('options-general.php'))
         ,'icon' => isset($page['icon']) ? $page['icon'] : false
         ,'page_icon' => isset($page['page_icon']) ? $page['page_icon'] : (isset($page['icon']) ? $page['icon'] : null)         
         ,'single_line' => isset($page['single_line']) ? $page['single_line'] : false

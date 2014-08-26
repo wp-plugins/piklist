@@ -94,9 +94,13 @@
   <?php if (isset($setting) && !empty($setting)): ?>
 
     <?php if ($save): ?>
+      
+      <?php if ($notice): ?>
   
-      <?php settings_errors(); ?>
-    
+        <?php settings_errors(); ?>
+      
+      <?php endif; ?>
+      
       <form action="<?php echo admin_url('options.php'); ?>" method="post" enctype="multipart/form-data">
 
         <?php settings_fields($setting); ?>
