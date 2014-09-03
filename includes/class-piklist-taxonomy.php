@@ -8,9 +8,7 @@ if (!defined('ABSPATH'))
 class PikList_Taxonomy
 {
   private static $meta_boxes;
-  
-  private static $meta_box_nonce = false;
-  
+    
   private static $taxonomies = array();
   
   public static function _construct()
@@ -105,18 +103,6 @@ class PikList_Taxonomy
   {
     if ($taxonomy)
     {
-      if (!self::$meta_box_nonce)
-      {
-        piklist_form::render_field(array(
-          'type' => 'hidden'
-          ,'field' => 'nonce'
-          ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
-          ,'scope' => piklist::$prefix
-        ));
-        
-        self::$meta_box_nonce = true;
-      }
-    
       $wrapper = 'term_meta';
       
       foreach (self::$meta_boxes[$taxonomy] as $taxonomy => $meta_box)
@@ -367,7 +353,7 @@ if (!function_exists('delete_term_meta_by_key'))
 if (!function_exists('get_term_custom'))
 {
   /**
-   * Retrieve term meta fields, based on term ID.
+   * Retrieve all term meta fields, based on term ID.
    *
    * The term meta fields are retrieved from the cache where possible,
    * so the function is optimized to be called more than once.

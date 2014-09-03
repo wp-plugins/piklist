@@ -16,7 +16,7 @@
       class="button piklist-upload-file-button piklist-field-part"
       title="<?php _e(isset($options['modal_title']) ? $options['modal_title'] : 'Add Media'); ?>"
     >
-      <span class="wp-media-buttons-icon"></span> <?php _e(isset($options['button']) ? $options['button'] : 'Add Media'); ?>
+      <?php _e(isset($options['button']) ? $options['button'] : 'Add Media'); ?>
     </a>
   
   <?php endif; ?>

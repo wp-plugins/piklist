@@ -1,18 +1,18 @@
 
-<div class="<?php echo esc_attr($type); ?>">
+<div class="<?php echo esc_attr((is_admin() ? null : 'piklist-notice-') . $type); ?>">
 
-  <?php if (is_array($messages)): ?>
+  <?php if (is_array($notices)): ?>
     
-    <?php foreach ($messages as $message): ?>
+    <?php foreach ($notices as $notice): ?>
 
-      <p><?php echo $message; ?></p>
+      <p><?php echo $notice; ?></p>
 
     <?php endforeach; ?>
   
   <?php else: ?>
     
     <p>
-      <?php echo $message; ?>
+      <?php echo $notices; ?>
     </p>
 
   <?php endif; ?>

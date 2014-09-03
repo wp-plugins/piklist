@@ -19,22 +19,24 @@ class PikList_Revision
   {
     if ($parent_id = wp_is_post_revision($post_id) && !wp_is_post_autosave($post_id)) 
     {
-      $meta = piklist('post_custom', $parent_id);
-
-      foreach ($meta as $key => $value)
+      if ($meta = piklist('post_custom', $parent_id))
       {
-        add_metadata('post', $post_id, $key, maybe_serialize($value));
+        foreach ($meta as $key => $value)
+        {
+          add_metadata('post', $post_id, $key, maybe_serialize($value));
+        }
       }
     }
   }
   
   public static function restore_revision($post_id, $revision_id)
   {
-    $meta = piklist('post_custom', $revision->ID);
-
-    foreach ($meta as $key => $value)
+    if ($meta = piklist('post_custom', $revision->ID))
     {
-      update_metadata('post', $post_id, $key, $value);   
+      foreach ($meta as $key => $value)
+      {
+        update_metadata('post', $post_id, $key, $value);   
+      }
     }
   }  
 }

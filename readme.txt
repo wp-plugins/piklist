@@ -90,6 +90,14 @@ Piklist is the developers best friend. A rapid development framework for WordPre
 
 == Changelog ==
 
+= 0.9.5e =
+* NEW: username_exists validation rule
+* NEW: email_exists validation rule
+
+= 0.9.5 =
+* NEW: Front end forms!
+* ENHANCED: WordPress 4.0 support.
+
 = 0.9.4.12 =
 * FIXED: Duplicate "Settings Saved" messages are gone.
 

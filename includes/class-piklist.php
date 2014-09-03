@@ -834,11 +834,6 @@ class PikList
     return isset($options[$setting]) ? $options[$setting] : array();
   }
   
-  public static function check_in($needle, $haystack)
-  {
-    return (is_array($needle) && in_array($haystack, $needle)) || (is_string($needle) && $needle == $haystack);
-  }
-  
   public static function sort_by_order($a, $b) 
   {
     return $a['order'] - $b['order'];
@@ -946,21 +941,20 @@ class PikList
     
     array_push($keep, 'submitdiv');
     
-    $post_type = $post_type ? $post_type : $typenow;
-    
     foreach ($wp_meta_boxes[$post_type] as $meta_boxes)
     {
       foreach (array('normal', 'advanced', 'side') as $context)
       {
-        foreach (array('high', 'core', 'default', 'low') as $priority)
+        foreach (array('high', 'core', 'default', 'low', 'sorted') as $priority)
         {
           if (isset($meta_boxes[$priority]))
           {
             foreach ($meta_boxes[$priority] as $id => $config)
             {
-              if (!in_array($id, $keep))
+              if (!in_array($id, $keep) && (!isset($config['args']['part'])
+                  || (isset($config['args']['part']) && !in_array(preg_replace('/\\.[^.\\s]{3,4}$/', '', $config['args']['part']), $keep))))
               {
-                remove_meta_box($id, $post_type, $context);
+                unset($wp_meta_boxes[$post_type][$context][$priority][$id]);
               }
             }
           }

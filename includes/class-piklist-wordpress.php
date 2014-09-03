@@ -70,7 +70,7 @@ class PikList_WordPress
       return $meta_query;
     }
 
-    $where = array_filter(preg_split('/$\n?^/m', trim(substr($meta_query['where'], 6, strlen($meta_query['where']) - 8))));
+    $where = array_filter(preg_split('/$\n?^/m', trim(substr($meta_query['where'], 0, strlen($meta_query['where'])))));
     
     foreach ($queries as $query)
     {
@@ -79,7 +79,7 @@ class PikList_WordPress
         return $meta_query;
       }
     }
-
+    
     if (!empty($where))
     {
       $relation = 'AND';
@@ -94,16 +94,12 @@ class PikList_WordPress
     
       for ($i = 0; $i < count($where); $i++)
       {
-        if ($i > 0)
+        if ($i == 1)
         {
-          if ($i == 1)
-          {
-            $relation = trim(substr($where[$i], 0, strpos($where[$i], '(')));
-          }
-      
-          $where[$i] = substr($where[$i], strpos($where[$i], '('));
+          $relation = trim(substr($where[$i], 0, strpos($where[$i], '(')));
         }
       
+        $where[$i] = substr($where[$i], strpos($where[$i], '('));
         $where[$i] = str_replace($meta_prefixes, array(''), $where[$i]);
       }
 
