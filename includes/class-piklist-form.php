@@ -1606,8 +1606,8 @@ class PikList_Form
           {
             if (isset($ids[$meta_type]))
             {
-              $grouped = in_array($field['type'], self::$field_list_types['multiple_value']) && ($field['add_more'] || $field['group_field']);
-              
+              $grouped = isset($field['type']) && in_array($field['type'], self::$field_list_types['multiple_value']) && ($field['add_more'] || $field['group_field']);
+
               if (isset($field['display']) && !$field['display'])
               {
                 delete_metadata($meta_type, $ids[$meta_type], $field['field']);
