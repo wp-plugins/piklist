@@ -17,4 +17,10 @@
 
   <?php endif; ?>
 
+  <?php if(!empty($notice_id)) : ?>
+
+ 		<a class="piklist-dismiss-notice" href="<?php echo add_query_arg('piklist-dismiss', $notice_id); ?>" target="_parent"><?php _e('Dismiss', 'piklist'); ?></a>
+	
+	<?php endif; ?>
+
 </div>

@@ -2,67 +2,61 @@
 /*  
 Title: Post Submit
 Method: post
-Message: Data saved in Piklist Demos, under the Validation tab.
-Logged in: true
+Message: Test Entry Saved.
 */
 
+  // [piklist_form form="new-post-validation" add_on="piklist-demos"]
 
-/**
- * Piklist forms automatically generate a shortcode:
- * [piklist_form form="THE FILE NAME" add_on="PLUGIN OR THEME SLUG"]
- *
- * 
- * The shortcode for this form is:
- * [piklist_form form="new-post-with-validation" add_on="piklist-demos"]
- */
-
-
-/**
- * The fields in this form are exactly like the fields in piklist-demos/parts/meta-boxes/field-validate.php
- * Only the 'scope' paramater needed to be added.
- */
-
-  // Set where to save this form
   piklist('field', array(
     'type' => 'hidden'
     ,'scope' => 'post'
     ,'field' => 'post_type'
-    ,'value' => 'piklist_demo'
+    ,'value' => 'piklist_demo_entry'
   ));
 
   piklist('field', array(
     'type' => 'hidden'
     ,'scope' => 'post'
     ,'field' => 'post_status'
-    ,'value' => 'pending' // It's a good idea to save any front end form submissions to a PENDING status
+    ,'value' => 'pending'
   ));
 
   piklist('field', array(
     'type' => 'text'
-    ,'scope' => 'post' // post_title is in the wp_posts table, so scope is: post
+    ,'scope' => 'post'
     ,'field' => 'post_title'
     ,'label' => 'Title'
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
   ));
 
- 
   piklist('field', array(
     'type' => 'text'
-    ,'field' => 'validate_text_required'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
+    ,'field' => 'text_required_validate'
+    ,'scope' => 'post_meta'
     ,'label' => 'Text Required'
     ,'description' => "required => true"
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
     ,'required' => true
   ));
 
   piklist('field', array(
+    'type' => 'text'
+    ,'field' => 'text_limit_validate'
+    ,'scope' => 'post_meta'
+    ,'label' => 'Text Limit Validate'
+    ,'add_more' => true
+    ,'validate' => array(
+      array(
+        'type' => 'limit'
+        ,'options' => array(
+          'min' => 1
+          ,'max' => 2
+        )
+      )
+    )
+  ));
+
+  piklist('field', array(
     'type'    => 'group'
-    ,'field'   => 'validate_group_required'
+    ,'field'   => 'group_required_validate'
     ,'scope' => 'post_meta'
     ,'label'   => 'Group Required'
     ,'add_more'=> true
@@ -77,7 +71,7 @@ Logged in: true
       )
       ,array(
         'type' => 'checkbox'
-        ,'field' => 'hierarchical'
+        ,'field' => 'hierarchical_validate'
         ,'required' => true
         ,'columns' => 4
         ,'choices' => array(
@@ -90,7 +84,7 @@ Logged in: true
   piklist('field', array(
     'type' => 'text'
     ,'label' => 'File Name'
-    ,'field' => 'validate_file_name'
+    ,'field' => 'file_name_validate'
     ,'scope' => 'post_meta'
     ,'description' => 'Converts multiple words to a valid file name'
     ,'sanitize' => array(
@@ -98,20 +92,14 @@ Logged in: true
         'type' => 'file_name'
       )
     )
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
   ));
 
   piklist('field', array(
     'type' => 'text'
-    ,'field' => 'validate_emaildomain'
+    ,'field' => 'emaildomain_validate'
     ,'scope' => 'post_meta'
     ,'label' => 'Email address'
     ,'description' => __('Validate Email and Email Domain')
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
     ,'validate' => array(
       array(
         'type' => 'email'
@@ -124,13 +112,10 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'text'
-    ,'field' => 'validate_file_exists'
+    ,'field' => 'file_exists_validate'
     ,'scope' => 'post_meta'
     ,'label' => __('File exists?')
     ,'description' => 'Test with: http://wordpress.org/plugins/about/readme.txt'
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
     ,'validate' => array(
       array(
         'type' => 'file_exists'
@@ -140,13 +125,10 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'text'
-    ,'field' => 'validate_image'
+    ,'field' => 'image_validate'
     ,'scope' => 'post_meta'
     ,'label' => __('Image')
     ,'description' => 'Test with: http://piklist.com/wp-content/themes/piklistcom-base/images/piklist-logo@2x.png'
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
     ,'validate' => array(
       array(
         'type' => 'image'
@@ -156,7 +138,7 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'checkbox'
-    ,'field' => 'validate_checkbox_limit'
+    ,'field' => 'checkbox_validate'
     ,'scope' => 'post_meta'
     ,'label' => 'Checkbox'
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
@@ -179,22 +161,18 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'file'
-    ,'field' => 'validate_upload_media_limit'
+    ,'field' => 'upload_media_validate'
     ,'scope' => 'post_meta'
-    ,'label' => __('Add File(s)','piklist-demo')
-    ,'description' => 'No more than one file is allowed'
+    ,'label' => __('Add File','piklist')
     ,'options' => array(
-      'modal_title' => __('Add File(s)','piklist-demo')
-      ,'button' => __('Add','piklist-demo')
-    )
-    ,'attributes' => array(
-      'style' => 'width: 100%'
+      'modal_title' => __('Add File','piklist')
+      ,'button' => __('Add','piklist')
     )
     ,'validate' => array(
       array(
         'type' => 'limit'
         ,'options' => array(
-          'min' => 0
+          'min' => 1
           ,'max' => 1
         )
       )
@@ -203,11 +181,11 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'group'
-    ,'field' => 'validate_group_add_more_limit'
+    ,'field' => 'address_group_add_more_validate'
     ,'scope' => 'post_meta'
     ,'add_more' => true
     ,'label' => 'Grouped/Add-More with Limit'
-    ,'description' => 'No more than two add-mores are allowed'
+    ,'description' => 'No more than 2'
     ,'fields' => array(
       array(
         'type' => 'text'
@@ -232,8 +210,38 @@ Logged in: true
       )
     )
   ));
+  
+  piklist('field', array(
+    'type' => 'group'
+    ,'add_more' => true
+    ,'label' => 'UnGrouped/Add-More with Limit'
+    ,'scope' => 'post_meta'
+    ,'description' => 'No more than 2'
+    ,'fields' => array(
+      array(
+        'type' => 'text'
+        ,'field' => 'group_field_1_test'
+        ,'label' => 'Field 1'
+        ,'columns' => 12
+      )
+      ,array(
+        'type' => 'text'
+        ,'field' => 'group_field_2_test'
+        ,'label' => 'Field 2'
+        ,'columns' => 12
+      )
+    )
+    ,'validate' => array(
+      array(
+        'type' => 'limit'
+        ,'options' => array(
+          'min' => 1
+          ,'max' => 2
+        )
+      )
+    )
+  ));
 
-  // Submit button
   piklist('field', array(
     'type' => 'submit'
     ,'field' => 'submit'

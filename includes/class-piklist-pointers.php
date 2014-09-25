@@ -54,14 +54,16 @@ class PikList_Pointers
 
     $dismissed = explode( ',', (string) get_user_meta(get_current_user_id(), 'dismissed_wp_pointers', true ));
 
-    if (in_array($data['pointer_id'], $dismissed))
+    if (!empty($dismissed[0]) && in_array($data['pointer_id'], $dismissed))
     {
       return;
     }
 
-    $pages = isset($data['page']) ? explode(',', $data['page']) : false;
-    
-    if (((($screen->id == $data['page']) || (empty($data['page'])) 
+    $page = str_replace(' ', '', $data['page']);
+
+    $pages = $page ? explode(',', $page) : false;
+   
+    if (((($screen->id == $page) || (empty($page)) 
       || (in_array($screen->id, $pages))))
     )
     {

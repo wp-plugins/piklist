@@ -15,6 +15,8 @@ class PikList_CPT
 
   private static $meta_boxes_hidden = array();
 
+  private static $meta_box_nonce = null;
+
   private static $meta_boxes_builtin = array(
     'slug'
     ,'author'
@@ -497,7 +499,12 @@ class PikList_CPT
 
   public static function save_post($post_id, $post, $update)
   {
-    if (!piklist_form::valid())
+    if (empty($_REQUEST) || !isset($_REQUEST[piklist::$prefix]['nonce']))
+    {
+      return $post_id;
+    }
+
+    if (!wp_verify_nonce($_REQUEST[piklist::$prefix]['nonce'], plugin_basename(piklist::$paths['piklist'] . '/piklist.php')))
     {
       return $post_id;
     }
@@ -634,16 +641,25 @@ class PikList_CPT
   {
     global $typenow;
 
+    if (!self::$meta_box_nonce)
+    {
+      piklist_form::render_field(array(
+        'type' => 'hidden'
+        ,'field' => 'nonce'
+        ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
+        ,'scope' => piklist::$prefix
+      ));
+
+      self::$meta_box_nonce = true;
+    }
+
     do_action('piklist_pre_render_meta_box', $post, $meta_box);
 
-    if ($meta_box['args']['add_on'] && $meta_box['args']['part'])
-    {
-      piklist::render(piklist::$paths[$meta_box['args']['add_on']] . '/parts/meta-boxes/' . $meta_box['args']['part'], array(
-        'type' => $typenow
-        ,'prefix' => 'piklist'
-        ,'plugin' => 'piklist'
-      ), false);
-    }
+    piklist::render(piklist::$paths[$meta_box['args']['add_on']] . '/parts/meta-boxes/' . $meta_box['args']['part'], array(
+      'type' => $typenow
+      ,'prefix' => 'piklist'
+      ,'plugin' => 'piklist'
+    ), false);
     
     do_action('piklist_post_render_meta_box', $post, $meta_box);
   }
@@ -932,27 +948,15 @@ class PikList_CPT
         }
       }
 
-      if (isset($_REQUEST['post_type']))
+      if (isset($_REQUEST[piklist::$prefix . 'post_type']))
       {
-        $post_type = $_REQUEST['post_type'];
-        
-        if (is_array($post_type))
-        {
-          array_walk($post_type, 'esc_attr');
-          $post_type = implode(',', $post_type);
-        }
-        else
-        {
-          $post_type = esc_attr($post_type);
-        }
-        
+        $post_type = is_array($_REQUEST[piklist::$prefix . 'post_type']) ? implode(',', array_walk($_REQUEST[piklist::$prefix . 'post_type'], 'esc_attr')) : esc_attr($_REQUEST[piklist::$prefix . 'post_type']);
         $query->set('post_type', $post_type);
       }
 
-      if (isset($_REQUEST['posts_per_page']))
+      if (isset($_REQUEST[piklist::$prefix . 'posts_per_page']))
       {
-        $posts_per_page = (int) (is_array($_REQUEST['posts_per_page']) ? $_REQUEST['posts_per_page'][0] : $_REQUEST['posts_per_page']);
-        
+        $posts_per_page = (int) $_REQUEST[piklist::$prefix . 'posts_per_page'];
         $query->set('posts_per_page', $posts_per_page);
       }
 

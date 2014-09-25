@@ -54,7 +54,7 @@
     <?php 
       if ($widget):
         
-        do_action('piklist_notices');
+        do_action('piklist_widget_notices');
         
         piklist::render($widgets[$widget]['form'], array(
           'instance' => $instance

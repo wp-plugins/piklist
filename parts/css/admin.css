@@ -149,13 +149,7 @@
     .piklist-upload-file-preview .attachment {
       cursor: pointer;
       margin: 20px 10px 10px 10px;
-      width: auto;
     }
-    
-      .piklist-upload-file-preview .attachment .check {
-        top: -5px;
-        right: -5px;
-      }
   
       #side-sortables .piklist-upload-file-preview .attachment {
         margin: 10px 15px 10px 5px;
@@ -749,15 +743,10 @@
     display: block;
     margin-bottom: 1em;
   }
-    
-    ul.piklist-tab-bar li {
-      padding: 6px;
-    }
-    
+
     ul.piklist-tab-bar li.wp-tab-active {
       background: #e5e5e5;
-      border: 1px solid #cccccc;
-      padding: 5px;
+      border: none;
     }
 
   .piklist-tab-panel {
