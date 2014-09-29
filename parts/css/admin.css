@@ -160,6 +160,14 @@
           margin-right: 0;
         }
       }
+
+    .piklist-upload-file-preview .attachment-preview.landscape:before {
+      display: inline;
+    }
+
+    .piklist-upload-file-preview .attachment-preview.landscape .icon {
+      padding-top: 1em;
+    }
   
     .piklist-upload-file-preview .attachment-preview, 
     .piklist-upload-file-preview .attachment-preview .thumbnail {
