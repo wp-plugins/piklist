@@ -1,9 +1,9 @@
 === PIKLIST | Rapid development framework ===
 Contributors: piklist, p51labs, sbruner
 Tags: piklist, framework, cms, custom post types, post type, custom taxonomies, taxonomy, custom comment type, comments, settings, widgets
-Tested up to: 4.0
+Tested up to: 3.9
 Requires at least: 3.6
-Stable tag: 0.9.4.17
+Stable tag: 0.9.4.12
 Donate link: http://piklist.com/get-involved/
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -90,11 +90,28 @@ Piklist is the developers best friend. A rapid development framework for WordPre
 
 == Changelog ==
 
-= 0.9.4.17 =
-* FIXED: CSS Tweak for upload fields and WordPress 4.0.
+= 0.9.5h =
+* ENHANCED: Allow for different sizes of images previews.
+* FIXED: Updated editors
+* FIXED: Better Javascript wrapping
+* FIXED: Drag and drop issues work as expected.
+* FIXED: Editors work nicely in grouped add-mores.
+* FIXED: Tool tips look great in the main post column and the side sortables.
+* Lots of bug fixes.
 
-= 0.9.4.16 =
-* FIXED: Admin notices work as expected.
+= 0.9.5g =
+* NEW: Admin notices
+* FIXED: show_admin_column works for User Taxonomies
+* FIXED: Front end forms work with media_handle_sideload()
+* Lots of bug fixes.
+
+= 0.9.5e =
+* NEW: username_exists validation rule
+* NEW: email_exists validation rule
+
+= 0.9.5 =
+* NEW: Front end forms!
+* ENHANCED: WordPress 4.0 support.
 
 = 0.9.4.15 =
 * NEW: Admin notices

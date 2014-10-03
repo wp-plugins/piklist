@@ -29,8 +29,10 @@ Collapse: false
     ,'field' => 'upload_basic'
     ,'scope' => 'post_meta'
     ,'label' => __('Basic Upload Field','piklist-demo')
+    ,'description' => __('Preview size is set to "Medium','piklist-demo')
     ,'options' => array(
       'basic' => true
+      ,'preview_size' => 'medium'
     )
   ));
   
@@ -43,6 +45,7 @@ Collapse: false
     ,'options' => array(
       'modal_title' => __('Add File(s)','piklist-demo')
       ,'button' => __('Add','piklist-demo')
+      ,'preview_size' => 'medium'
     )
   ));
   

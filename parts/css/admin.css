@@ -93,6 +93,25 @@
   div.piklist-admin-notice-error {
     border-left: 4px solid #dd3d36;
   }
+
+  a.piklist-dismiss-notice:before {
+    color: #bbb;
+    content: "\f153";
+    display: inline-block !important;
+    font-family: 'dashicons';
+    -webkit-font-smoothing: antialiased;
+    font-weight: normal;
+    height: 20px;
+    margin-right: 0;
+    text-align: center;
+    vertical-align: middle;
+    width: 20px;
+  }
+
+    a.piklist-dismiss-notice:hover:before {
+      color: #2ea2cc;
+    }
+
   
   #side-sortables .piklist-field {
     padding: 0.6667% 0 1% 0;
@@ -148,19 +167,33 @@
     
     .piklist-upload-file-preview .attachment {
       cursor: pointer;
-      margin: 20px 10px 10px 10px;
+      margin: 10px 10px 5px 0;
+      width: auto;
     }
+      
+      .piklist-meta-box-none .piklist-upload-file-preview .selected.attachment {
+        -webkit-box-shadow: inset 0 0 0 5px #f1f1f1, inset 0 0 0 7px #ccc;
+        box-shadow: inset 0 0 0 5px #f1f1f1, inset 0 0 0 7px #ccc;
+      }
+      
+      .piklist-upload-file-preview .attachment-preview-document {
+        width: 150px;
+        height: 150px;  
+      }
+       
+      .piklist-upload-file-preview .attachment .check {
+        top: -5px;
+        right: -5px;
+      }
   
       #side-sortables .piklist-upload-file-preview .attachment {
         margin: 10px 15px 10px 5px;
       }
+    
+    .piklist-upload-file-preview .attachment-preview img {
+      display: block;
+    }
       
-      @media only screen and (min-width: 851px) {
-        #side-sortables .piklist-upload-file-preview .attachment:nth-child(even) {
-          margin-right: 0;
-        }
-      }
-
     .piklist-upload-file-preview .attachment-preview.landscape:before {
       display: inline;
     }
@@ -169,17 +202,9 @@
       padding-top: 1em;
     }
   
-    .piklist-upload-file-preview .attachment-preview, 
-    .piklist-upload-file-preview .attachment-preview .thumbnail {
-      width: 10em;
-      height: 10em;
+    .piklist-upload-file-preview .attachment-preview:before {
+      display: none;
     }
-    
-      #side-sortables .piklist-upload-file-preview .attachment-preview, 
-      #side-sortables .piklist-upload-file-preview .attachment-preview .thumbnail {
-        width: 8.1em;
-        height: 8.1em;
-      }
     
     .piklist-upload-file-preview a {
       display: block;
@@ -673,6 +698,18 @@
 /* --------------------------------------------------------------------------------
   Responsive fields
 ---------------------------------------------------------------------------------- */
+
+  @media only screen and (min-width: 851px) {
+
+    #side-sortables .piklist-tooltip:after {
+      min-width: 175px;
+      max-width: 175px;
+    }
+
+    #side-sortables .piklist-upload-file-preview .attachment:nth-child(even) {
+      margin-right: 0;
+    }
+  }
   
   @media only screen and (max-width: 782px) {
     
@@ -751,10 +788,15 @@
     display: block;
     margin-bottom: 1em;
   }
-
+    
+    ul.piklist-tab-bar li {
+      padding: 6px;
+    }
+    
     ul.piklist-tab-bar li.wp-tab-active {
       background: #e5e5e5;
-      border: none;
+      border: 1px solid #cccccc;
+      padding: 5px;
     }
 
   .piklist-tab-panel {

@@ -319,7 +319,7 @@
               number: widget_number
             }
             ,success: function(response) 
-            {
+            {              
               if (response.tiny_mce != '' && response.quicktags != '')
               {
                 tinyMCEPreInit.mceInit = $.extend(tinyMCEPreInit.mceInit, response.tiny_mce);

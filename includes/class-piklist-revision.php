@@ -38,5 +38,5 @@ class PikList_Revision
         update_metadata('post', $post_id, $key, $value);   
       }
     }
-  }
+  }  
 }

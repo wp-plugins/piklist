@@ -29,7 +29,7 @@
       $column['child_field'] = true;
     }
     
-    $column['attributes']['wrapper_class'] = (isset($column['attributes']['wrapper_class']) ? $column['attributes']['wrapper_class'] : null) . ' piklist-field-part';
+    $column['attributes']['wrapper_class'] = (isset($column['attributes']['wrapper_class']) ? $column['attributes']['wrapper_class'] : null) . ($template != 'field' ? ' piklist-field-part' : null);
     
     if (in_array('piklist-error', $attributes['class']))
     {
@@ -205,7 +205,7 @@
         }
       }
 
-      if (!in_array($column['type'], array('group', 'editor')) && !$group_add_more && isset($attributes['data-piklist-field-addmore']))
+      if ($column['type'] != 'group' && !$group_add_more && isset($attributes['data-piklist-field-addmore']))
       {
         $column['attributes']['data-piklist-field-addmore'] = $attributes['data-piklist-field-addmore'];
         $group_add_more = true;

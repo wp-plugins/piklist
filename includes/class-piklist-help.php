@@ -5,6 +5,11 @@ if (!defined('ABSPATH'))
   exit;
 }
 
+if (!is_admin())
+{
+  return;
+}
+
 class PikList_Help
 {
   public static function _construct()

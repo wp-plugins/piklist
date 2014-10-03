@@ -7,7 +7,7 @@ Order: 10
 
   piklist('field', array(
     'type' => 'text'
-    ,'field' => 'text_required'
+    ,'field' => 'validate_text_required'
     ,'label' => 'Text Required'
     ,'description' => "required => true"
     ,'attributes' => array(
@@ -18,7 +18,7 @@ Order: 10
 
   piklist('field', array(
     'type'    => 'group'
-    ,'field'   => 'group_required'
+    ,'field'   => 'validate_group_required'
     ,'label'   => 'Group Required'
     ,'add_more'=> true
     ,'fields'  => array(
@@ -45,7 +45,7 @@ Order: 10
   piklist('field', array(
     'type' => 'text'
     ,'label' => 'File Name'
-    ,'field' => 'file_name'
+    ,'field' => 'validate_file_name'
     ,'description' => 'Converts multiple words to a valid file name'
     ,'sanitize' => array(
       array(
@@ -107,7 +107,7 @@ Order: 10
 
   piklist('field', array(
     'type' => 'checkbox'
-    ,'field' => 'checkbox'
+    ,'field' => 'validate_checkbox_limit'
     ,'label' => 'Checkbox'
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
@@ -132,7 +132,7 @@ Order: 10
 
   piklist('field', array(
     'type' => 'file'
-    ,'field' => 'upload_media'
+    ,'field' => 'validate_upload_media_limit'
     ,'label' => __('Add File(s)','piklist-demo')
     ,'description' => 'No more than one file is allowed'
     ,'options' => array(
@@ -155,7 +155,7 @@ Order: 10
 
   piklist('field', array(
     'type' => 'group'
-    ,'field' => 'address_group_add_more'
+    ,'field' => 'validate_group_add_more_limit'
     ,'add_more' => true
     ,'label' => 'Grouped/Add-More with Limit'
     ,'description' => 'No more than two add-mores are allowed'

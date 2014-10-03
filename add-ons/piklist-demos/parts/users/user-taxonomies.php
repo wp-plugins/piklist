@@ -5,14 +5,15 @@ Capability: manage_options
 Order: 30
 */
 
+
   piklist('field', array(
     'type' => 'checkbox'
     ,'scope' => 'taxonomy'
-    ,'field' => 'piklist_test_user_type'
+    ,'field' => 'piklist_demo_user_type'
     ,'label' => 'Demo Types'
     ,'description' => 'Terms will appear when they are added to this taxonomy.'
     ,'choices' => piklist(
-      get_terms('piklist_test_user_type', array(
+      get_terms('piklist_demo_user_type', array(
         'hide_empty' => false
       ))
       ,array(

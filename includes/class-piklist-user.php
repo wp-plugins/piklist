@@ -8,9 +8,7 @@ if (!defined('ABSPATH'))
 class PikList_User
 {
   private static $meta_boxes = array();
-  
-  private static $meta_box_nonce = false;
-  
+    
   public static function _construct()
   {    
     add_action('init', array('piklist_user', 'init'));
@@ -86,18 +84,6 @@ class PikList_User
   {
     if (!empty(self::$meta_boxes))
     {
-      if (!self::$meta_box_nonce)
-      {
-        piklist_form::render_field(array(
-          'type' => 'hidden'
-          ,'field' => 'nonce'
-          ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
-          ,'scope' => piklist::$prefix
-        ));
-      
-        self::$meta_box_nonce = true;
-      }
-      
       $user = get_userdata($user_id);
 
       foreach (self::$meta_boxes as $meta_box)

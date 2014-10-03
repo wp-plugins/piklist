@@ -56,7 +56,7 @@ Order: 10
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
 
 ?>

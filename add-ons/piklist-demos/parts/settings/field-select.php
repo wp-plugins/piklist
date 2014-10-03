@@ -34,6 +34,6 @@ Order: 30
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Settings Section'
   ));
 ?>

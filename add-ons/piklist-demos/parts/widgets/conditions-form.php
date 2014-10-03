@@ -384,7 +384,12 @@ piklist('field', array(
         ,'compare' => '!='
       )
     )
-  )); 
+  ));
+
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Widget'
+  ));
 
 
 ?>
