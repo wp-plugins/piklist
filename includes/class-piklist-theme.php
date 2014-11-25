@@ -133,13 +133,16 @@ class PikList_Theme
 
     global $wp_scripts;
 
-    foreach ($wp_scripts->registered as $script)
+    if(!empty($wp_scripts))
     {
-      if (isset($script->extra['conditional']))
+      foreach ($wp_scripts->registered as $script)
       {
-        $src = $script->src . '?ver=' . (!empty($script->ver) ? $script->ver : get_bloginfo('version'));
-        $tag = "<script type='text/javascript' src='{$src}'></script>\n";
-        $output = str_replace($tag, "<!--[if {$script->extra['conditional']}]>\n{$tag}<![endif]-->\n", $output);
+        if (isset($script->extra['conditional']))
+        {
+          $src = $script->src . '?ver=' . (!empty($script->ver) ? $script->ver : get_bloginfo('version'));
+          $tag = "<script type='text/javascript' src='{$src}'></script>\n";
+          $output = str_replace($tag, "<!--[if {$script->extra['conditional']}]>\n{$tag}<![endif]-->\n", $output);
+        }
       }
     }
 
