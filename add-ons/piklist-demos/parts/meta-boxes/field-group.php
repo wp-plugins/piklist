@@ -16,6 +16,7 @@ Order: 80
         'type' => 'text'
         ,'field' => 'address_1'
         ,'label' => 'Street Address'
+        ,'value' => 'my value'
         ,'required' => true
         ,'columns' => 12
         ,'attributes' => array(

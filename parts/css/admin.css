@@ -813,3 +813,31 @@
   .wp-tab-panel.piklist-tab-panel.piklist-fields-field-list {
     clear: right;
   }
+
+
+/* --------------------------------------------------------------------------------
+  Piklist Field Classes
+---------------------------------------------------------------------------------- */
+
+  /* .piklist-inline-edit */
+  input[type="text"].piklist-inline-edit {
+    border: none;
+    margin: 1px;
+    box-shadow: none;
+    text-decoration: underline;
+    color: #0074A2;
+    cursor: pointer;
+  }
+
+    input[type="text"].piklist-inline-edit:focus {
+      border: 1px solid #DDDDDD;
+      text-decoration: none;
+      color: #000;
+      margin: 0;
+    }
+
+    input[type="text"].piklist-inline-edit:disabled {
+      color: #000;
+      text-decoration: none;
+      cursor: initial;
+    }

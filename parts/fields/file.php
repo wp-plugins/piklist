@@ -100,15 +100,15 @@
     
                 <li class="attachment selected">
                    <div class="attachment-preview attachment-preview-document landscape type-<?php echo substr($file_type['type'], 0, strpos($file_type['type'], '/')); ?> subtype-<?php echo substr($file_type['type'], strpos($file_type['type'], '/') + 1); ?>">
-              		   <div class="thumbnail">
-              			   <div class="centered">
+                     <div class="thumbnail">
+                       <div class="centered">
                           <img src="<?php echo $icon; ?>" class="icon" />
-              				 </div>
+                       </div>
                        <div class="filename">
                          <div><?php echo basename($attachment_path); ?></div>
                        </div>
                      </div>
-                     <a class="check" href="#" title="Deselect" data-attachment-id="<?php echo $attachment_id; ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
+                     <a class="check" href="#" title="Deselect" data-attachment-id="<?php echo $attachment_id; ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
                    </div>
                  </li>
     

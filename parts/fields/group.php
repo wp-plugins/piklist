@@ -87,7 +87,7 @@
     {
       if (piklist_form::is_widget())
       {
-        $_values = isset(piklist_widget::widget()->instance[$column['field']]) ? maybe_unserialize(piklist_widget::widget()->instance[$column['field']]) : null;
+        $_values = isset(piklist_widget::widget()->instance[$column['field']]) ? maybe_unserialize(piklist_widget::widget()->instance[$column['field']]) : (isset($column['value']) ? $column['value'] : null);
       }
       else
       {

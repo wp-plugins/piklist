@@ -15,9 +15,9 @@ Collapse: false
 <?php
 
   piklist('field', array(
-    'type' => 'text'
+    'type' => 'password'
     ,'field' => 'text_class_regular'
-    ,'label' => 'Text'
+    ,'label' => 'color'
     ,'description' => 'class="regular-text"'
     ,'help' => 'You can easily add tooltips to your fields with the help parameter.'
     ,'attributes' => array(

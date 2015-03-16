@@ -3,15 +3,9 @@
   piklist('field', array(
     'type' => 'hidden'
     ,'scope' => piklist::$prefix
-    ,'field' => 'nonce'
-    ,'value' => $nonce
-  ));
-
-  piklist('field', array(
-    'type' => 'hidden'
-    ,'scope' => piklist::$prefix
     ,'field' => 'fields_id'
     ,'value' => $fields_id
+    ,'widget' => false
     ,'attributes' => array(
       'class' => 'piklist-fields-id'
     )

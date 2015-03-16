@@ -79,7 +79,7 @@ class PikList_WordPress
         return $meta_query;
       }
     }
-    
+
     if (!empty($where))
     {
       $relation = 'AND';
@@ -94,12 +94,16 @@ class PikList_WordPress
     
       for ($i = 0; $i < count($where); $i++)
       {
-        if ($i == 1)
+        if ($i > 0)
         {
-          $relation = trim(substr($where[$i], 0, strpos($where[$i], '(')));
+          if ($i == 1)
+          {
+            $relation = trim(substr($where[$i], 0, strpos($where[$i], '(')));
+          }
+      
+          $where[$i] = substr($where[$i], strpos($where[$i], '('));
         }
       
-        $where[$i] = substr($where[$i], strpos($where[$i], '('));
         $where[$i] = str_replace($meta_prefixes, array(''), $where[$i]);
       }
 
@@ -139,13 +143,11 @@ class PikList_WordPress
       }
 
       $ids = array_unique($ids);
-      
-      $meta_relation = get_query_var('meta_relation');
-      
+
       $meta_query['join'] = '';
-      $meta_query['where'] = ' ' . (!empty($meta_relation) ? strtoupper($meta_relation) : 'AND'). " \n\t{$primary_table}.{$primary_id_column} IN (\n\t\t" . (!empty($ids) ? implode("\n\t\t,", $ids) : '-1') . "\n\t) \n";
+      $meta_query['where'] = ' ' . (isset($_REQUEST['meta_relation']) ? strtoupper($_REQUEST['meta_relation']) : 'AND'). " \n\t{$primary_table}.{$primary_id_column} IN (\n\t\t" . (!empty($ids) ? implode("\n\t\t,", $ids) : '-1') . "\n\t) \n";
     }
-    
+
     return $meta_query;
   }
 }

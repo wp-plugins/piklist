@@ -8,7 +8,9 @@ if (!defined('ABSPATH'))
 class PikList_Media
 {
   private static $meta_boxes = array();
-    
+  
+  private static $meta_box_nonce = false;
+  
   public static function _construct()
   {    
     add_action('init', array('piklist_media', 'init'));
@@ -88,6 +90,18 @@ class PikList_Media
     if (!empty(self::$meta_boxes))
     {
       ob_start();
+      
+      if (!self::$meta_box_nonce)
+      {
+        piklist_form::render_field(array(
+          'type' => 'hidden'
+          ,'field' => 'nonce'
+          ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
+          ,'scope' => piklist::$prefix
+        ));
+      
+        self::$meta_box_nonce = true;
+      }
       
       $GLOBALS['piklist_attachment'] = $post;
       

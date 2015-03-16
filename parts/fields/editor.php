@@ -1,7 +1,7 @@
 <?php 
 
   $name = piklist_form::get_field_name($field, $scope, false, $prefix);
-  
+
   $_attributes = '';
   foreach ($attributes as $_key => $_value)
   {

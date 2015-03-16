@@ -55,6 +55,8 @@ class PikList_Widget
         $widget_class_name = $widget_class . '_' . piklist::slug($from);
 
         $suffix = '';
+        $title = '';
+        $description = '';
       
         if (isset(piklist_add_on::$available_add_ons[$from]))
         {

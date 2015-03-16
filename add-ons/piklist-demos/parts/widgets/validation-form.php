@@ -106,6 +106,34 @@ piklist('field', array(
     )
   ));
 
+
+  // piklist('field', array(
+  //   'type' => 'text'
+  //   ,'field' => 'text_class_small'
+  //   ,'label' => 'Text'
+  //   ,'value' => '<em>Click</em> <a href=\'http://wp.tutsplus.com\'>here</a> to visit <strong> wptuts+</strong>'
+  //   ,'sanitize' => array(
+  //     array(
+  //       'type' => 'wp_kses'
+  //       ,'options' => array(
+  //         'allowed_html' => array(
+  //           'strong' => array()
+  //           ,'a' => array(
+  //             'href' => array()
+  //             ,'title' => array()
+  //           )
+  //         )
+  //         ,'allowed_protocols' => array('http')
+  //       )
+  //     )
+  //   )
+  //   ,'help' => 'You can easily add tooltips to your fields with the help parameter.'
+  //   ,'attributes' => array(
+  //     'class' => 'regular-text'
+  //   )
+  // ));
+  // 
+
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox'
@@ -181,11 +209,7 @@ piklist('field', array(
         )
       )
     )
-  ));
-
-  piklist('shared/code-locater', array(
-    'location' => __FILE__
-    ,'type' => 'Widget'
+ 
   ));
 
 ?>

@@ -5,11 +5,6 @@ if (!defined('ABSPATH'))
   exit;
 }
 
-if (!is_admin())
-{
-  return;
-}
-
 class PikList_Setting
 {
   private static $setting_tabs = array();

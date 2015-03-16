@@ -11,6 +11,7 @@ class PikList_Notices
 
   public static function _construct()
   {
+    add_action('admin_init', array('piklist_notices', 'update_dismissed_piklist_notices'));
     add_action('current_screen', array('piklist_notices', 'register_notices'));
     add_action('admin_notices', array('piklist_notices', 'admin_notices'));
   }
@@ -84,6 +85,19 @@ class PikList_Notices
         ,'notices' => $value['content']
         ,'notice_id' => $value['notice_id']
       ));
+    }
+  }
+
+  public static function update_dismissed_piklist_notices()
+  {
+    if(isset($_GET['piklist-dismiss']))
+    {
+      $dismissed = array_filter(explode( ',', (string) get_user_meta(get_current_user_id(), 'dismissed_piklist_notices', true)));
+
+      $dismissed[] = $_GET['piklist-dismiss'];
+      $dismissed = implode( ',', $dismissed);
+
+      update_user_meta(get_current_user_id(), 'dismissed_piklist_notices', $dismissed);
     }
   }
 }

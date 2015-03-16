@@ -339,7 +339,7 @@ piklist('field', array(
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Widget'
+    ,'type' => 'Meta Box'
   ));
 
 ?>

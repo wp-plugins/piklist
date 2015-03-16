@@ -3,7 +3,7 @@
 Title: Piklist Demos
 Anchor ID: #toplevel_page_piklist
 Pointer ID: piklist-demos-toplevel_page_piklist
-Edge: bottom
+Edge: left
 Align: center
 */
 ?>

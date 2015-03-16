@@ -169,7 +169,7 @@ class PikList_Universal_Widget extends WP_Widget
       piklist::render($this->widgets[$widget]['path'], array(
         'instance' => $instance
         ,'settings' => $instance
-        ,'before_widget' => str_replace('class="', 'class="' . piklist::dashes($this->widgets[$widget]['add_on'] . ' ' . $this->widgets[$widget]['name']) . ' ', $before_widget)
+        ,'before_widget' => str_replace('class="', 'class="' . piklist::dashes($this->widgets[$widget]['add_on'] . ' ' . $this->widgets[$widget]['name']) . ' ' . $this->widgets[$widget]['data']['class'] . ' ', $before_widget)
         ,'after_widget' => $after_widget
         ,'before_title' => $before_title
         ,'after_title' => $after_title
@@ -221,6 +221,7 @@ class PikList_Universal_Widget extends WP_Widget
           'title' => 'Title'
           ,'description' => 'Description'
           ,'tags' => 'Tags'
+          ,'class' => 'Class'
         ))
       );
     }

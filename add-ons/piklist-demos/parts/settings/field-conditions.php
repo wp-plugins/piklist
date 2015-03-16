@@ -189,7 +189,7 @@ Order: 30
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Settings Section'
+    ,'type' => 'Meta Box'
   ));
 
 ?>

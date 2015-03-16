@@ -1,30 +1,23 @@
 
 <form 
   method="<?php echo strtolower($method); ?>" 
-  action="<?php echo $filter ? home_url() . $action : null; ?>" 
+  action="<?php echo isset($action) ? home_url() . $action : $_SERVER['REQUEST_URI']; ?>" 
   enctype="multipart/form-data"
   id="<?php echo $form_id; ?>"
-  autocomplete="off"
 >
-  
-  <?php
 
-    do_action('piklist_notices', $form_id);
-  
-    piklist::render($form);
+  <?php
   
     piklist('field', array(
       'type' => 'hidden'
       ,'scope' => piklist::$prefix
-      ,'field' => 'form_id'
-      ,'value' => $form_id
+      ,'field' => 'nonce'
+      ,'value' => $nonce
     ));
-    
-    $field_ids = piklist_form::get('field_ids');
-    
-    if (!empty($field_ids))
+  
+    if (!empty($ids))
     {
-      foreach ($field_ids as $type => $id)
+      foreach ($ids as $type => $id)
       {
         piklist('field', array(
           'type' => 'hidden'
@@ -35,7 +28,28 @@
       }
     }
     
-    if ($filter)
+    foreach (array('post', 'comment', 'taxonomy', 'user') as $type)
+    {
+      $field = (in_array($type, array('comment')) ? $type . '_' : '') . (in_array($type, array('taxonomy')) ? 'id' : 'ID');
+      if (isset($_REQUEST[$field]))
+      {
+        piklist_form::$save_ids[$type] = $_REQUEST[$field];
+      } 
+    }
+    
+    if (isset($_REQUEST['ID']))
+    {
+      piklist_form::$save_ids['post'] = $_REQUEST['ID'];
+      
+      piklist('field', array(
+        'type' => 'hidden'
+        ,'scope' => 'post'
+        ,'field' => 'ID'
+        ,'value' => $_REQUEST['ID']
+      ));
+    }
+    
+    if (isset($filter) && $filter == 'true')
     {
       piklist('field', array(
         'type' => 'hidden'
@@ -45,16 +59,9 @@
       ));
     }
     
-    if (!empty($redirect))
-    {
-      piklist('field', array(
-        'type' => 'hidden'
-        ,'scope' => piklist::$prefix
-        ,'field' => 'redirect'
-        ,'value' => $redirect
-      ));
-    }
   ?>
+  
+  <?php piklist::render($form); ?>
   
   <?php piklist_form::save_fields(); ?>  
   

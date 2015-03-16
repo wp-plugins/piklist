@@ -28,7 +28,7 @@ class PikList_Validate
     add_action('init', array('piklist_validate', 'init'));
     add_action('admin_head', array('piklist_validate', 'admin_head'));
     add_action('admin_notices', array('piklist_validate', 'admin_notices'));
-    add_action('piklist_notices', array('piklist_validate', 'admin_notices'));
+    add_action('piklist_widget_notices', array('piklist_validate', 'admin_notices'));
 
     add_filter('wp_redirect', array('piklist_validate', 'wp_redirect'), 10, 2);
     add_filter('piklist_validation_rules', array('piklist_validate', 'validation_rules'));
@@ -83,11 +83,9 @@ class PikList_Validate
     }
   }
   
-  public static function admin_notices($form_id = null)
+  public static function admin_notices()
   {
-    $submitted_form_id = piklist_form::get('form_id');
-
-    if ((($submitted_form_id && $form_id == $submitted_form_id) || !$submitted_form_id) && !empty(self::$submission['errors']))
+    if (!empty(self::$submission['errors']))
     {
       $notices = array();
       foreach (self::$submission['errors'] as $type => $fields)
@@ -138,7 +136,7 @@ class PikList_Validate
             $request_data = &$_REQUEST;
           }
         }
-        
+
         if (isset($request_data) && isset($field['field']))
         {
           $field['request_value'] = !strstr($field['field'], ':') ? (isset($request_data[$field['field']]) ? $request_data[$field['field']] : null) : piklist::array_path_get($request_data, explode(':', $field['field']));
@@ -186,7 +184,7 @@ class PikList_Validate
               $field['request_value'][$_field['field']] = !strstr($_field['field'], ':') ? (isset($request_data[$_field['field']]) ? $request_data[$_field['field']] : null) : piklist::array_path_get($request_data, explode(':', $_field['field']));              
             }
           }
-          else if ($field['type'] != 'html')
+          else
           {
             $index = 0;
             
@@ -391,15 +389,16 @@ class PikList_Validate
         ,'description' => __('Verifies that the email domain entered is a valid domain.', 'piklist')
         ,'callback' => array('piklist_validate', 'validate_email_domain')
       )
-      ,'email_exists' => array(
-        'name' => __('Username email_exists?', 'piklist')
-        ,'description' => __('Checks that the entered email is not already registered to another user.', 'piklist')
-        ,'callback' => array('piklist_validate', 'validate_email_exists')
-      )
       ,'file_exists' => array(
         'name' => __('File Exists?', 'piklist')
         ,'description' => __('Verifies that the file path entered leads to an actual file.', 'piklist')
         ,'callback' => array('piklist_validate', 'validate_file_exists')
+      )
+      ,'html' => array(
+        'name' => __('Valid HTML', 'piklist')
+        ,'description' => __('Verifies that the data entered is valid HTML.', 'piklist')
+        ,'rule' => "/^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/"
+        ,'message' => __('is not valid HTML', 'piklist')
       )
       ,'image' => array(
         'name' => __('Is Image?', 'piklist')
@@ -434,11 +433,6 @@ class PikList_Validate
         ,'rule' => "/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/"
         ,'message' => __('is not a valid url.', 'piklist')
       )
-      ,'username_exists' => array(
-        'name' => __('Username exists?', 'piklist')
-        ,'description' => __('Checks that the entered username does not already exist.', 'piklist')
-        ,'callback' => array('piklist_validate', 'validate_username_exists')
-      )
     );
 
     return $validation_rules;
@@ -471,21 +465,6 @@ class PikList_Validate
   public static function validate_email_domain($value, $field, $arguments)
   {
     return (bool) @checkdnsrr(preg_replace('/^[^@]++@/', '', $value), 'MX') ? true : __('does not contain a valid Email Domain.', 'piklist');
-  }
-
-  /**
-   * Check if a email is already registered to another user
-   *
-   * Uses the WordPress function email_exists()
-   * 
-   * @param  $file
-   * @param  $field 
-   * @param  $arguments
-   * @return bool true if $email is registered to another user generated message, return false otherwise.
-   */
-  public static function validate_email_exists($value, $field, $arguments)
-  {
-    return email_exists($value) ? sprintf(__('cannot be "%s". This email is registered to another user.', 'piklist'), $value) : true;
   }
 
   /**
@@ -553,7 +532,6 @@ class PikList_Validate
     return true;
   }
 
-
   /**
    * Validate if a numbered value is within a range.
    * 
@@ -578,28 +556,13 @@ class PikList_Validate
       return sprintf(__('contains a value that is not between %s and %s', 'piklist'), $min, $max);
     }
   }
-
-  /**
-   * Check if a username already exists
-   *
-   * Uses the WordPress function username_exists()
-   * 
-   * @param  $file
-   * @param  $field 
-   * @param  $arguments
-   * @return bool true if $username does not exist, message otherwise.
-   */
-  public static function validate_username_exists($value, $field, $arguments)
-  {
-    return username_exists($value) ? sprintf(__('cannot be "%s". This username already exists.', 'piklist'), $value) : true;
-  }
   
   
   
   /**
    * Included Sanitization Callbacks
    */
-
+  
   public static function sanitization_rules()
   {
     $sanitization_rules = array(

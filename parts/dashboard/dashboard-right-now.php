@@ -1,6 +1,6 @@
 <?php
 /*
-Title: Right Now
+Title: At a Glance
 Capability: manage_options
 Network: false
 ID: dashboard_right_now
@@ -32,17 +32,39 @@ function piklist_dashboard_right_now_new()
 
       <?php $post_types = get_post_types(array(), 'objects'); ?>
 
+
+        <?php $exclude = array('revision');?>
+
+        <?php foreach ($exclude as $exclude_post_type) : ?>
+
+          <?php unset($post_types[$exclude_post_type]); ?>
+       
+        <?php endforeach; ?>
+
+
       <?php asort($post_types); ?>
+
+        <?php $custom_status = array(
+            'attachment' => 'inherit'
+          ); ?>
 
       <?php foreach ($post_types  as $post_type) : ?>
 
-            <li class="<?php echo mb_strtolower($post_type->name); ?><?php _e('_right_now', 'piklist');?>">
+            <?php $status = 'publish'; ?>
 
-              <?php $num_pages = wp_count_posts ($post_type->name); ?>
+            <li class="<?php echo mb_strtolower($post_type->name) . __('_right_now', 'piklist');?>">
+
+              <?php $num_pages = wp_count_posts($post_type->name); ?>
+
+              <?php if(array_key_exists($post_type->name, $custom_status)) : ?>
+
+                <?php $status = implode($custom_status); ?>
+
+              <?php endif; ?>
 
               <a href="<?php echo $post_type->name == 'attachment' ? 'upload.php' : 'edit.php?post_type=' . $post_type->name;?>">
                 
-                <?php echo number_format_i18n( $num_pages->publish ) . '&nbsp;' . $post_type->label; ?>
+                <?php echo number_format_i18n( $num_pages->$status ) . '&nbsp;' . $post_type->label; ?>
               
               </a>
 

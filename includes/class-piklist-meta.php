@@ -54,6 +54,7 @@ class PikList_Meta
       ,'admin_color'
       ,'dismissed_wp_pointers'
       ,'wp_user-settings'
+      ,'dismissed_piklist_notices'
     )
   );
   

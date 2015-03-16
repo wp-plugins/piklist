@@ -22,7 +22,7 @@
         {
           $(this).find('.wp-editor-area').each(function()
           {
-            if (typeof switchEditors != 'undefined')
+            if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
             {
               var id = $(this).attr('id'),
                 command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
@@ -40,7 +40,7 @@
         {
           $(this).find('.wp-editor-area').each(function()
           {
-            if (typeof switchEditors != 'undefined')
+            if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
             {
               var id = $(this).attr('id'),
                 command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
@@ -241,31 +241,13 @@
           $(this).parents('tr:eq(0)').css(hide);
         }
       });
-      
-      $('form[autocomplete="off"] input, input[autocomplete="off"]').each(function()
-      {
-        var $element = $(this),
-          name = $element.attr('name'),
-          id = $element.attr('id');
-
-        $element
-          .removeAttr('name')
-          .removeAttr('id');      
-
-        setTimeout(function()
-        { 
-          $element
-            .attr('name', name)
-            .attr('id', id);            
-        }, 1);
-      }); 
 
       var options = typeof field.options === 'object' ? field.options : null;
 
       switch (field.type)
       {
         case 'editor':
-          
+
           $('textarea[name="' + field.name + '"]').each(function()
           {
             var id = $(this).attr('id'),
@@ -279,11 +261,11 @@
                 fields_id = $(this).parents('form:first').find('[name="' + piklist.prefix + '[fields_id]"]').val();
 
               id = Math.random().toString(36).substr(2, 9) + 'piklisteditor' + name.replace(/[^A-Z0-9]/g, '');
-              
+
               $editor_wrap
                 .css('height', $editor_wrap.height() + 'px')
                 .empty();
-              
+
               $.ajax({
                 type : 'POST',
                 url : ajaxurl,
@@ -305,64 +287,64 @@
                     id: id
                   }
                 }
-                ,success: function(response) 
+                ,success: function(response)
                 {
                   if (response.tiny_mce != '')
                   {
                     tinyMCEPreInit.mceInit = $.extend(tinyMCEPreInit.mceInit, response.tiny_mce);
                   }
-                  
+
                   if (response.quicktags != '')
                   {
                     tinyMCEPreInit.qtInit = $.extend(tinyMCEPreInit.qtInit, response.quicktags);
                   }
-                                    
+
                   $(response.field).insertAfter($editor_wrap);
-                
+
                   $editor_wrap.remove();
 
                   quicktags(tinyMCEPreInit.qtInit[id]);
-                  
+
                   QTags._buttonsInit();
-                  
+
                   tinyMCE.init(tinyMCEPreInit.mceInit[id]);
                 }
               });
             }
             else if (typeof tinyMCEPreInit.qtInit[id] == 'undefined')
-            {               
+            {
               for (original_id in tinyMCEPreInit.qtInit)
               {
                 if (original_id.substr(original_id.indexOf('piklisteditor') + ('piklisteditor').length) == id.substr(id.indexOf('piklisteditor') + ('piklisteditor').length))
                 {
                   tinyMCEPreInit.mceInit[id] = tinyMCEPreInit.mceInit[original_id];
                   tinyMCEPreInit.mceInit[id].elements = id;
-          
+
                   tinyMCEPreInit.qtInit[id] = tinyMCEPreInit.qtInit[original_id];
                   tinyMCEPreInit.qtInit[id].id = id;
-                  
+
                   break;
                 }
               }
-              
+
               quicktags(tinyMCEPreInit.qtInit[id]);
-              
+
               QTags._buttonsInit();
-                    
+
               tinyMCE.execCommand(command, false, id);
             }
             else if ($(this).siblings('.mce-tinymce, .quicktags-toolbar').length == 0)
             {
               quicktags(tinyMCEPreInit.qtInit[id]);
-              
+
               QTags._buttonsInit();
-                    
+
               tinyMCE.execCommand(command, false, id);
             }
           });
-                    
+
         break;
-        
+
         case 'datepicker':
 
           $(':input[name="' + field.name + '"]').each(function()
@@ -374,11 +356,11 @@
                 .datepicker(options);
             }
           });
-      
+
         break;
-        
+
         case 'colorpicker':
-          
+
           $(':input[name="' + field.name + '"]').each(function()
           {
             $(this)
@@ -388,7 +370,7 @@
 
         break;
       }
-      
+
       if (field.js_callback)
       {
         window[field.js_callback](field);
@@ -646,56 +628,59 @@
             break;
 
             default:
-            
-              if (context.css('visibility') == 'hidden' && overall_outcome)
+              
+              if (context != null)
               {
-                context
-                  .css(show)
-                  .animate({
-                    'opacity': 1
-                  });     
-              }
-              else if (!overall_outcome)
-              {
-                if (outcomes[i].condition.reset)
+                if (context.css('visibility') == 'hidden' && overall_outcome)
                 {
-                  if (field.is(':radio') || field.is(':checkbox'))
+                  context
+                    .css(show)
+                    .animate({
+                      'opacity': 1
+                    });     
+                }
+                else if (!overall_outcome)
+                {
+                  if (outcomes[i].condition.reset)
                   {
-                    field = $(selector == reset_selector ? selector : reset_selector);
+                    if (field.is(':radio') || field.is(':checkbox'))
+                    {
+                      field = $(selector == reset_selector ? selector : reset_selector);
                     
-                    if (field.is(':checked'))
-                    {
-                      field
-                        .attr('checked', false)
-                        .trigger('change'); 
-                    } 
-                  }
-                  else
-                  {
-                    if (field.is('select'))
-                    {
-                      if (field.children('option[selected="selected"]').length > 0)
+                      if (field.is(':checked'))
                       {
                         field
-                          .children('option')
-                          .removeAttr('selected');
-                        
-                        field.trigger('change');
-                      }
+                          .attr('checked', false)
+                          .trigger('change'); 
+                      } 
                     }
                     else
                     {
-                      if (field.val() != '')
+                      if (field.is('select'))
                       {
-                        field
-                          .val('')
-                          .trigger('change'); 
+                        if (field.children('option[selected="selected"]').length > 0)
+                        {
+                          field
+                            .children('option')
+                            .removeAttr('selected');
+                        
+                          field.trigger('change');
+                        }
+                      }
+                      else
+                      {
+                        if (field.val() != '')
+                        {
+                          field
+                            .val('')
+                            .trigger('change'); 
+                        }
                       }
                     }
                   }
-                }
                 
-                context.css(hide);
+                  context.css(hide);
+                }
               }
 
             break;
@@ -762,13 +747,13 @@
     _init: function() 
     {
       this.$element
-        .find('[data-piklist-field-group]:not(:radio, :checkbox, :file, :hidden)')
+        .find('[data-piklist-field-group]:not(:radio, :checkbox, :file, :input[type="hidden"])')
         .each(function()
         {
           var $element = $(this),
             group = $element.data('piklist-field-group'),
             sub_group = $element.data('piklist-field-sub-group');
-            
+
           if ($element.is('textarea') && $element.hasClass('wp-editor-area'))
           {
             $element = $(this).parents('.wp-editor-wrap:first');
@@ -801,7 +786,7 @@
 
      this.$element
        .find('[data-piklist-field-group]')
-       .filter(':radio, :checkbox, :hidden')
+       .filter(':radio, :checkbox, :input[type="hidden"]')
        .each(function()
        {
          var $element = $(this),
@@ -1063,7 +1048,7 @@
                     
                       $(this).find('.wp-editor-area').each(function()
                       {
-                        if (typeof switchEditors != 'undefined')
+                        if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
                         {
                           var id = $(this).attr('id'),
                             command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
@@ -1078,7 +1063,7 @@
                     {
                       $(this).find('.wp-editor-area').each(function()
                       {
-                        if (typeof switchEditors != 'undefined')
+                        if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
                         {
                           var id = $(this).attr('id'),
                             command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
@@ -1140,7 +1125,7 @@
 
                   if (!$(this).is(':checkbox, :radio'))
                   {
-                    $(this).removeAttr('value');
+                    $(this).removeProp('value');
                   }
                   
                   if ($(this).is('textarea'))
@@ -1257,7 +1242,7 @@
 
                     $(this).find('.wp-editor-area').each(function()
                     {
-                      if (typeof switchEditors != 'undefined')
+                      if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
                       {
                         var id = $(this).attr('id'),
                           command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
@@ -1272,7 +1257,7 @@
                   {
                     $(this).find('.wp-editor-area').each(function()
                     {
-                      if (typeof switchEditors != 'undefined')
+                      if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
                       {
                         var id = $(this).attr('id'),
                           command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
@@ -1479,14 +1464,14 @@
         .each(function()
         {
           var $element = $(this),
-            columns = $element.data('piklist-field-columns'),
-            $parent = $element.parent('div[data-piklist-field-group]:eq(0)');
+            columns = $element.data('piklist-field-columns');
           
           if ($element.is('textarea') && $element.hasClass('wp-editor-area'))
           {
             $element = $(this).parents('.wp-editor-wrap:first');
-            $parent = $element.parent('div[data-piklist-field-group]:eq(0)')
           }
+              
+          var $parent = $element.parent('div[data-piklist-field-group]:eq(0)');
               
           if ($parent.length > 0)
           {
@@ -1495,7 +1480,7 @@
           else
           {
             $element
-              .siblings('.piklist-field-part')
+              .siblings('.piklist-field-part:eq(0)')
               .addBack()
               .wrapAll('<div data-piklist-field-columns="' + columns + '" />');
           }

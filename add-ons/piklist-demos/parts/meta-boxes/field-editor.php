@@ -5,13 +5,6 @@ Order: 100
 Lock: true
 Meta box: false
 */
-  
-  piklist('field', array(
-    'type' => 'editor'
-    ,'field' => 'feature_box'
-    ,'add_more' => true
-    ,'label' => 'Feature Box'
-  ));
 
   piklist('field', array(
     'type' => 'editor'
@@ -20,7 +13,7 @@ Meta box: false
     ,'label' => 'Post Content'
     ,'description' => 'This is the standard WordPress Editor, placed in a Metabox, which is placed in a Piklist WorkFlow tab. By default, Piklist formats the editor like any other field with a label to the left.'
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    ,'options' => array(
+    ,'options' => array (
       'wpautop' => true
       ,'media_buttons' => true
       ,'tabindex' => ''

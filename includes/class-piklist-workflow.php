@@ -63,7 +63,7 @@ class PikList_Workflow
   public static function is_active($data)
   {
     $is_active = false;
-    
+
     if (isset($_REQUEST['flow_page']))
     {
       $is_active = $_REQUEST['flow_page'] == $data['page_slug'];
@@ -147,9 +147,14 @@ class PikList_Workflow
 
       $data['page_slug'] = piklist::slug($data['name']);
       $data['flow_slug'] = piklist::slug($data['flow']);
-      
+
       if (!$data['header'])
       {
+        if ($data['page'] && !is_int(array_search($pagenow, $data['page'])))
+        {
+          return null;
+        }
+        
         $data = self::is_active($data);
       }
       

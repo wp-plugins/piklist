@@ -166,8 +166,10 @@
       $(document).on('mousedown', '.widget input[name="savewidget"]', function()
       {
         var button = $(this),
-          widget_container = button.parents('.widget-control-actions:first').siblings('.widget-content:first');
-     
+          widget_container = button.parents('.widget-control-actions:first').siblings('.widget-content:first'),
+          widget_title = button.parents('.widget').find('.widget-title h4'),
+          title = button.parents('form').find('.piklist-universal-widget-form-container').attr('data-widget-title');
+
         if (typeof tinyMCE != 'undefined')
         {
           tinyMCE.triggerSave();
@@ -209,7 +211,14 @@
                 sortable: true
               })
               .piklistfields();
-
+            
+            if (typeof title != 'undefined')
+            {
+              widget_title
+                .find('.in-widget-title')
+                .text(':  ' + title);
+            }
+            
             widget_container
               .css({
                 'height': 'auto',
@@ -219,23 +228,7 @@
         });
       });
               
-      $('.piklist-universal-widget-form-container').each(function()
-      {
-        var widget_container = $(this).parents('.widget-content'),
-          widget_title = $(this).parents('.widget').find('.widget-title h4'),
-          title = $(this).attr('data-widget-title'),
-          height = $(this).attr('data-widget-height'),
-          width = $(this).attr('data-widget-width');
-        
-        if (typeof title != 'undefined')
-        {
-          widget_title
-            .find('.in-widget-title')
-            .text(':  ' + title);
-        }
-        
-        piklist_admin.widget_dimensions(widget_container, height, width);
-      });
+      piklist_admin.widget_title();
       
       var current_widget = null;
       
@@ -384,6 +377,32 @@
           widget_container.attr('data-piklist-wptab-active', $(this).text());
         }
       });
+      
+      piklist_admin.widget_title();
+    },
+    
+    widget_title: function()
+    {
+      setTimeout(function()
+      {
+        $('.piklist-universal-widget-form-container').each(function()
+        {
+          var widget_container = $(this).parents('.widget-content'),
+            widget_title = $(this).parents('.widget').find('.widget-title h4'),
+            title = $(this).attr('data-widget-title'),
+            height = $(this).attr('data-widget-height'),
+            width = $(this).attr('data-widget-width');
+        
+          if (typeof title != 'undefined')
+          {
+            widget_title
+              .find('.in-widget-title')
+              .text(':  ' + title);
+          }
+        
+          piklist_admin.widget_dimensions(widget_container, height, width);
+        });
+      }, 250);
     },
     
     widget_dimensions: function(widget, height, width)

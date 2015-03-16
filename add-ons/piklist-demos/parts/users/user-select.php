@@ -33,6 +33,6 @@ Collapse: false
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'User Section'
+    ,'type' => 'Meta Box'
   ));
 ?>

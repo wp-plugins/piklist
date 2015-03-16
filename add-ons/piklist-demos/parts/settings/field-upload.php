@@ -1,9 +1,9 @@
 <?php
 /*
-Title: Upload Fields <span class="piklist-title-right">Settings Section Removed</span>
+Title: Upload Fields <span class="piklist-title-right">Meta Box Removed</span>
 Post Type: piklist_demo
 Order: 110
-Settings Section: false
+Meta Box: false
 Collapse: false
 */
   
@@ -41,5 +41,5 @@ Collapse: false
   
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Settings Section'
+    ,'type' => 'Meta Box'
   ));
