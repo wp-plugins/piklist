@@ -15,7 +15,9 @@ The most powerful framework available for WordPress.
 
 **CURRENTLY IN BETA**
 
-Piklist is the developers best friend. A rapid development framework for WordPress that will let you concentrate on the main focus of your plugin or theme, and let Piklist handle everything else.
+Piklist is the most powerful framework available for WordPress. Easy for beginners... built for developers. Piklist helps you build things - fast.
+
+Pikilst is a rapid development framework for WordPress that will let you concentrate on the main focus of your plugin or theme, and let Piklist handle everything else.
 
 [Watch the Piklist presentation from WordCamp NYC >](http://wordpress.tv/2012/09/04/steve-bruner-and-kevin-miller-building-powerful-websites-and-web-applications-with-piklist/):
 
@@ -29,6 +31,19 @@ Piklist is the developers best friend. A rapid development framework for WordPre
 
 = LEARN MORE =
 *   <a href="http://piklist.com/user-guide/">Piklist User Guide</a>
+
+= Customize everything in WordPress =
+*   Post Types
+*   Taxonomies
+*   User Profiles
+*   Media
+*   Settings
+*   Admin Pages
+*   Widgets
+*   Dashboard
+*   Help Tabs
+*   Admin Notices
+*   Pointers
 
 
 = Better Custom Post Types =
@@ -45,26 +60,30 @@ Piklist is the developers best friend. A rapid development framework for WordPre
 *   Lock the box, so users cannot move or hide them.
 *   Add meta box to a specific Page/Post ID.
 
-= Simple, Groupable Widgets =
-*   Group widgets into one widget to save space, and make finding them easier 
+= Simple Widgets =
 *   Create one file for your Widget settings, and one for your output... all done!
-*   Use any Piklist field type in your widget settings page.
 
 = Powerful Fields =
 *   Backend, Frontend, Widgets... it all works the same.
+*   ANY field or groups of fields can be a repeater.
+*   Validate and Sanitize any field.
 
-= Lots of field types (and more coming soon!): =
+= Lots of field types (and more coming soon!) =
 *   text
 *   textarea
 *   checkbox
 *   radio
 *   select
 *   post editor
+*   file upload
+*   image upload
 *   hidden
 *   html
 *   date chooser 
 *   color picker
 *   add more
+*   HTML5
+
 
 = Choose a content type for your field (You can even mix-n-match on one form) =
 *   post
