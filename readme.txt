@@ -9,13 +9,15 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Tags: piklist,framework,cms,admin,admin pages,settings,settings pages,content types,custom post types,post type,post type fields,custom taxonomies,taxonomy,taxonomy fields,term fields,custom comment type,comments,custom fields,widgets,help,help tabs,contextual help,media,media fields,admin notices,alerts,admin pointers,pointers,users,user profiles,user fields,validate,validation,field validation,field sanitization,sanitization,sanitize,tabs,tabbed sections,tabbed settings
 
-The most powerful framework available for WordPress.
+Piklist is the most powerful framework available for WordPress.
+Easy for beginners... built for developers. Piklist helps you build things - fast.
 
 == Description ==
 
 **CURRENTLY IN BETA**
 
-Piklist is the most powerful framework available for WordPress. Easy for beginners... built for developers. Piklist helps you build things - fast.
+= Piklist is the most powerful framework available for WordPress. =
+Easy for beginners... built for developers. Piklist helps you build things - fast.
 
 Pikilst is a rapid development framework for WordPress that will let you concentrate on the main focus of your plugin or theme, and let Piklist handle everything else.
 
@@ -64,7 +66,6 @@ Pikilst is a rapid development framework for WordPress that will let you concent
 *   Create one file for your Widget settings, and one for your output... all done!
 
 = Powerful Fields =
-*   Backend, Frontend, Widgets... it all works the same.
 *   ANY field or groups of fields can be a repeater.
 *   Validate and Sanitize any field.
 
@@ -102,6 +103,10 @@ Pikilst is a rapid development framework for WordPress that will let you concent
 *   Hide/Show based on the post status.
 *   Hide/Show based on the users capability.
 *   Hide form fields, and just show field values
+
+
+> #### Getting Started with Piklist is Easy.
+> <a href="https://piklist.com/user-guide/tutorials/getting-started-with-piklist/">Read our getting started tutorial.</a>
 
 == Installation ==
 
@@ -448,14 +453,15 @@ Pikilst is a rapid development framework for WordPress that will let you concent
 == Upgrade Notice ==
 
 = 0.6.7 =
-* Major upgrade. Looks of awesome new features.
+* Major upgrade. Lots of awesome new features.
 
 = 0.6.4 =
-* Fixes major issue with Publish box. Please upgrade.
+* Fixed major issue with Publish box. Please upgrade.
 
 == Screenshots ==
 
-1. Post relationships: You'll wish all relationships were this easy.
-2. Add-mores: The infinite repeater field.
-3. WorkFlows: The tab system you never knew was possible.
-4. Multiple user roles: Better security, more flexibility.
+1. Less code required: Creating fields in Piklist is super simple, and in most cases the same code can be used anywhere: Post Types, Settings, Taxonomies, User Profiles and Widgets.
+2. Post relationships: You'll wish all relationships were this easy.
+3. Add-mores: The infinite repeater field.
+4. WorkFlows: The tab system you never knew was possible.
+5. Multiple user roles: Better security, more flexibility.
