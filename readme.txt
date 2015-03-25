@@ -113,6 +113,35 @@ Pikilst is a rapid development framework for WordPress that will let you concent
 *   Install and activate Piklist like any other plugin.
 *   DEVELOPERS: Learn how to develop Piklist Powered <a href="https://piklist.com/user-guide/tutorials/giving-your-theme-some-piklist-power/">Themes</a> and <a href="https://piklist.com/user-guide/tutorials/writing-a-plugin-for-piklist/">Plugins</a>.
 
+
+== Frequently Asked Questions ==
+
+= What does this plugin do? =
+Piklist provides a stable framework for building amazing things with WordPress.
+
+= I'm a beginner, is Piklist for me? =
+Piklist makes it very easy for beginners to <a href="https://piklist.com/user-guide/tutorials/getting-started-with-piklist/">get started</a>. In most cases you can just copy and paste code you find in the Piklist built-in Demos, one of our tutorials or in the support forums.
+
+= I'm a developer, is Piklist for me? =
+Piklist was originally built for developers. It was inspired by Ruby on Rails, jQuery and Django. Piklist is a fast and concise plugin that encourages WordPress rapid development. It simplifies many of the more difficult tasks in WordPress and adds functionality not presently common in WordPress core. 
+
+We’ve worked hard to make Piklist easy to use for beginners, and powerful enough for Developers… and our users all agree!
+
+= Where's the User Interface? =
+Piklist is a code-based framework, which means it has no user interface. We believe this is one of the biggest benefits to using Piklist. At first glance, UI based field builders look easier, but in our experience they are not. Code based systems allow you greater flexibility in your field configurations and development, and will save you time in the long run. With Piklist you can usually use the same code you have written in one section and use it in another, allowing you to copy and paste, and save tons of time.
+
+Piklist comes with built-in Demos. If you find a field you like, just copy the code and paste it into your project... seriously, it's that easy.
+
+Code-based frameworks also allows you to version control your code, which is very difficult to do with a UI based framework. All you have to do is press delete by accident in a UI-based system, and you've just lost your work. With version control that never happens.
+
+= What's the best way to get started with Piklist? =
+1. Install and activate the plugin.
+2. Go through our <a href="https://piklist.com/user-guide/tutorials/getting-started-with-piklist/">Getting Started with Piklist</a> tutorial.
+3. <a href="https://piklist.com/user-guide/tutorials/piklists-built-demos/">Activate the built-in Demos</a> to get an idea of what you can build. If you like something in the demos, you can just copy and paste it into your own project.
+4. Ask questions on our <a href="https://piklist.com/support/">Support Forum</a>. (We love hearing from our users)
+
+
+
 == Changelog ==
 
 = 0.9.4.24 =
