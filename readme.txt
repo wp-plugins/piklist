@@ -7,7 +7,8 @@ Donate link: http://piklist.com/get-involved/
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Tags: piklist,framework,cms,admin,admin pages,settings,settings pages,content types,custom post types,post type,post type fields,custom taxonomies,taxonomy,taxonomy fields,term fields,custom comment type,comments,custom fields,widgets,help,help tabs,contextual help,media,media fields,admin notices,alerts,admin pointers,pointers,users,user profiles,user fields,validate,validation,field validation,field sanitization,sanitization,sanitize,tabs,tabbed sections,tabbed settings
+Tags: admin,admin notices,admin pages,admin pointers,advanced,alerts,cms,comments,content types,contextual help,custom,custom comment type,custom,custom field,custom fields,custom post types,custom taxonomies,edit,field,field sanitization,editor,field validation,file,framework,help,help tabs,html5,image,images,integration,magic fields,media,media fields,more fields,piklist,pointers,post,posts,post type,post type fields,repeater,sanitization,sanitize,settings,settings pages,simple fields,tabbed sections,tabbed settings,tabs,taxonomy,taxonomy fields,term fields,text, textarea, type,upload,upload field,user fields,user profiles,users,validate,validation,widget,widgets
+
 
 Piklist is the most powerful framework available for WordPress.
 Easy for beginners... built for developers. Piklist helps you build things - fast.
@@ -104,6 +105,9 @@ Pikilst is a rapid development framework for WordPress that will let you concent
 *   Hide/Show based on the users capability.
 *   Hide form fields, and just show field values
 
+
+= Please Review Piklist =
+Your reviews really make a difference! Thanks.
 
 > #### Getting Started with Piklist is Easy.
 > <a href="https://piklist.com/user-guide/tutorials/getting-started-with-piklist/">Read our getting started tutorial.</a>
