@@ -107,7 +107,8 @@ Pikilst is a rapid development framework for WordPress that will let you concent
 
 
 = Please Review Piklist =
-Your reviews really make a difference! Thanks.
+<a href="http://wordpress.org/support/view/plugin-reviews/piklist">Your reviews really make a difference! Thanks.</a>
+
 
 > #### Getting Started with Piklist is Easy.
 > <a href="https://piklist.com/user-guide/tutorials/getting-started-with-piklist/">Read our getting started tutorial.</a>
