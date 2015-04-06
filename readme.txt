@@ -1,6 +1,6 @@
 === PIKLIST | Rapid development framework ===
 Contributors: piklist, p51labs, sbruner
-Tested up to: 4.1
+Tested up to: 4.2
 Requires at least: 3.7
 Stable tag: 0.9.4.25
 Donate link: http://piklist.com/get-involved/
