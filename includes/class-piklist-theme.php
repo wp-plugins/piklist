@@ -19,27 +19,29 @@ class PikList_Theme
     
     add_action($pagenow == 'customize.php' ? 'customize_controls_init' : 'init', array('piklist_theme', 'init'));
     add_action('setup_theme', array('piklist_theme', 'setup_theme'));
-
     add_action('wp_head', array('piklist_theme', 'register_assets_head'), -1);
-    add_action('wp_head', array('piklist_theme', 'conditional_scripts_start'), -1);
     add_action('wp_footer', array('piklist_theme', 'register_assets_footer'), -1);
-    add_action('wp_footer', array('piklist_theme', 'conditional_scripts_start'), -1);
     add_action('admin_head', array('piklist_theme', 'register_assets_head'), -1);
-    add_action('admin_head', array('piklist_theme', 'conditional_scripts_start'), -1);
     add_action('admin_footer', array('piklist_theme', 'register_assets_footer'), -1);
-    add_action('admin_footer', array('piklist_theme', 'conditional_scripts_start'), -1);
-    add_action('customize_controls_print_styles', array('piklist_theme', 'conditional_scripts_start'), -1);
-    add_action('customize_controls_print_scripts', array('piklist_theme', 'conditional_scripts_start'), -1);
-    add_action('customize_controls_print_footer_scripts', array('piklist_theme', 'conditional_scripts_start'), -1);
-  
-    add_action('wp_head', array('piklist_theme', 'conditional_scripts_end'), 101);
-    add_action('wp_footer', array('piklist_theme', 'conditional_scripts_end'), 101);
-    add_action('admin_head', array('piklist_theme', 'conditional_scripts_end'), 101);
-    add_action('admin_footer', array('piklist_theme', 'conditional_scripts_end'), 101);
-    add_action('customize_controls_print_styles', array('piklist_theme', 'conditional_scripts_end'), 101);
-    add_action('customize_controls_print_scripts', array('piklist_theme', 'conditional_scripts_end'), 101);
-    add_action('customize_controls_print_footer_scripts', array('piklist_theme', 'conditional_scripts_end'), 101);
-      
+
+    if (version_compare($GLOBALS['wp_version'], '4.2', '<' ))
+    {
+      add_action('wp_head', array('piklist_theme', 'conditional_scripts_start'), -1);
+      add_action('wp_footer', array('piklist_theme', 'conditional_scripts_start'), -1); 
+      add_action('admin_head', array('piklist_theme', 'conditional_scripts_start'), -1);
+      add_action('admin_footer', array('piklist_theme', 'conditional_scripts_start'), -1);
+      add_action('customize_controls_print_styles', array('piklist_theme', 'conditional_scripts_start'), -1);
+      add_action('customize_controls_print_scripts', array('piklist_theme', 'conditional_scripts_start'), -1);
+      add_action('customize_controls_print_footer_scripts', array('piklist_theme', 'conditional_scripts_start'), -1);
+      add_action('wp_head', array('piklist_theme', 'conditional_scripts_end'), 101);
+      add_action('wp_footer', array('piklist_theme', 'conditional_scripts_end'), 101);
+      add_action('admin_head', array('piklist_theme', 'conditional_scripts_end'), 101);
+      add_action('admin_footer', array('piklist_theme', 'conditional_scripts_end'), 101);
+      add_action('customize_controls_print_styles', array('piklist_theme', 'conditional_scripts_end'), 101);
+      add_action('customize_controls_print_scripts', array('piklist_theme', 'conditional_scripts_end'), 101);
+      add_action('customize_controls_print_footer_scripts', array('piklist_theme', 'conditional_scripts_end'), 101);     
+    }
+
     add_filter('body_class', array('piklist_theme', 'body_class'));
     add_filter('post_class', array('piklist_theme', 'post_class'));
     
