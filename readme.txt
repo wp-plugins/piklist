@@ -2,7 +2,7 @@
 Contributors: piklist, p51labs, sbruner
 Tested up to: 4.2
 Requires at least: 3.7
-Stable tag: 0.9.4.26
+Stable tag: 0.9.4.27
 Donate link: http://piklist.com/get-involved/
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -148,6 +148,8 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 
 == Changelog ==
+= 0.9.4.27 =
+* ENHANCED: Only load conditional scripts with Piklist functions, for WP v4.1 and under.
 
 = 0.9.4.26 =
 * FIX: Security update for admin notices. @props joostdevalk
