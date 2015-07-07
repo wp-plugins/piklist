@@ -149,6 +149,8 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 == Changelog ==
 = 0.9.4.27 =
+Release Date: June 19, 2015
+
 * ENHANCED: Only load conditional scripts with Piklist functions, for WP v4.1 and under.
 
 = 0.9.4.26 =
