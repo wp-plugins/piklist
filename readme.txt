@@ -130,7 +130,7 @@ Piklist makes it very easy for beginners to <a href="https://piklist.com/user-gu
 = I'm a developer, is Piklist for me? =
 Piklist was originally built for developers. It was inspired by Ruby on Rails, jQuery and Django. Piklist is a fast and concise plugin that encourages WordPress rapid development. It simplifies many of the more difficult tasks in WordPress and adds functionality not presently common in WordPress core. 
 
-We’ve worked hard to make Piklist easy to use for beginners, and powerful enough for Developers… and our users all agree!
+Weâ€™ve worked hard to make Piklist easy to use for beginners, and powerful enough for Developersâ€¦ and our users all agree!
 
 = Where's the User Interface? =
 Piklist is a code-based framework, which means it has no user interface. We believe this is one of the biggest benefits to using Piklist. At first glance, UI based field builders look easier, but in our experience they are not. Code based systems allow you greater flexibility in your field configurations and development, and will save you time in the long run. With Piklist you can usually use the same code you have written in one section and use it in another, allowing you to copy and paste, and save tons of time.
@@ -148,11 +148,6 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 
 == Changelog ==
-= 0.9.4.28 =
-Release Date: August 18, 2015
-
-* ENHANCED: Updated Widgets to be compliant with WP 4.3.
-
 = 0.9.4.27 =
 Release Date: June 19, 2015
 
@@ -357,13 +352,13 @@ Release Date: June 19, 2015
 * NEW: admin_body_class parameter when registering Post Types.
 * NEW: Remove Save functionality for settings page.
 * NEW: Change Save button text.
-* NEW: French translation by Daniel Ménard.
+* NEW: French translation by Daniel MÃ©nard.
 * NEW: Slovak translation by Branco.
 * IMPROVED: Extended admin_body_class for Post Types and Taxonomies.
 * IMPROVED: Better display for settings page for both Tabs/no Tabs, and single line.
 * IMPROVED: Add or auto generate Form ID.
 * IMPROVED: Stops Webkit browsers from auto-filling user fields in the admin.
-* IMPROVED: More localized strings. Props @Daniel Ménard.
+* IMPROVED: More localized strings. Props @Daniel MÃ©nard.
 * FIXED: HTTPS works properly.
 * FIXED: Comment field no longer duplicates comments.
 * FIXED: Administrators can edit other users meta.
@@ -409,7 +404,7 @@ Release Date: June 19, 2015
 * FIXED: Network Activated plugins did not work properly.
 * FIXED: In function post_type_labels, view_item should be singularize. Props @James_Mc
 * FIXED: Allow creating of field-less meta boxes. Props @James_Mc
-* FIXED: Register Taxonomies before Custom Post Types. Props @Daniel Ménard
+* FIXED: Register Taxonomies before Custom Post Types. Props @Daniel MÃ©nard
 
 = 0.6.6 =
 * NEW: uninstall.php file added.
