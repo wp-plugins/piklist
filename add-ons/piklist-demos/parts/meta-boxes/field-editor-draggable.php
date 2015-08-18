@@ -2,15 +2,18 @@
 /*
 Title: Draggable Editor
 Post Type: piklist_demo,piklist_lite_demo
-Order: 100
+Order: 110
+Flow: Edit Demo
+Tab: Common
+Sub Tab: Editor
 */
 
   piklist('field', array(
     'type' => 'editor'
     ,'field' => 'post_content_full'
-    ,'scope' => 'post'
+    ,'scope' => 'post_meta'
     ,'template' => 'field'
-    ,'value' => 'You can remove the left label when displaying the editor by defining <code>\'template\'=>\'field\'</code> in the field parameters. This will make it look like the default WordPress editor. To learn about replacing the WordPress editor <a href="http://piklist.com/user-guide/tutorials/replacing-wordpress-post-editor/">read our Tutorial</a>.'
+    ,'value' => sprintf(__('You can remove the left label when displaying the editor by defining %1$s in the field parameters. This will make it look like the default WordPress editor. To learn about replacing the WordPress editor %2$sread our Tutorial%2$s.', 'piklist-demo'), '<code>\'template\'=>\'field\'</code>', '<a href="http://piklist.com/user-guide/tutorials/replacing-wordpress-post-editor/">', '</a>')
     ,'options' => array (
       'wpautop' => true
       ,'media_buttons' => true
@@ -26,4 +29,9 @@ Order: 100
     ,'on_post_status' => array(
       'value' => 'lock'
     )
+  ));
+
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Meta Box'
   ));

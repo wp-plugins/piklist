@@ -1,20 +1,40 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList
+/**
+ * Piklist
+ * Core functionality for Piklist.
+ *
+ * @package     Piklist
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist
 {
+  /**
+   * @var string The current version of Piklist.
+   * @access public
+   */
   public static $version;
-      
+  
+  /**
+   * @var array The urls to all areas Piklist can be found.
+   * @access public
+   */
   public static $urls = array();
 
+  /**
+   * @var array The paths to all areas Piklist can be found.
+   * @access public
+   */
   public static $paths = array();
-
-  public static $domains = array();
   
+  /**
+   * @var array Conversions for plurals.
+   * @access public
+   */
   public static $plurals = array(
     'plural' => array(
       '/(quiz)$/i' => "$1zes"
@@ -92,21 +112,54 @@ class PikList
     )
   );
   
+  /**
+   * @var string The prefix used for all piklist field names and ids.
+   * @access public
+   */
   public static $prefix = '_';
   
+  /**
+   * @var array Holds all processed parts by folder.
+   * @access public
+   */
+  private static $processed_parts = array();
+  
+  /**
+   * load
+   * Load resources, classes and add-ons.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function load()
   {
     self::add_plugin('piklist', dirname(dirname(__FILE__)));
 
-    self::$version = current(get_file_data(self::$paths['piklist'] . '/piklist.php', array('version' => 'Version')));
+    self::$version = current(self::get_file_data(self::$paths['piklist'] . '/piklist.php', array('version' => 'Version')));
 
     load_plugin_textdomain('piklist', false, 'piklist/languages/');
 
     register_activation_hook('piklist/piklist.php', array('piklist', 'activate'));
    
     self::auto_load();
+    
+    add_filter('piklist_part_data', array('piklist', 'part_data'), 10, 2);
+
+    add_action('admin_init', array('piklist', 'process_parts_callback'), 1000);
+    add_action('admin_head', array('piklist', 'process_parts_callback'), 1000);
+    add_action('template_redirect', array('piklist', 'process_parts_callback'), 1000);
+    add_action('piklist_widgets_post_register', array('piklist', 'process_parts_callback'), 1000);
   }
   
+  /**
+   * auto_load
+   * Auto load all classes in the includes directory of this plugin.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function auto_load()
   {
     $includes = self::get_directory_list(self::$paths['piklist'] . '/includes');
@@ -125,19 +178,30 @@ class PikList
     }
   }
 
+  /**
+   * activate
+   * Fire activation hook for Piklist.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function activate()
   {
     piklist::check_network_propagate('do_action', 'piklist_activate');
   }
-
-  public static function plugin_dir()
-  {
-    $dir = plugin_dir_path(__FILE__);
-    $dir = substr($dir, 0, -18);  
-
-    return apply_filters('piklist_plugin_dir', $dir);
-  }
   
+  /**
+   * add_plugin
+   * Add a plugin or add-on to the paths and urls objects.
+   *
+   * @param string $type Slug for the plugin.
+   * @param string $path Path to the plugin.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function add_plugin($type, $path)
   {
     self::$paths[$type] = stristr($path, ':\\') || stristr($path, ':/') ? str_ireplace('/', '\\', $path) : $path;   
@@ -146,116 +210,220 @@ class PikList
 
     self::$urls[$type] = plugins_url() . substr($path, strrpos($path, '/'));
   }
+
+  /**
+   * wp_globals
+   * Returns an array with all the standard wordpress globals, protecting the real globals
+   *
+   * @return array
+   *
+   * @access private
+   * @static
+   * @since 1.0
+   */
+  private static function wp_globals()
+  {
+    $globals = array(
+      'authordata'
+      ,'comment'
+      ,'current_screen'
+      ,'current_user'
+      ,'hook_suffix'
+      ,'is_apache'
+      ,'is_IIS'
+      ,'is_iis7'
+      ,'is_iphone'
+      ,'is_chrome'
+      ,'is_safari'
+      ,'is_NS4'
+      ,'is_opera'
+      ,'is_macIE'
+      ,'is_winIE'
+      ,'is_gecko'
+      ,'is_lynx'
+      ,'is_IE'
+      ,'l10n'
+      ,'locale'
+      ,'pagenow'
+      ,'typenow'
+      ,'post'
+      ,'post_id'
+      ,'posts'
+      ,'profileuser'
+      ,'user_ID'
+      ,'wp'
+      ,'wp_admin_bar'
+      ,'wp_broken_themes'
+      ,'wp_db_version'
+      ,'wp_did_header'
+      ,'wp_did_template_redirect'
+      ,'wp_file_description'
+      ,'wp_filter'
+      ,'wp_importers'
+      ,'wp_plugins'
+      ,'wp_post_statuses'
+      ,'wp_themes'
+      ,'wp_object_cache'
+      ,'wp_query'
+      ,'wp_queries'
+      ,'wp_rewrite'
+      ,'wp_roles'
+      ,'wp_similiesreplace'
+      ,'wp_smiliessearch'
+      ,'wp_version'
+      ,'wpcommentspopupfile'
+      ,'wpcommentsjavascript'
+      ,'wpdb'
+    );
+    
+    foreach ($globals as $key => $global)
+    {
+      global $$global;
+      
+      $globals[$global] = $$global;
+      
+      unset($globals[$key]);
+    }
+
+    return $globals;
+  }
   
+  /**
+   * render
+   * Renders a file from the parts directory with global arguments.
+   *
+   * @param string $view File to display; relative path for a local lookup or absolute for a specific lookup.
+   * @param array $arguments Variables to be passed to the view globally.
+   * @param bool $return Whether to print or return the output.
+   * @param array $loop An object with data to be iterated over while rendered.
+   *
+   * @return string Output from the file rendering.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function render($view, $arguments = array(), $return = false, $loop = null) 
   {
-    global $post, $posts, $post_id, $current_user, $wpdb, $wp_query, $pagenow, $typenow, $hook_suffix, $current_screen, $wp_version, $wp_did_header, $wp_rewrite, $wp, $wp_post_statuses, $comment, $user_ID;
+    $view .= strstr($view, '.php') ? '' : '.php';
 
-    $_windows_os = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-    $_path_seperator = '/';
-
-    $_backtrace = debug_backtrace();
-
-    if (isset($_backtrace[1]['file']))
+    if (($view_is_absolute = self::path_is_absolute($view)) === true)
     {
-      $_origin = $_backtrace[1]['file'];
-      
-      if (is_string($_origin) && ((!$_windows_os && substr($_origin, 0, 1) == $_path_seperator) || ($_windows_os && substr($_origin, 1, 1) == ':')))
-      { 
-        $view .= strstr($view, '.php') ? '' : '.php';
-        $_path = substr($_origin, 0, strrpos($_origin, $_path_seperator));     
-        foreach (array(STYLESHEETPATH, TEMPLATEPATH) as $_theme_path)
+      $_file = $view;
+    }
+    else
+    {
+      $_backtrace = debug_backtrace();
+      $_origin = isset($_backtrace[1]['file']) ? $_backtrace[1]['file'] : '';
+      $_origin = apply_filters('piklist_render_origin', $_origin, $view, $arguments, $return, $loop);
+
+      if ($_origin && self::path_is_absolute($_origin))
+      {
+        $_path = substr($_origin, 0, strrpos($_origin, '/'));
+        $_theme_paths = array(get_template_directory(), get_stylesheet_directory());
+
+        foreach ($_theme_paths as $_theme_path)
         {
-          if ($_path == $_theme_path && file_exists($_theme_path . $_path_seperator . $view))
+          if ($_path == $_theme_path && file_exists($_theme_path . '/' . $view))
           {
-            $_file = path_is_absolute($view) ? $view : $_theme_path . $_path_seperator . $view;
+            $_file = "$_theme_path/$view";
           }
         }
       }
     }
-    
+
     if (!isset($_file))
     {
-      foreach (self::$paths as $_display => $_path)
+      $_paths = self::$paths;
+      
+      if ($view_is_absolute && (false !== strpos($view, '/parts/')) && preg_match('~(?<base>.+(?:piklist)?)/parts/(?<view>.+)$~i', $view, $_matches)) 
       {
-        $_file = (path_is_absolute($view) ? $view : self::$paths[$_display] . $_path_seperator . 'parts' . $_path_seperator . $view) . (strstr($view, '.php') ? '' : '.php');
-
-        // Check for theme overrides
-        if (stristr($_file, '/parts/'))
+        if (false !== ($_add_on = array_search($_matches['base'], $_paths)))
         {
-          $_part = '';
-          $_directories = explode($_path_seperator, $_file);
-          for ($i = count($_directories); $i >= 0; $i--)
-          {
-            if (isset($_directories[$i]))
-            {
-              $_part = $_directories[$i] . (empty($_part) ? '' : $_path_seperator) . $_part;  
-              if ($_directories[$i] == 'parts')
-              {
-                $_part = $_path_seperator . $_directories[$i - 1] . $_path_seperator . $_part;  
-                break;
-              }
-            }
-          }
+          $view = $_matches['view'];
+          $_paths = array($_add_on => $_paths[$_add_on]) + $_paths;
         }
-        
-        if (!path_is_absolute($_file))
+        else
         {
-          foreach (array('theme', 'parent-theme') as $_theme)
-          {
-            $_path = isset(self::$paths[$_theme]) ? self::$paths[$_theme] : null;
-
-            if (isset(self::$paths[$_theme]) && isset($_path)) 
-            {          
-              $_path = substr($_path, 0, strlen($_path) - 8);
-              
-              if (file_exists($_path . $_part))
-              {
-                $_file = $_path . $_part;
-                break;
-              }
-            }
-          }
+          return $return ? '' : null;
         }
+      }
+      
+      foreach ($_paths as $_add_on => $_path)
+      {
+        $_file = (self::path_is_absolute($view) ? null : self::$paths[$_add_on] . '/parts/') . $view . (strstr($view, '.php') ? '' : '.php');
 
         if (file_exists($_file))
         {
-          break;
+          $view = $_file;
         }
-      }   
+      }
     }
-
+    else
+    {
+      $view = $_file;
+    }
+    
     if ($return)
     {
       ob_start();
     }
 
-    $_arguments = array($wp_query->query_vars);
+    $_wp_globals = self::wp_globals();
+
+    $_arguments = array($_wp_globals['wp_query']->query_vars);
     
     if (isset($arguments) && !empty($arguments))
     {
       array_push($_arguments, $arguments);
     }
 
+
     foreach ($_arguments as $_object)
     {
       foreach ($_object as $_key => $_value)
       {
-        $$_key = $_value;
+        if (isset($_wp_globals[$_key]))
+        {
+          $trigger_error_message = sprintf(__('is a reserved WordPress global variable and cannot be passed as an argument to %s', 'piklist'),'piklist::render()');
+
+          trigger_error('$' . $_key . " " . $trigger_error_message, E_USER_WARNING);
+        }
+        else
+        {
+          $$_key = $_value;
+        }
       }
     }
-    
-    $_file = apply_filters('piklist_render', $_file, $view, $arguments);
 
-    if ($_file)
+    // Bring WP globals into scope
+    extract($_wp_globals);
+    
+    /**
+     * piklist_render
+     * Insert description here
+     * 
+     * @since 1.0
+     */
+    $view = apply_filters('piklist_render', $view, $arguments);
+
+    if (file_exists($view))
     {
       if ($loop && self::is_associative_array($arguments[$loop]))
       {
         $_depth = 1;
-        
+
+        // Determine which array as highest number of elements
         foreach ($arguments[$loop] as $_key => $_value)
         {
-          $_depth = is_array($_value) ? (count($_value) > $_depth ? count($_value) : $_depth) : 1;
+          if (is_array($_value))
+          {
+            $_depth = ($count = count($_value)) > $_depth ? $count : $_depth;
+          }
+          else
+          {
+            $arguments[$loop][$_key] = array($_value);
+          }
         }
         
         for ($i = 0; $i < $_depth; $i++)
@@ -267,21 +435,31 @@ class PikList
           }
           $$loop = $_loop;
           
-          include $_file;
+          include $view;
         }
       }
       elseif ($loop)
       {
-        for ($i = 0; $i < count($arguments[$loop]); $i++)
+        $_count = count($arguments[$loop]);
+        for ($i = 0; $i < $_count; $i++)
         {    
           $$loop = $arguments[$loop][$i];
               
-          include $_file;
+          include $view;
         }
       }
-      elseif (file_exists($_file))
+      else
       {
-        include $_file;
+        include $view;
+      }
+    }
+    else
+    {
+      if(dirname($view) != str_replace('/.php', '', $view))
+      {
+        $trigger_error_message = sprintf(__('File does not exist%s', 'piklist'), ': ' . $view);
+    
+        trigger_error($trigger_error_message, E_USER_WARNING);
       }
     }
     
@@ -295,74 +473,520 @@ class PikList
     }
   }
 
-  public static function view_exists($view, $paths = array())
+  /**
+   * process_parts
+   * Scan and process all views in a specified folder.
+   *
+   * @param string $folder Folder name inside the parts folder to inspect.
+   * @param array $data Comment block data at the top of the view to filter.
+   * @param string|array $callback Function to call when processing the view.
+   * @param string $path Path(s) to scan for parts and folder combinations.
+   * @param string $prefix Prefix to require of the views.
+   * @param string $suffix Suffix to require of the views.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function process_parts($folder, $data, $callback = null, $path = null, $prefix = '', $suffix = '.php')
   {
-    if (empty($paths))
+    if (!isset(self::$processed_parts[$folder]))
     {
-      return false;
+      self::$processed_parts[$folder] = array(
+        'callback' => $callback
+        ,'parts' => array()
+      );
     }
     
-    foreach ($paths as $type => $path)
-    {
-      if (file_exists($path . '/parts/' . $view . '.php'))
-      {
-        return $type;
-      }
-    }
+    $parts = array();
     
-    return false;
-  }
-  
-  public static function process_views($folder, $callback, $path = false, $prefix = '', $suffix = '.php')
-  { 
     $paths = $path ? $path : self::$paths;
+    $paths = is_array($paths) ? $paths : array($paths);
 
-    foreach ($paths as $display => $path)
-    {  
+    /**
+     * piklist_part_data
+     * Add additional parameters to read from file comment blocks.
+     *
+     * @param  array $data comment block parameters
+     * @param  var $folder the parts folder where the file is located.
+     * 
+     * @since 1.0
+     */
+    $data = array_merge(apply_filters('piklist_part_data', $data, $folder), $data);
+    
+    foreach ($paths as $add_on => $path)
+    {
       $files = self::get_directory_list($path . '/parts/' . $folder);
-
-      if (empty($files) && in_array($display, array('theme', 'parent-theme')))
+      
+      if (empty($files) && in_array($add_on, array('theme', 'parent-theme')))
       {
         $files = self::get_directory_list($path . '/' . $folder);
       }
-      
+    
       foreach ($files as $part)
       {
-        if (strtolower($part) != 'index.php')
+        if (strtolower($part) != 'index.php' && substr($part, 0, strlen($prefix)) == $prefix && substr($part, strlen($part) - strlen($suffix)) == $suffix)
         {
-          $file_prefix = substr($part, 0, strlen($prefix));
-          $file_suffix = substr($part, strlen($part) - strlen($suffix));
+          $render = $path . '/parts/' . $folder . '/' . $part;
+          $part_data = self::get_file_data($render, $data);
+
+          $_part = array(
+            'id' => !empty($part_data['extend']) ? $part_data['extend'] : apply_filters("piklist_part_id-{$folder}", piklist::slug($add_on . ' ' . $part), $add_on, $part, $part_data)
+            ,'folder' => $folder
+            ,'part' => $part
+            ,'data' => $part_data
+            ,'prefix' => $prefix
+            ,'add_on' => $add_on
+            ,'path' => $path
+            ,'render' => array(
+              $render
+            )
+          );
           
-          if ($file_prefix == $prefix && $file_suffix == $suffix)
+          /**
+           * piklist_part_process
+           * Post-process for a part.
+           *
+           * @param  array $part being validated
+           * @param  var $folder the parts folder where the file is located.
+           * 
+           * @since 1.0
+           */
+          $_part = apply_filters('piklist_part_process', $_part, $folder);
+          
+          /**
+           * piklist_part_process-FOLDER
+           * Post-process for a part by folder.
+           *
+           * @param  array $part being validated
+           * 
+           * @since 1.0
+           */
+          $_part = apply_filters("piklist_part_process-{$folder}", $_part);
+          
+          if ($_part)
           {
-            call_user_func_array($callback, array(array(
-              'folder' => $folder
-              ,'part' => $part
-              ,'prefix' => $prefix
-              ,'add_on' => $display
-              ,'path' => $path
-            )));
+            array_push(self::$processed_parts[$folder]['parts'], $_part);
           }
         }
       }
     }
+
+    $extensions = array();
+    
+    foreach (self::$processed_parts[$folder]['parts'] as $current_index => &$part)
+    {
+      if (isset(self::$processed_parts[$folder]['parts'][$current_index + 1]))
+      {
+        for ($index = $current_index + 1; $index < count(self::$processed_parts[$folder]['parts']); $index++)
+        {
+          $extend = self::$processed_parts[$folder]['parts'][$index];
+        
+          if ($part['id'] == $extend['id'])
+          {
+            foreach ($part['data'] as $attribute => &$data)
+            {
+              if (!in_array($attribute, array('extend', 'extend_method')) && (!empty($extend['data'][$attribute]) || is_bool($extend['data'][$attribute])))
+              {
+                $data = is_array($extend['data'][$attribute]) && is_array($data) ? array_unique(array_merge($extend['data'][$attribute], $data), SORT_REGULAR) : $extend['data'][$attribute];
+              }
+            }
+            
+            array_push($extensions, $index);
+            
+            foreach ($extend['render'] as $render)
+            {
+              if (!in_array($render, $part['render']))
+              {
+                switch ($extend['data']['extend_method'])
+                {
+                  case 'before':
+                    array_unshift($part['render'], $render);
+                  break;
+
+                  case 'replace':
+                    $part['render'] = array($render);
+                  break;
+
+                  case 'after':
+                  default:
+                    array_push($part['render'], $render);
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    foreach ($extensions as $index)
+    {
+      unset(self::$processed_parts[$folder]['parts'][$index]);
+    }
+    self::$processed_parts[$folder]['parts'] = array_values(self::$processed_parts[$folder]['parts']);
+
+    /**
+     * piklist_part_add
+     * Add additional parts to processed list.
+     *
+     * @param  array $processed parts so far.
+     * @param  var $folder the parts folder where the file is located.
+     *
+     * @since 1.0
+     */
+    self::$processed_parts[$folder]['parts'] = array_merge(apply_filters('piklist_part_add', array(), $folder), self::$processed_parts[$folder]['parts']);
+    
+    /**
+     * piklist_part_add-FOLDER
+     * Add additional parts to processed list.
+     *
+     * @param  array $processed parts so far.
+     *
+     * @since 1.0
+     */
+    self::$processed_parts[$folder]['parts'] = array_merge(apply_filters("piklist_part_add-{$folder}", array()), self::$processed_parts[$folder]['parts']);
+
+    // Move extensions to the end of the list
+    uasort(self::$processed_parts[$folder]['parts'], array('piklist', 'sort_by_data_extend'));
+    self::$processed_parts[$folder]['parts'] = array_values(self::$processed_parts[$folder]['parts']);
+    
+    if (is_null($callback))
+    {
+      $parts = array();
+      
+      foreach (self::$processed_parts[$folder]['parts'] as $part)
+      {
+        if (self::validate_part($part))
+        {
+          array_push($parts, $part);
+        }
+      }
+      
+      return $parts;
+    }
   }
   
-  public static function pre($output, $source = false)
+  /**
+   * get_processed_parts
+   * Get the list of processed parts if it has been processed.
+   *
+   * @param  var $folder the parts folder where the file is located.
+   *
+   * @since 1.0
+   */
+  public static function get_processed_parts($folder)
   {
-    if ($output === '-')
+    return isset(self::$processed_parts[$folder]) ? self::$processed_parts[$folder] : null;
+  }
+  
+  /**
+   * process_parts_callback
+   * Process any callbacks for processed parts.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function process_parts_callback()
+  { 
+    $processed_parts = array_reverse(self::$processed_parts);
+    
+    foreach ($processed_parts as $folder => $processed)
     {
-      $output = '--------------------------------------------------';
+      foreach ($processed['parts'] as $part)
+      {
+        /**
+         * piklist_part_process_callback
+         * Post-process for a part.
+         *
+         * @param  array $part being validated
+         * @param  var $folder the parts folder where the file is located.
+         *
+         * @since 1.0
+         */
+        $part = apply_filters('piklist_part_process_callback', $part, $folder);
+        
+        /**
+         * piklist_part_process_callback-FOLDER
+         * Post-process for a part by folder.
+         *
+         * @param  array $part being validated
+         *
+         * @since 1.0
+         */
+        $part = apply_filters("piklist_part_process_callback-{$folder}", $part);
+
+        if ($part && self::validate_part($part))
+        {
+          call_user_func_array($processed['callback'], array($part));
+        }
+      }
+      
+      do_action('piklist_parts_processed', $folder);
+      
+      unset(self::$processed_parts[$folder]);
+    }
+  }
+  
+  /**
+   * part_data
+   * Adds tab to all part types for easy association
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function part_data($data, $folder)
+  {
+    $data['extend'] = 'Extend';
+    $data['extend_method'] = 'Extend Method';
+    
+    return $data;
+  }
+  
+  /**
+   * get_file_data
+   * Get file data and try and cast the values.
+   *
+   * @param string $file File path to read.
+   * @param array $data Attributes to fetch.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function get_file_data($file, $data)
+  {
+    $data = get_file_data($file, $data);
+
+    array_walk_recursive($data, array('piklist', 'array_values_cast'));
+    
+    foreach ($data as $parameter => &$value)
+    {
+      switch ($parameter)
+      {
+        case 'capability':
+        case 'id':
+        case 'page':
+        case 'post_type':
+        case 'role':
+        case 'status':
+        case 'taxonomy':
+
+          $value = piklist::explode(',', $value, 'strtolower');
+          $value = array_filter($value);
+          $value = empty($value) ? null : $value;
+        
+        break;
+
+        case 'template':
+
+          $value = piklist::explode(',', $value, 'strtolower');
+          $value = str_ireplace('.php', '', $value);
+          $value = array_filter($value);
+          $value = empty($value) ? null : $value;
+
+        break;
+
+        case 'flow':
+        case 'flow_page':
+        case 'tab':
+        case 'sub_tab':
+
+          $value = piklist::explode(',', $value, array('piklist', 'slug'));
+          $value = array_filter($value);
+          $value = empty($value) ? null : $value;
+          
+        break;
+      
+        default:
+
+          /**
+           * piklist_validate_part_parameter
+           * Add custom part parameters to check.
+           *
+           * @param $value Value to compare.
+           * @param $parameter Parameter to check.
+           * 
+           * @since 1.0
+           */
+          $value = apply_filters('piklist_part_data_parameter', $value, $parameter);
+
+        break;
+      }
     }
     
-    echo "<pre " . ($source ? 'style="display: none !important;"' : null) . ">\r\n";
-  
+    return $data;
+  }
+
+  /**
+   * validate_part
+   * Check to see if a part should be registered
+   *
+   * @param array $part Comment block data at the top of the view.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function validate_part($part)
+  {
+    if (isset($part['data']))
+    {
+      foreach ($part['data'] as $parameter => $value)
+      {
+        if (!empty($value))
+        {
+          if (!self::validate_part_parameter($parameter, $value))
+          {
+            return false;
+          }
+        }
+      }
+    }
+    
+    return true;
+  }
+
+  /**
+   * validate_part_parameter
+   * Check to see if the paramter passes validation.
+   *
+   * @param string $parts The parameter name.
+   * @param mixes $parts The parameter value.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function validate_part_parameter($parameter, $value)
+  {
+    global $post, $pagenow, $current_screen;
+
+    switch ($parameter)
+    {
+      case 'capability':
+
+        return piklist_user::current_user_can($value);
+
+      break;
+
+      case 'role':
+      
+        return piklist_user::current_user_role($value);
+
+      break;
+
+      case 'logged_in':
+
+        return $value == 'true' ? is_user_logged_in() : true;
+
+      break;
+
+      case 'post_type':
+
+        return ($post && in_array($post->post_type, $value)) || !$post;
+
+      break;
+      
+      case 'status':
+      case 'post_status':
+
+        return ($post && in_array($post->post_status, $value)) || !$post;
+
+      break;
+
+      case 'new':
+
+        return $value == 'true' ? $pagenow == 'post-new.php' : true;
+
+      break;
+
+      case 'page':
+
+        $current = array($pagenow);
+        
+        if (!empty($current_screen->id))
+        {
+          array_push($current, $current_screen->id);
+        }
+        
+        if (!empty($_REQUEST['page']))
+        {
+          array_push($current, $_REQUEST['page']);
+        }
+
+        return array_intersect($value, $current);
+
+      break;
+
+      case 'id':
+
+        return $post && in_array($post->ID, $value);
+
+      break;
+
+      case 'template':
+
+        $page_template = ($post->post_status == 'auto-draft') ? 'default' : strtolower(str_replace('.php', '', get_post_meta($post->ID, '_wp_page_template', true)));
+
+        return in_array($page_template, $value);
+
+      break;
+
+      case 'network':
+
+        if (isset($current_screen) && $current_screen->id == 'dashboard-network')
+        {
+          return in_array($value, array('true', 'only'));
+        }
+        elseif (isset($current_screen) && $current_screen->id == 'dashboard')
+        {
+          return $value != 'only';
+        }
+      
+      break;
+      
+      default:
+
+        /**
+         * piklist_validate_part_parameter
+         * Add custom part parameters to check.
+         *
+         * @param $parameter Parameter to check.
+         * @param $value Value to compare.
+         * 
+         * @since 1.0
+         */
+        return apply_filters('piklist_validate_part_parameter', true, $parameter, $value);
+
+      break;
+    }
+  }
+
+  /**
+   * pre
+   * Used for debugging to output information to the screen.
+   *
+   * @param mixed $output Information to output.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function pre($output)
+  {
+    $output = $output === '-' ? '--------------------------------------------------' : $output;
+    
+    echo "<pre>\r\n";
+
     print_r($output);
-  
+
     echo "</pre>\r\n";
 
     $output = ob_get_contents();
- 
+
     if (!empty($output))
     {
       @ob_flush();
@@ -370,21 +994,35 @@ class PikList
     }
   }
   
-  public static function get_prefixed_post_types($prefix)
+  /**
+   * console
+   * Used for debugging to output information to the browser console.
+   *
+   * @param mixed $output Information to output.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function console($output)
   {
-    $post_types = get_post_types('', 'names');
-    
-    foreach ($post_types as $key => $post_type) 
-    {
-      if (substr($post_type, 0, strlen($prefix)) != $prefix)
-      {
-        unset($post_types[$key]);
-      }
-    }
-    
-    return $post_types;
+    ?><script>window.console && console.log(<?php echo json_encode($output); ?>);</script><?php
   }
   
+  /**
+   * get_directory_list
+   * Gets a list of files in a directory.
+   *
+   * @param string $start Relative path to inspect.
+   * @param bool $path Whether or not to include the path.
+   * @param bool $extension Whether or not to include the extension.
+   *
+   * @return array List of files.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function get_directory_list($start = '.', $path = false, $extension = false) 
   {
     $files = array();
@@ -407,14 +1045,14 @@ class PikList
             $file_parts = explode('.', $file);
             $_file = $extension ? $file : $file_parts[0];
             $file_path = $path ? $start . '/' . $_file : $_file;
-
+            
             if (is_dir($file_path)) 
             {
-              $files = array_merge($files, self::get_directory_list($file_path));
+              $files = array_merge($files, self::get_directory_list($file_path, $path, $extension));
             } 
             else 
             {
-              array_push($files, $file);
+              array_push($files, $path ? $file_path : $file);
             }
           }
         }
@@ -430,16 +1068,68 @@ class PikList
     return $files;
   }
    
+  /**
+   * dashes
+   * Converts a string to lowercase and spaces to dashes.
+   *
+   * @param string $string String to dash.
+   *
+   * @return string Dashed string.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function dashes($string)
-  {  
-    return str_replace(array('_', ' '), '-', preg_replace('/[^a-z0-9]+/i', '-', str_replace('.php', '', strtolower($string))));
+  {
+    return str_replace(array('_', ' '), '-', preg_replace('/[^a-z0-9]+/i', '-', preg_replace('/[^\P{P}\-_]+/u', '', str_replace('.php', '', strtolower($string)))));
   }
   
+  /**
+   * slug
+   * Converts a string to lowercase and spaces/dashes to underscores.
+   *
+   * @param string $string String to slug.
+   *
+   * @return string Slugged string.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function slug($string)
   {
-    return str_replace('.php', '', str_replace(array('-', ' '), '_', strtolower($string)));
+    return str_replace(array('-', ' '), '_', preg_replace('/[^a-z0-9]+/i', '_', preg_replace('/[^\P{P}\-_]+/u', '', str_replace('.php', '', strtolower($string)))));
   }
 
+  /**
+   * humanize
+   * Converts a string to human readable string, concept borrowed from RoR.
+   *
+   * @param string $string String to humanize.
+   *
+   * @return string Humanized string.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function humanize($string) 
+  {
+    return implode(' ', array_map('ucwords', explode(' ', preg_replace('/\s+/', ' ', preg_replace('/[^a-z0-9\s+]/', ' ', trim(strtolower($string)))))));
+  }
+
+  /**
+   * check_network_propagate
+   * Propogate function call through network if necessary.
+   *
+   * @param string|array $callback Function to call.
+   * @param mixed $arguments Arguments to pass to callback.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function check_network_propagate($callback, $arguments)
   {
     global $wpdb;
@@ -469,6 +1159,17 @@ class PikList
     }
   }
   
+  /**
+   * create_table
+   * Create a mySQL table.
+   *
+   * @param string $table_name Table name.
+   * @param array $columns List of columns for the table
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function create_table($table_name, $columns) 
   {
     global $wpdb;
@@ -478,6 +1179,16 @@ class PikList
     $wpdb->query('CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . $table_name . ' (' . $columns . ') ' . $settings . ';');
   }
 
+  /**
+   * delete_table
+   * Delete a mySQL table.
+   *
+   * @param string $table_name Table name.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function delete_table($table_name) 
   {
     global $wpdb;
@@ -485,6 +1196,18 @@ class PikList
     $wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . $table_name);
   }
 
+  /**
+   * post_type_labels
+   * Create detailed post type labels.
+   *
+   * @param string $label Singular label.
+   *
+   * @return array List of all labels accepted by register_post_type.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function post_type_labels($label)
   {
     return array(
@@ -504,6 +1227,18 @@ class PikList
     );
   }
   
+  /**
+   * taxonomy_labels
+   * Create detailed taxonomy labels.
+   *
+   * @param string $label Singular label.
+   *
+   * @return array List of all labels accepted by register_taxonomy.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function taxonomy_labels($label)
   {
     return array(
@@ -528,6 +1263,18 @@ class PikList
     );
   }
   
+  /**
+   * pluralize
+   * Pluralize a singular word.
+   *
+   * @param string $string Word to pluralize.
+   *
+   * @return Pluralized word.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function pluralize($string)
   {
     if ((in_array(strtolower($string), self::$plurals['ignore'])) || (strrpos($string, ' ') && in_array(strtolower(substr($string, strrpos($string, ' ') + 1, strlen($string) - strrpos($string, ' ') + 1)), self::$plurals['ignore'])))
@@ -555,6 +1302,18 @@ class PikList
     return $string;
   }
   
+  /**
+   * singularize
+   * Singularize a plural word.
+   *
+   * @param string $string Word to singularize.
+   *
+   * @return Singularized word.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function singularize($string)
   {
     if (in_array(strtolower($string), self::$plurals['ignore']))
@@ -582,6 +1341,16 @@ class PikList
     return $string;
   }
   
+  /**
+   * add_admin_menu_separator
+   * Insert a seperator in the admin menu at a specified position.
+   *
+   * @param int $position Position to insert the seperator.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function add_admin_menu_separator($position) 
   {
     global $menu;
@@ -615,11 +1384,25 @@ class PikList
     }
   }
   
+  /**
+   * array_path
+   * Given a value and an array, find the key path to said value.
+   *
+   * @param array $array Array to search.
+   * @param mixed $find Value to locate in array.
+   * @param string $map Path to start with.
+   *
+   * @return array Value found.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function array_path($array, $find, $map = null)
   {
     $path = array();
     
-    if (array_key_exists($find, $array))
+    if ($find && array_key_exists($find, $array))
     {
       return $map ? array("{$map[count($path)]}" => $find) : array($find);
     }
@@ -642,6 +1425,19 @@ class PikList
     return null;
   }
   
+  /**
+   * array_path_get
+   * Get value from array given key path.
+   *
+   * @param array $array Array to get value from.
+   * @param string|array $path Path to get.
+   *
+   * @return array Found value.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function array_path_get($array, $path)
   {
     if (!$path)
@@ -665,17 +1461,31 @@ class PikList
     return $found;
   }
 
+  /**
+   * array_path_set
+   * Set value from key path.
+   *
+   * @param array $array Array to set value to.
+   * @param string|array $path Path to set.
+   * @param string|array $value Value to set.
+   *
+   * @return bool Whether the array was updated.
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function array_path_set(&$array, $path, $value)
   {
     if (is_array($path) && empty($path))
     {
       $array = $value;
       
-      return null;
+      return false;
     }
     elseif (!$path)
     {
-      return null;
+      return false;
     }
     
     $map = is_array($path) ? $path : explode('/', $path);
@@ -692,9 +1502,21 @@ class PikList
     }
 
     $found = $value;
+    
+    return true;
   }
   
-  public static function array_values_cast(&$value, $key)
+  /**
+   * array_values_cast
+   * Automatically cast array values.
+   *
+   * @param string $value Value to cast based on what it is.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function array_values_cast(&$value)
   {
     if (is_numeric($value))
     {
@@ -706,6 +1528,18 @@ class PikList
     }
   }
   
+  /**
+   * xml_to_array
+   * Convert an XML string to an array.
+   *
+   * @param string $xml XMl string.
+   *
+   * @return array Converted XML string.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function xml_to_array($xml) 
   {
     libxml_use_internal_errors(true);
@@ -716,6 +1550,18 @@ class PikList
     return self::dom_node_to_array($xml_document->documentElement);
   }
 
+  /**
+   * dom_node_to_array
+   * Convert an XML dom to an array.
+   *
+   * @param object $node XML document.
+   *
+   * @return array Converted XML document.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function dom_node_to_array($node) 
   {
     $output = array();
@@ -775,6 +1621,18 @@ class PikList
     return $output;
   }
   
+  /**
+   * directory_empty
+   * Check if a directory is empty.
+   *
+   * @param string $path Directory path to check.
+   *
+   * @return bool Whether the directory is empty.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function directory_empty($path)
   {
     if (is_dir($path))
@@ -786,27 +1644,35 @@ class PikList
     return true;
   }
   
+  /**
+   * unique_id
+   * Generates a unique id from an objects structure or a random number. 
+   *
+   * @param array|object $object Object to use for the unique id generation.
+   *
+   * @return string A unique 7 digit md5 string based on an objects structure.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function unique_id($object = null)
   {
     return substr(md5(is_object($object) || is_array($object) ? serialize($object) : rand()), 0, 7);
   }
 
-  public static function object_id($object)
-  {
-    if (!is_object($object)) 
-    {
-      return null;
-    }
-    
-    if (!isset($object->__unique)) 
-    {
-      $object->__unique = microtime(true);
-      usleep(1);
-    }
-    
-    return spl_object_hash($object) . $object->__unique;
-  }
-  
+  /**
+   * object_to_array
+   * Converts an object to an array.
+   *
+   * @param object $object Object to convert to an array.
+   *
+   * @return array Converted object.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function object_to_array($object) 
   {
     if (!is_array($object) && !is_object($object))
@@ -822,38 +1688,110 @@ class PikList
     return array_map(array('piklist', 'object_to_array'), $object);
   }
   
+  /**
+   * is_associative_array
+   * Check if an array is associative.
+   *
+   * @param array $array Array to check.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function is_associative_array($array)
   {
     return array_keys($array) !== range(0, count($array) - 1);
   }
   
+  /**
+   * get_settings
+   * Retrieves a setting by key.
+   *
+   * @param string $option Option to pull setting from.
+   * @param string $setting Setting to pull from the options.
+   *
+   * @return string The setting requested.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function get_settings($option, $setting)
   {
     $options = get_option($option);
 
-    return isset($options[$setting]) ? $options[$setting] : array();
+    return isset($options[$setting]) ? $options[$setting] : null;
   }
   
-  public static function check_in($needle, $haystack)
-  {
-    return (is_array($needle) && in_array($haystack, $needle)) || (is_string($needle) && $needle == $haystack);
-  }
-  
+  /**
+   * sort_by_order
+   * Sort an array by the order key.
+   *
+   * @param array $a First array.
+   * @param array $b Second array.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function sort_by_order($a, $b) 
   {
     return $a['order'] - $b['order'];
   }
 
+  /**
+   * sort_by_name_order
+   * Sort an array by the name key.
+   *
+   * @param array $a First array.
+   * @param array $b Second array.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function sort_by_name_order($a, $b) 
   {
     return $a['name'] - $b['name'];
   }
   
+  /**
+   * sort_by_tab_order
+   * Sort an array by the tab key.
+   *
+   * @param array $a First array.
+   * @param array $b Second array.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function sort_by_tab_order($a, $b) 
   {
     return $a['tab_order'] - $b['tab_order'];
   }
   
+  /**
+   * sort_by_args_order
+   * Sort an array by the args|order key.
+   *
+   * @param array $a First array.
+   * @param array $b Second array.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function sort_by_args_order($a, $b) 
   {
     if (!isset($a['args']['order']) && !isset($b['args']['order']))
@@ -864,29 +1802,85 @@ class PikList
     return $a['args']['order'] - $b['args']['order'];
   }
   
-  public static function sort_by_config_order($a, $b) 
+  /**
+   * sort_by_data_order
+   * Sort an array by the data|order key.
+   *
+   * @param array $a First array.
+   * @param array $b Second array.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function sort_by_data_order($a, $b) 
   {
-    return $a['config']['order'] - $b['config']['order'];
+    return $a['data']['order'] - $b['data']['order'];
   }
   
-  public static function array_next($array, $needle)
+  /**
+   * sort_by_data_extend
+   * Sort an array by the data|order key.
+   *
+   * @param array $a First array.
+   * @param array $b Second array.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function sort_by_data_extend($a, $b) 
   {
-    $keys = array_keys($array);
-    $position = array_search($needle, $keys);
-
-    if (isset($keys[$position + 1])) 
-    {
-      return $keys[$position + 1];
-    }
-    
-    return $needle;
+    return empty($b['data']['extend']);
   }
   
-  public static function array_filter($value)
-  {
-    return $value !== false && $value !== null && $value !== '';
-  }
-    
+  /**
+   * array_filter_recursive
+   * Custom filter to remove empty values from a multidimensional array.
+   *
+   * @param array $$array
+   *
+   * @return array Filtered array.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+   public static function array_filter_recursive($array) 
+   { 
+     if (!is_array($array))
+     {
+       return $array;
+     }
+     
+     foreach ($array as &$value) 
+     { 
+       if (is_array($value)) 
+       { 
+         $value = self::array_filter_recursive($value); 
+       } 
+     }     
+     
+     return array_filter($array); 
+   } 
+  
+  /**
+   * object
+   * Get meta or an option and nicely format the object.
+   *
+   * @param string $type Type of object to fetch.
+   * @param id|string $id Identifier for the object.
+   *
+   * @return array Object data.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function object($type, $id)
   {
     $data = $type == 'option' ? get_option($id) : get_metadata($type, $id);
@@ -902,6 +1896,63 @@ class PikList
     return $data;
   }
   
+  /**
+   * object_format
+   * Format a stored object like a grouped or add-more field.
+   *
+   * @param object|array $object Object to format.
+   *
+   * @return object|array Formatted object.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function object_format($object = array())
+  {
+    $keys = array_keys($object);
+    
+    if (empty($keys) || empty($object))
+    {
+      return array();
+    }
+    
+    $formatted = $values = array();
+    
+    for ($i = 0; $i < count($object[$keys[0]]); $i++) 
+    {
+      foreach ($keys as $key) 
+      {
+        $value = isset($object[$key][$i]) ? $object[$key][$i] : null;
+        
+        if ( is_array($value) && !isset($value[0][0]) )  
+        {
+          $values[$key] = self::object_format($value);
+        } 
+        else
+        {
+          $values[$key] = $value;
+        }
+      }
+ 
+      $formatted[] = $values;
+    }
+ 
+    return $formatted;
+  }
+  
+  /**
+   * object_value
+   * Set the value for the value found in the object method.
+   *
+   * @param array $object Object to format the values of.
+   *
+   * @return array Formatting object.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function object_value($object)
   {
     if (is_array($object) && count($object) == 1 && self::is_flat($object))
@@ -928,67 +1979,87 @@ class PikList
     return maybe_unserialize($object);
   }
   
+  /**
+   * is_flat
+   * Check if an object is multi-dimensional.
+   *
+   * @param object|array $object Object to check.
+   *
+   * @return bool Status of comparison.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function is_flat($object)
   {
-    return count($object) == count($object, COUNT_RECURSIVE);
-  }
-  
-  public static function explode($delimiter, $string)
-  {
-    return array_map('trim', explode($delimiter, $string));
-  }
-  
-  public static function include_meta_boxes($keep, $post_type = null)
-  {
-    global $wp_meta_boxes, $typenow;
-    
-    $post_type = $post_type ? $post_type : $typenow;
-    
-    array_push($keep, 'submitdiv');
-    
-    $post_type = $post_type ? $post_type : $typenow;
-    
-    foreach ($wp_meta_boxes[$post_type] as $meta_boxes)
+    if (is_array($object) || is_object($object))
     {
-      foreach (array('normal', 'advanced', 'side') as $context)
+      foreach ($object as $index => $value)
       {
-        foreach (array('high', 'core', 'default', 'low') as $priority)
+        if (is_array($value) || is_object($value)) 
         {
-          if (isset($meta_boxes[$priority]))
-          {
-            foreach ($meta_boxes[$priority] as $id => $config)
-            {
-              if (!in_array($id, $keep))
-              {
-                remove_meta_box($id, $post_type, $context);
-              }
-            }
-          }
+          return false;
         }
       }
     }
-  }
-  
-  public static function include_actions($tags)
-  {
-    global $wp_filter;
     
-    // TODO: Redo with below...
-    foreach ($tags as $tag => $keep)
+    return true;
+  }
+
+  /**
+   * path_is_absolute
+   * Determine whether a path is relative or absolute
+   *
+   * @param string $path path to check
+   *
+   * @return bool
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function path_is_absolute($path)
+  {
+    return ( path_is_absolute($path) || ( 1 === preg_match('~^[a-z]+://~i', $path) ) );
+  }
+
+  /**
+   * explode
+   * Explode and trim a string into an array.
+   *
+   * @param string $delimiter Delimeter to explode string by.
+   * @param string $string String to explode.
+   * @param string $map Additional function to map array with.
+   *
+   * @return array Converted string. 
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function explode($delimiter, $string, $map = false)
+  {
+    $output = array_map('trim', explode($delimiter, $string));
+    
+    if ($map)
     {
-      foreach ($wp_filter[$tag] as $priority => $callback)
-      {
-        foreach ($callback as $id => $config)
-        {
-          if (!in_array($id, $keep))
-          {
-            unset($wp_filter[$tag][$priority][$id]);
-          }
-        }
-      }
-    }    
+      $output = array_map($map, $output);
+    }
+    
+    return $output;
   }
   
+  /**
+   * get_ip_address
+   * Get the IP address of the visitor.
+   *
+   * @return string IP address.
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public function get_ip_address() 
   {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) 
@@ -1007,6 +2078,14 @@ class PikList
     return $ip_address;
   }
   
+  /**
+   * performance
+   * Removes what php limits are possible to remove to allow a process to run as long as needed.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function performance()
   {
     if (!ini_get('safe_mode'))
@@ -1017,8 +2096,11 @@ class PikList
   }
 }
 
-/*
- * Helper Function
+/**
+ * piklist
+ * The core helper function for the Piklist framework.
+ *
+ * @since 1.0
  */
 function piklist($option, $arguments = array())
 {
@@ -1029,8 +2111,14 @@ function piklist($option, $arguments = array())
 
   if (is_array($option) || is_object($option))
   {
+    if (empty($arguments))
+    {
+      return piklist::object_format($option);
+    }
+
     $list = array();
     $arguments = is_array($arguments) ? $arguments : array($arguments);
+    
     foreach ($option as $key => $value) 
     {
       if (count($arguments) > 1)
@@ -1070,7 +2158,7 @@ function piklist($option, $arguments = array())
         }
         else
         {
-          piklist_form::render_field($arguments, isset($arguments['return']) ? $arguments['return'] : false);
+          return piklist_form::render_field($arguments, isset($arguments['return']) ? $arguments['return'] : false);
         }
         
       break;
@@ -1153,45 +2241,15 @@ function piklist($option, $arguments = array())
         
       break;
       
+      case 'humanize':
+      
+        return piklist::humanize($arguments);
+        
+      break;
+      
       case 'performance':
         
         piklist::performance();
-        
-      break;
-      
-      case 'include_meta_boxes':
-      
-        // TODO: Improve
-        if (isset($arguments['post_type']))
-        {
-          $post_type = $arguments['post_type'];
-          unset($arguments['post_type']);
-        }
-        else
-        {
-          $post_type = null;
-        }
-
-        piklist::include_meta_boxes($arguments, $post_type);
-
-      break;
-      
-      case 'include_actions':
-        
-        // TODO: Improve
-        if (isset($arguments['action']))
-        {
-          $post_type = $arguments['action'];
-          unset($arguments['action']);
-        }
-        
-        piklist::include_actions($action, $arguments);
-      
-      break;
-      
-      case 'include_user_profile_fields':
-      
-        piklist_user::include_user_profile_fields($arguments);
         
       break;
       

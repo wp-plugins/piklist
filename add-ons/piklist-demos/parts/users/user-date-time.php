@@ -3,14 +3,14 @@
 Title: DatePicker Fields
 Capability: manage_options
 Order: 70
-Collapse: false
+Tab: Advanced
 */
 
   piklist('field', array(
     'type' => 'datepicker'
     ,'field' => 'date'
-    ,'label' => 'Date'
-    ,'description' => 'Choose a date'
+    ,'label' => __('Date', 'piklist-demo')
+    ,'description' => __('Choose a date', 'piklist-demo')
     ,'options' => array(
       'dateFormat' => 'M d, yy'
     )
@@ -24,8 +24,8 @@ Collapse: false
     'type' => 'datepicker'
     ,'field' => 'date_add_more'
     ,'add_more' => true
-    ,'label' => 'Date Add More'
-    ,'description' => 'Choose a date'
+    ,'label' => __('Date Add More', 'piklist-demo')
+    ,'description' => __('Choose a date', 'piklist-demo')
     ,'options' => array(
       'dateFormat' => 'M d, yy'
     )
@@ -37,7 +37,7 @@ Collapse: false
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
 
 ?>

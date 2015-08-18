@@ -2,105 +2,91 @@
 /*
 Title: Radio Fields
 Post Type: piklist_demo
-Order: 30
-Collapse: true
+Order: 20
+Tab: Common
+Sub Tab: Lists
+Flow: Edit Demo
 */
 
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio'
-    ,'label' => 'Normal'
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Radio', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
   
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_add_more'
-    ,'label' => 'Normal Add More'
+    ,'label' => __('Radio Add More', 'piklist-demo')
     ,'add_more' => true
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
   
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_inline'
-    ,'label' => 'Single Line'
+    ,'label' => __('Single Line', 'piklist-demo')
     ,'value' => 'no'
     ,'list' => false
     ,'choices' => array(
-      'yes' => 'Yes'
-      ,'no' => 'No'
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
+      'yes' => __('Yes', 'piklist-demo')
+      ,'no' => __('No', 'piklist-demo')
     )
   ));
   
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'radio_list'
-    ,'label' => 'Group Lists'
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'radio'
         ,'field' => 'radio_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'third'
         ,'choices' => array(
-          'first' => 'First Choice'
-          ,'third' => 'Third Choice'
+          'first' => __('First Choice', 'piklist-demo')
+          ,'third' => __('Third Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
       ,array(
         'type' => 'radio'
         ,'field' => 'radio_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => 'First Choice'
-          ,'second' => 'Second Choice'
-          ,'third' => 'Third Choice'
+          'first' => __('First Choice', 'piklist-demo')
+          ,'second' => __('Second Choice', 'piklist-demo')
+          ,'third' => __('Third Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
     )
   ));
   
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_nested'
-    ,'label' => 'Nested Field'
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=radio_nested_text] input.'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=radio_nested_text]')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'fields' => array(
       array(
@@ -112,9 +98,6 @@ Collapse: true
           'class' => 'small-text'
         )
       )
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
     )
   ));
 

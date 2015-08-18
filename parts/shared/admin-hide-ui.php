@@ -1,6 +1,10 @@
 
 <style type="text/css">
   
+  html {
+    background-color: #f3f3f3 !important;
+  }
+  
   #adminmenuback,
   #adminmenuwrap,
   #wpadminbar,
@@ -17,8 +21,9 @@
   }
   
   #wpcontent {
-    margin-left: 15px !important;
-    padding-top: 0px !important;
+    margin-left: 0px !important;
+    padding-top: 6px !important;
+    padding-left: 14px !important;
   }
   
   html.wp-toolbar {

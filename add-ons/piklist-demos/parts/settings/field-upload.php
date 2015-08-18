@@ -1,10 +1,8 @@
 <?php
 /*
-Title: Upload Fields <span class="piklist-title-right">Meta Box Removed</span>
-Post Type: piklist_demo
+Title: Upload Fields
+Setting: piklist_demo_fields
 Order: 110
-Meta Box: false
-Collapse: false
 */
   
   // Any field with the scope set to the field name of the upload field will be treated as related
@@ -16,12 +14,10 @@ Collapse: false
   // shown on the Media page in the admin, but it is in the database and can be found using query_posts
   // or get_posts or get_post etc....  
 
-
   piklist('field', array(
     'type' => 'file'
     ,'field' => 'upload_basic'
-    ,'scope' => 'post_meta'
-    ,'label' => __('Basic Upload Field','piklist-demo')
+    ,'label' => __('Basic Upload Field', 'piklist-demo')
     ,'options' => array(
       'basic' => true
     )
@@ -30,16 +26,15 @@ Collapse: false
   piklist('field', array(
     'type' => 'file'
     ,'field' => 'upload_media'
-    ,'scope' => 'post_meta'
-    ,'label' => __('Media Uploader','piklist-demo')
-    ,'description' => __('Validation rule set: Upload no more than two files.','piklist-demo')
+    ,'label' => __('Media Uploader', 'piklist-demo')
+    ,'description' => __('Validation rule set: Upload no more than two files.', 'piklist-demo')
     ,'options' => array(
-      'modal_title' => __('Add File(s)','piklist-demo')
-      ,'button' => __('Add','piklist-demo')
+      'modal_title' => __('Add File(s)', 'piklist-demo')
+      ,'button' => __('Add', 'piklist-demo')
     )
   ));
   
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Settings Section'
   ));

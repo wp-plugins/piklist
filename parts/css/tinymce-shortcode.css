@@ -1,0 +1,64 @@
+
+/* --------------------------------------------------------------------------------
+  Shortcode Embed Style
+--------------------------------------------------------------------------------- */  
+  
+  div.piklist-shortcode {
+    position: relative;
+    clear: both;
+    display: block;
+    background-color: #ffffff;
+    border: 1px solid #dedede;
+    box-shadow: none;
+    cursor: pointer;
+    color: #2b2b2b;
+    font-family: "Open Sans", sans-serif;
+    font-size: 13px;
+    line-height: 19px;
+    text-align: left;
+    padding: 14px 0;
+    
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+    div.piklist-shortcode::selection,
+    .wpview-wrap[data-mce-selected] div.piklist-shortcode {
+      background-color: transparent !important;
+    } 
+    
+    div.piklist-shortcode strong,
+    div.piklist-shortcode em {
+      margin-right: 10px;
+      margin-left: 10px;
+      display: block;
+    }
+
+    div.piklist-shortcode .dashicons {
+      display: block;
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      position: absolute;
+      top: 6px;
+      left: 6px;
+    }
+    
+    div.piklist-shortcode-dashicon {
+      min-height: 76px;
+    }
+    
+    div.piklist-shortcode-dashicon strong,
+    div.piklist-shortcode-dashicon em {
+      margin-left: 76px;
+    }
+    
+    
+    

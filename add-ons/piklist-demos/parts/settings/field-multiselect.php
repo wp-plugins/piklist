@@ -9,12 +9,12 @@ Order: 30
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'multiselect'
-    ,'label' => 'Multiselect'
+    ,'label' => __('Multiselect', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'attributes' => array(
       'multiple'
@@ -23,6 +23,6 @@ Order: 30
   
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Settings Section'
   ));
 ?>

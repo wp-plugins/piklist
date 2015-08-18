@@ -3,15 +3,16 @@
 Title: Text Fields
 Capability: manage_options
 Order: 10
+Tab: Basic
 */
 
 
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_class_small'
-    ,'label' => 'Text'
+    ,'label' => __('Text', 'piklist-demo')
     ,'value' => 'Lorem'
-    ,'help' => 'You can easily add tooltips to your fields with the help parameter.'
+    ,'help' => __('You can easily add tooltips to your fields with the help parameter.', 'piklist-demo')
     ,'attributes' => array(
       'class' => 'regular-text'
     )
@@ -22,7 +23,7 @@ Order: 10
     'type' => 'text'
     ,'field' => 'text_add_more'
     ,'add_more' => true
-    ,'label' => 'Text Add More'
+    ,'label' => __('Text Add More', 'piklist-demo')
     ,'description' => 'add_more="true"'
     ,'value' => 'Lorem'
   ));
@@ -30,7 +31,7 @@ Order: 10
   piklist('field', array(
     'type' => 'number'
     ,'field' => 'number'
-    ,'label' => 'Number'
+    ,'label' => __('Number', 'piklist-demo')
     ,'description' => 'ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 5
     ,'attributes' => array(
@@ -44,7 +45,7 @@ Order: 10
   piklist('field', array(
     'type' => 'textarea'
     ,'field' => 'textarea_large'
-    ,'label' => 'Large Code'
+    ,'label' => __('Large Code', 'piklist-demo')
     ,'description' => 'class="large-text code" rows="10" columns="50"'
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'attributes' => array(
@@ -56,7 +57,7 @@ Order: 10
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
 
 ?>

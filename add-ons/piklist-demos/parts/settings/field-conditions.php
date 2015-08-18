@@ -3,18 +3,17 @@
 Title: Conditional Fields
 Setting: piklist_demo_fields
 Tab: Conditions
-Tab Order: 70
-Order: 30
+Tab Order: 50
 */
 
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'show_hide_select'
-    ,'label' => 'Select: toggle a field'
+    ,'label' => __('Select: toggle a field', 'piklist-demo')
     ,'choices' => array(
-      'show1' => 'Show first set'
-      ,'show2' => 'Show second set'
-      ,'hide' => 'Hide all'
+      'show1' => __('Show first set', 'piklist-demo')
+      ,'show2' => __('Show second set', 'piklist-demo')
+      ,'hide' => __('Hide all', 'piklist-demo')
     )
     ,'value' => 'hide'
   ));
@@ -22,8 +21,8 @@ Order: 30
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'show_hide_field_select_1'
-    ,'label' => 'Show/Hide Field (Set 1)'
-    ,'description' => 'This field is toggled by the Select field above'
+    ,'label' => __('Show/Hide Field (Set 1)', 'piklist-demo')
+    ,'description' => __('This field is toggled by the Select field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide_select'
@@ -35,8 +34,8 @@ Order: 30
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'another_show_hide_field_select_1'
-    ,'label' => 'Another Show/Hide Field (Set 1)'
-    ,'description' => 'This field is also toggled by the Select field above'
+    ,'label' => __('Another Show/Hide Field (Set 1)', 'piklist-demo')
+    ,'description' => __('This field is also toggled by the Select field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide_select'
@@ -48,8 +47,8 @@ Order: 30
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'show_hide_field_select_set_2'
-    ,'label' => 'Show/Hide Field (Set 2)'
-    ,'description' => 'This field is toggled by the Select field above'
+    ,'label' => __('Show/Hide Field (Set 2)', 'piklist-demo')
+    ,'description' => __('This field is toggled by the Select field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide_select'
@@ -61,8 +60,8 @@ Order: 30
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'another_show_hide_field_select_set_2'
-    ,'label' => 'Another Show/Hide Field (Set 2)'
-    ,'description' => 'This field is also toggled by the Select field above'
+    ,'label' => __('Another Show/Hide Field (Set 2)', 'piklist-demo')
+    ,'description' => __('This field is also toggled by the Select field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide_select'
@@ -74,12 +73,12 @@ Order: 30
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'select_show_hide_field_select_set_2'
-    ,'label' => 'Select Show/Hide Field (Set 2)'
-    ,'description' => 'This field is also toggled by the Select field above'
+    ,'label' => __('Select Show/Hide Field (Set 2)', 'piklist-demo')
+    ,'description' => __('This field is also toggled by the Select field above', 'piklist-demo')
     ,'choices' => array(
-      'a' => 'Choice A'
-      ,'b' => 'Choice B'
-      ,'c' => 'Choice C'
+      'a' => __('Choice A', 'piklist-demo')
+      ,'b' => __('Choice B', 'piklist-demo')
+      ,'c' => __('Choice C', 'piklist-demo')
     )
     ,'conditions' => array(
       array(
@@ -92,12 +91,12 @@ Order: 30
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_show_hide_field_select_set_2'
-    ,'label' => 'Checkbox Show/Hide Field (Set 2)'
-    ,'description' => 'This field is also toggled by the Select field above'
+    ,'label' => __('Checkbox Show/Hide Field (Set 2)', 'piklist-demo')
+    ,'description' => __('This field is also toggled by the Select field above', 'piklist-demo')
     ,'choices' => array(
-      'a' => 'Choice A'
-      ,'b' => 'Choice B'
-      ,'c' => 'Choice C'
+      'a' => __('Choice A', 'piklist-demo')
+      ,'b' => __('Choice B', 'piklist-demo')
+      ,'c' => __('Choice C', 'piklist-demo')
     )
     ,'conditions' => array(
       array(
@@ -111,7 +110,7 @@ Order: 30
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'show_hide'
-    ,'label' => 'Radio: toggle a field'
+    ,'label' => __('Radio: toggle a field', 'piklist-demo')
     ,'choices' => array(
       'show' => 'Show'
       ,'hide' => 'Hide'
@@ -122,8 +121,8 @@ Order: 30
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'show_hide_field'
-    ,'label' => 'Show/Hide Field'
-    ,'description' => 'This field is toggled by the Radio field above'
+    ,'label' => __('Show/Hide Field', 'piklist-demo')
+    ,'description' => __('This field is toggled by the Radio field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide'
@@ -135,7 +134,7 @@ Order: 30
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'show_hide_checkbox'
-    ,'label' => 'Checkbox: toggle a field'
+    ,'label' => __('Checkbox: toggle a field', 'piklist-demo')
     ,'choices' => array(
       'show' => 'Show'
     )
@@ -144,8 +143,8 @@ Order: 30
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'show_hide_field_checkbox'
-    ,'label' => 'Show/Hide Field'
-    ,'description' => 'This field is toggled by the Checkbox field above'
+    ,'label' => __('Show/Hide Field', 'piklist-demo')
+    ,'description' => __('This field is toggled by the Checkbox field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide_checkbox'
@@ -157,10 +156,10 @@ Order: 30
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'change'
-    ,'label' => 'Update a field'
+    ,'label' => __('Update a field', 'piklist-demo')
     ,'choices' => array(
-      'hello-world' => 'Hello World'
-      ,'clear' => 'Clear'
+      'hello-world' => __('Hello World', 'piklist-demo')
+      ,'clear' => __('Clear', 'piklist-demo')
     )
     ,'value' => 'hello-world'
     ,'conditions' => array(
@@ -183,13 +182,11 @@ Order: 30
     'type' => 'text'
     ,'field' => 'update_field'
     ,'value' => 'Hello World!'
-    ,'label' => 'Update This Field'
-    ,'description' => 'This field is updated by the field above'
+    ,'label' => __('Update This Field', 'piklist-demo')
+    ,'description' => __('This field is updated by the field above', 'piklist-demo')
   ));
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Settings Section'
   ));
-
-?>

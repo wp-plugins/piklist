@@ -1,22 +1,65 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList_CPT
+/**
+ * Piklist_CPT
+ * Controls post type modifications and features.
+ *
+ * @package     Piklist
+ * @subpackage  CPT
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist_CPT
 {
+  /**
+   * @var array Post Types registered with piklist_post_types
+   * @access private
+   */
   private static $post_types = array();
 
+  /**
+   * @var array Taxonomies registered with piklist_taxonomies
+   * @access private
+   */
   private static $taxonomies = array();
 
+  /**
+   * @var string Current taxonomy.
+   * @access private
+   */
+  private static $taxonomy;
+
+  /**
+   * @var string Insert description here
+   * @access private
+   */
+  private static $taxonomy_list_table_filter = array();
+
+  /**
+   * @var string Insert description here
+   * @access private
+   */
+  private static $taxonomy_filter_meta_box = array();
+
+  /**
+   * @var array Meta boxes locked when lock: true 
+   * @access private
+   */
   private static $meta_boxes_locked = array();
 
+  /**
+   * @var array Meta boxes hidden
+   * @access private
+   */
   private static $meta_boxes_hidden = array();
 
-  private static $meta_box_nonce = null;
-
+  /**
+   * @var array Builtin meta boxes.
+   * @access private
+   */
   private static $meta_boxes_builtin = array(
     'slug'
     ,'author'
@@ -29,24 +72,46 @@ class PikList_CPT
 
   private static $search_data = array();
 
+  /**
+   * _construct
+   * Class constructor.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function _construct()
   {
     add_action('init', array('piklist_cpt', 'init'));
-    add_action('add_meta_boxes', array('piklist_cpt', 'register_meta_boxes'));
-    add_action('do_meta_boxes', array('piklist_cpt', 'sort_meta_boxes'), 100, 3);
-    add_action('save_post', array('piklist_cpt', 'save_post'), -1, 3);
     add_action('pre_get_posts', array('piklist_cpt', 'pre_get_posts'), 100);
     add_action('edit_page_form', array('piklist_cpt', 'edit_form'));
     add_action('edit_form_advanced', array('piklist_cpt', 'edit_form'));
     add_action('piklist_activate', array('piklist_cpt', 'activate'));
+    add_action('restrict_manage_posts', array('piklist_cpt', 'taxonomy_filters_list_table'));
+    add_action('admin_footer', array('piklist_cpt', 'quick_edit_post_statuses'));
 
     add_filter('posts_join', array('piklist_cpt', 'posts_join'), 10, 2);
     add_filter('posts_where', array('piklist_cpt', 'posts_where'), 10, 2);
     add_filter('post_row_actions', array('piklist_cpt', 'post_row_actions'), 10, 2);
     add_filter('page_row_actions', array('piklist_cpt', 'post_row_actions'), 10, 2);
     add_filter('wp_insert_post_data', array('piklist_cpt', 'wp_insert_post_data'), 100, 2);
+    add_filter('display_post_states', array('piklist_cpt', 'display_post_states'));
   }
 
+  /**
+   * init
+   * Initializes system.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function init()
   {
     self::register_tables();
@@ -54,6 +119,14 @@ class PikList_CPT
     self::register_post_types();
   }
 
+  /**
+   * register_tables
+   * Registers custom tables
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function register_tables()
   {
     global $wpdb;
@@ -63,6 +136,17 @@ class PikList_CPT
     $wpdb->post_relationships = $wpdb->prefix . 'post_relationships';
   }
 
+  /**
+   * activate
+   * Creates custom tables
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function activate()
   {
     piklist::create_table(
@@ -76,6 +160,19 @@ class PikList_CPT
     );
   }
 
+  /**
+   * posts_join
+   * Insert description here
+   *
+   * @param $join
+   * @param $query
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function posts_join($join, $query)
   {
     global $wpdb;
@@ -93,10 +190,23 @@ class PikList_CPT
     return $join;
   }
 
+  /**
+   * posts_where
+   * Insert description here
+   *
+   * @param $where
+   * @param $query
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function posts_where($where, $query)
   {
     global $wpdb;
-
+    
     if (isset($query->query_vars['post_belongs']) && $post_id = $query->query_vars['post_belongs'])
     {
       $where .= " AND {$wpdb->prefix}post_relationships.post_id = $post_id";
@@ -110,6 +220,17 @@ class PikList_CPT
     return $where;
   }
 
+  /**
+   * edit_form
+   * Insert description here
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function edit_form()
   {
     $fields = array(
@@ -132,8 +253,29 @@ class PikList_CPT
     }
   }
 
+  /**
+   * register_post_types
+   * registers Post Types that use the piklist_post_types filter.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function register_post_types()
   {
+    /**
+     * piklist_post_types
+     * Register Post Types with Piklist
+     *
+     * Allows for all custom Piklist parameters when registering a Post Type
+     *
+     * @param array $post_types 
+     *
+     * @since 1.0
+     */
     self::$post_types = apply_filters('piklist_post_types', self::$post_types);
 
     $check = array();
@@ -151,6 +293,13 @@ class PikList_CPT
 
       if (isset($configuration['status']) && !empty($configuration['status']))
       {
+        /**
+         * piklist_post_type_statuses
+         * Insert description here
+         *
+         * 
+         * @since 1.0
+         */
         $configuration['status'] = apply_filters('piklist_post_type_statuses', $configuration['status'], $post_type);
 
         foreach ($configuration['status'] as $status => &$status_data)
@@ -207,7 +356,7 @@ class PikList_CPT
       {
         global $pagenow;
 
-        if (in_array($pagenow, array('edit.php', 'post.php', 'post-new.php')) && !isset($_GET['page']) && isset($_REQUEST['post_type']) && ($_REQUEST['post_type'] == $post_type))
+        if (in_array($pagenow, array('edit.php', 'post.php', 'post-new.php')) && !isset($_REQUEST['page']) && isset($_REQUEST['post_type']) && ($_REQUEST['post_type'] == $post_type))
         {
           piklist_admin::$page_icon = array(
             'page_id' => '.icon32.icon32-posts-' . $post_type
@@ -228,17 +377,12 @@ class PikList_CPT
 
       if (isset($configuration['admin_body_class']) && !empty($configuration['admin_body_class']))
       {
-        add_filter('admin_body_class', array('piklist_cpt', 'admin_body_class'),999);
+        add_filter('admin_body_class', array('piklist_cpt', 'admin_body_class'), 10000);
       }
 
       if (isset($configuration['edit_manage']) && !empty($configuration['edit_manage']))
       {
         add_action('restrict_manage_posts', array('piklist_cpt', 'restrict_manage_posts'));
-      }
-
-      if (isset($configuration['post_states']) && !empty($configuration['post_states']))
-      {
-        add_filter('display_post_states', array('piklist_cpt', 'display_post_states'));
       }
 
       add_filter('post_updated_messages', array('piklist_cpt', 'post_updated_messages_filter'));
@@ -250,10 +394,30 @@ class PikList_CPT
     self::flush_rewrite_rules(md5(serialize($check)), 'piklist_post_type_rules_flushed');
   }
 
+  /**
+   * register_taxonomies
+   * registers Taxonomies that use the piklist_taxonomies filter.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function register_taxonomies()
   {
-    global $wp_taxonomies;
+    global $wp_taxonomies, $pagenow;
 
+    /**
+     * Register Taxonomies with Piklist
+     *
+     * Allows for all custom Piklist parameters when registering a Taxonomy
+     *
+     * @param array $taxonomies 
+     *
+     * @since 1.0
+     */
     self::$taxonomies = apply_filters('piklist_taxonomies', self::$taxonomies);
 
     $check = array();
@@ -293,8 +457,6 @@ class PikList_CPT
 
       if (isset($taxonomy['configuration']['page_icon']) && !empty($taxonomy['configuration']['page_icon']))
       {
-        global $pagenow;
-
         if (($pagenow == 'edit-tags.php') && ($_REQUEST['taxonomy'] == $taxonomy['name']))
         {
           piklist_admin::$page_icon = array(
@@ -303,31 +465,146 @@ class PikList_CPT
           );
         }
       }
+
+      if (isset($taxonomy['object_type']) && $taxonomy['object_type'] == 'user')
+      {
+        if (isset($taxonomy['configuration']['show_admin_column']) && $taxonomy['configuration']['show_admin_column'] == true)
+        {
+          piklist_cpt::$taxonomy = $taxonomy;
+
+          add_filter('manage_users_columns', array('piklist_cpt','user_column_header'), 10);
+          add_action('manage_users_custom_column', array('piklist_cpt','user_column_data'), 10, 3);
+        } 
+      }
+
+      if (isset($taxonomy['configuration']['meta_box_filter']) && $taxonomy['configuration']['meta_box_filter'] == '1')
+      {
+        if (in_array($pagenow, array('post.php', 'post-new.php')))
+        {
+          array_push(self::$taxonomy_filter_meta_box, $taxonomy);
+
+          add_action('admin_head', array('piklist_cpt', 'taxonomy_filter_meta_box'));
+        }
+      }
+
     }
-    
+
     self::flush_rewrite_rules(md5(serialize($check)), 'piklist_taxonomy_rules_flushed');
   }
 
+  /**
+   * taxonomy_filter_meta_box
+   * Display taxonomy filter in meta boxes
+   * taxonomy parameter: 'meta_box_filter' => true
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function taxonomy_filter_meta_box()
+  {
+    foreach (piklist_cpt::$taxonomy_filter_meta_box as $taxonomy)
+    {
+      piklist::render('shared/taxonomy-filter-meta-box', array(
+        'name' => $taxonomy['name']
+      ));
+    }
+
+  }
+
+  /**
+   * user_column_header
+   * Adds taxonomy name to a column header on the Users list table.
+   * User Taxonomy parameter: 'show_admin_column' => true
+   *
+   * @param $columns
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function user_column_header($columns)
+  {
+    $columns[piklist_cpt::$taxonomy['name']] = piklist_cpt::$taxonomy['configuration']['labels']['name'];
+
+    return $columns;
+  }
+
+  /**
+   * user_column_data
+   * Adds term data to a column on the Users list table.
+   *
+   * @param $term_list
+   * @param $column_name
+   * @param $value
+   *
+   * @return string 
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function user_column_data($term_list, $column_name, $value)
+  {
+    $term = wp_get_object_terms($value, piklist_cpt::$taxonomy['name']);
+
+    if (isset($term[0]))
+    {
+      $prefix = '';
+
+      foreach ($term as $name => $value)
+      {
+        $term_list .= $prefix . $value->name;
+        $prefix = ', ';
+      }
+    }
+    else
+    {
+      $term_list = '';
+    }
+   
+    return $term_list;
+  }
+
+  /**
+   * flush_rewrite_rules
+   * Flushes rewrite rules
+   *
+   * @param $check The last configureation flushed.
+   * @param $option The option that stores the last configuration.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function flush_rewrite_rules($check, $option)
   {
     if ($check != get_option($option))
     {
       flush_rewrite_rules(false);
+      
       update_option($option, $check);
     }
   }
 
+  /**
+   * hide_meta_boxes
+   * Accepts an array of div ID's for meta boxes and hides them.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function hide_meta_boxes()
   {
     global $pagenow, $wp_meta_boxes, $typenow, $post;
     
     if (in_array($pagenow, array('post.php', 'post-new.php')))
     {
-      if (isset(self::$meta_boxes_hidden[$typenow]) && !in_array('submitdiv', self::$meta_boxes_hidden[$typenow]))
-      {
-        array_push(self::$meta_boxes_hidden[$typenow], 'submitdiv');
-      }
-
       foreach (array('normal', 'advanced', 'side') as $context)
       {
         foreach (array('high', 'core', 'default', 'low') as $priority)
@@ -336,12 +613,7 @@ class PikList_CPT
           {
             foreach ($wp_meta_boxes[$typenow][$context][$priority] as $meta_box => $data)
             {
-              if ($meta_box == 'submitdiv' && $typenow != 'attachment' && isset(self::$post_types[$typenow]['status']) && !empty(self::$post_types[$typenow]['status']))
-              {
-                $wp_meta_boxes[$typenow][$context][$priority][$meta_box]['title'] = apply_filters('piklist_post_submit_meta_box_title', $wp_meta_boxes[$typenow][$context][$priority][$meta_box]['title'], $post);
-                $wp_meta_boxes[$typenow][$context][$priority][$meta_box]['callback'] = array('piklist_cpt', 'post_submit_meta_box');
-              }
-              elseif ($meta_box != 'submitdiv' && isset(self::$meta_boxes_hidden[$typenow]) && in_array($meta_box, self::$meta_boxes_hidden[$typenow]))
+              if ($meta_box != 'submitdiv' && isset(self::$meta_boxes_hidden[$typenow]) && in_array($meta_box, self::$meta_boxes_hidden[$typenow]))
               {
                 unset($wp_meta_boxes[$typenow][$context][$priority][$meta_box]);
               }
@@ -366,33 +638,60 @@ class PikList_CPT
     }
   }
 
-  public static function post_submit_meta_box()
+  /**
+   * get_post_statuses_for_type
+   * return a list of post statuses for a post type.
+   *
+   * @param $post_type set post type or leave empty for current.
+   * @param $all set to true to return all post status data, or false to return simple array
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function get_post_statuses_for_type($post_type = null, $all = true)
   {
-    global $post, $wp_post_statuses, $typenow;
+    global $post, $wp_post_statuses;
+
+    if (empty($post_type))
+    {
+      $post_type = $post->post_type;
+    }
 
     $default_statuses = array(
       'draft' => $wp_post_statuses['draft']
       ,'pending' => $wp_post_statuses['pending']
     );
-
-    if ($post->post_status == 'publish' || (!isset(self::$post_types[$typenow]['status']) || (isset(self::$post_types[$typenow]['status']) && isset(self::$post_types[$typenow]['status']['publish']))))
+    
+    if (($post && $post->post_status == 'publish') || (!isset(self::$post_types[$post_type]['status']) || (isset(self::$post_types[$post_type]['status']) && isset(self::$post_types[$post_type]['status']['publish']))))
     {
       $default_statuses['publish'] = $wp_post_statuses['publish'];
     }
 
-    $statuses = isset(self::$post_types[$post->post_type]['status']) ? self::$post_types[$post->post_type]['status'] : $default_statuses;
+    $statuses = $post && isset(self::$post_types[$post_type]['status']) ? self::$post_types[$post_type]['status'] : $default_statuses;
 
-    foreach ($statuses as $status => &$configuration)
+    if($all == false)
     {
-      $configuration = (object) $configuration;
+      foreach ($statuses as $key => $value)
+      {
+        $statuses[$key] = $value['label'];
+      }
     }
 
-    piklist::render('shared/post-submit-meta-box', array(
-      'post' => $post
-      ,'statuses' => $statuses
-    ));
+    return $statuses;
   }
 
+  /**
+   * sort_post_statuses
+   * Sorts custom post statuses.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function sort_post_statuses()
   {
     global $wp_post_types, $wp_post_statuses, $typenow;
@@ -427,9 +726,22 @@ class PikList_CPT
     $wp_post_statuses = $_wp_post_statuses;
   }
 
+  /**
+   * manage_edit_columns
+   * Change the titles of the columns on the list posts screen.
+   * Post Type parameter: 'edit_columns' => array()
+   *
+   * @param $columns
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function manage_edit_columns($columns)
   {
-    $post_type = $_REQUEST['post_type'];
+    $post_type = esc_attr($_REQUEST['post_type']);
 
     if (isset(self::$post_types[$post_type]))
     {
@@ -439,6 +751,19 @@ class PikList_CPT
     return $columns;
   }
 
+  /**
+   * post_row_actions
+   * Hide the post row actions that show up when you hover over a post in the list posts screen (e.g. edit, quick edit, trash, view). Post Type parameter: 'hide_post_row_actions' => array()
+   *
+   * @param $actions
+   * @param $post
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function post_row_actions($actions, $post)
   {
     global $current_screen;
@@ -457,300 +782,129 @@ class PikList_CPT
     return $actions;
   }
 
+  /**
+   * admin_body_class
+   * Add a custom body class to your post type page in the admin. Allows you to easily target css.
+   * Post Type parameter: 'admin_body_class' => array()
+   *
+   * @param array $classes
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function admin_body_class($classes)
   {
-    global $pagenow;
+    global $current_screen;
 
-    if (in_array($pagenow, array('edit.php', 'post.php', 'post-new.php')) && post_type_exists(get_post_type()))
+    if (!empty(self::$post_types[$current_screen->post_type]['admin_body_class']))
     {
-      $post_type = get_post_type();
-
-      if (!empty(self::$post_types[$post_type]['admin_body_class']))
+      $admin_body_class = is_array(self::$post_types[$current_screen->post_type]['admin_body_class']) ? self::$post_types[$current_screen->post_type]['admin_body_class'] : array(self::$post_types[$current_screen->post_type]['admin_body_class']);
+      foreach ($admin_body_class as $class)
       {
-        $admin_body_class = is_array(self::$post_types[$post_type]['admin_body_class']) ? self::$post_types[$post_type]['admin_body_class'] : array(self::$post_types[$post_type]['admin_body_class']);
-        foreach ($admin_body_class as $class)
-        {
-          $classes .= ' ';
-          $classes .= $class;
-        }
+        $classes .= ' ';
+        $classes .= $class;
       }
     }
+    
     return $classes;
   }
 
+  /**
+   * restrict_manage_posts
+   * Insert description here
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function restrict_manage_posts()
   {
     // NOTE: How to handle pre-existing printed info?  Callback function here?
   }
 
+  /**
+   * display_post_states
+   * Show post status states on the post type list table.
+   *
+   * @param $states
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function display_post_states($states)
   {
-    global $post, $wp_post_statuses;
-
-    $current_status = get_query_var('post_status');
-
-    if ($current_status != $post->post_status)
+    global $post;
+    
+    if (!empty($states))
     {
-      return array($wp_post_statuses[$post->post_status]->label);
+      $current_status = $post->post_status;
+      $post_statuses = self::get_post_statuses_for_type();
+    
+      $states = !empty($post_statuses[$current_status]->label) ? $post_statuses[$current_status]->label : $post_statuses[$current_status]['label'];
+      $states = $states == 'Published' ? '' : array($states);
     }
 
     return $states;
   }
-
-  public static function save_post($post_id, $post, $update)
-  {
-    if (empty($_REQUEST) || !isset($_REQUEST[piklist::$prefix]['nonce']))
-    {
-      return $post_id;
-    }
-
-    if (!wp_verify_nonce($_REQUEST[piklist::$prefix]['nonce'], plugin_basename(piklist::$paths['piklist'] . '/piklist.php')))
-    {
-      return $post_id;
-    }
-
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-    {
-      return $post_id;
-    }
-
-    if (wp_is_post_revision($post_id) && !wp_is_post_autosave($post_id))
-    {
-      return $post_id;
-    }
-
-    if ($post && $post->post_type == 'page')
-    {
-      if (!current_user_can('edit_page', $post_id))
-      {
-        return $post_id;
-      }
-    }
-    elseif (!current_user_can('edit_post', $post_id))
-    {
-      return $post_id;
-    }
-    
-    remove_action('save_post', array('piklist_cpt', 'save_post'), -1);
-
-    piklist_form::save(array(
-      'post' => $post_id
-    ));
-
-    add_action('save_post', array('piklist_cpt', 'save_post'), -1, 3);
-  }
-
-  public static function register_meta_boxes()
-  {
-    piklist::process_views('meta-boxes', array('piklist_cpt', 'register_meta_boxes_callback'));
-  }
-
-  public static function register_meta_boxes_callback($arguments)
-  {
-    global $post, $pagenow;
-
-    extract($arguments);
-
-    $current_user = wp_get_current_user();
-
-    $data = get_file_data($path . '/parts/' . $folder . '/' . $part, apply_filters('piklist_get_file_data', array(
-              'name' => 'Title'
-              ,'context' => 'Context'
-              ,'description' => 'Description'
-              ,'capability' => 'Capability'
-              ,'role' => 'Role'
-              ,'priority' => 'Priority'
-              ,'order' => 'Order'
-              ,'type' => 'Post Type'
-              ,'lock' => 'Lock'
-              ,'collapse' => 'Collapse'
-              ,'status' => 'Status'
-              ,'new' => 'New'
-              ,'id' => 'ID'
-              ,'div' => 'DIV'
-              ,'template' => 'Template'
-              ,'box' => 'Meta Box'
-            ), 'meta-boxes'));
-
-    $data = apply_filters('piklist_add_part', $data, 'meta-boxes');
-
-    $types = empty($data['type']) ? get_post_types() : explode(',', $data['type']);
-    
-    foreach ($types as $type)
-    {
-      $type = trim($type);
-
-      $statuses = !empty($data['status']) ? explode(',', $data['status']) : false;
-      $ids = !empty($data['id']) ? explode(',', $data['id']) : false;
-      $name = !empty($data['name']) ? $data['name'] : 'piklist_meta_' . piklist::slug($part);
-      
-      if (post_type_exists($type)
-        && (!$data['capability'] || ($data['capability'] && current_user_can(strtolower($data['capability']))))
-        && (!$data['role'] || ($data['role'] && piklist_user::current_user_role($data['role'])))
-        && (!$data['status'] || ($data['status'] && in_array($post->post_status, $statuses)))
-        && (!$data['new'] || ($data['new'] && $pagenow != 'post-new.php'))
-        && (!$data['id'] || ($data['id'] && in_array($post->ID, $ids)))
-        && (!$data['template'] || ($data['template'] && $data['template'] == pathinfo(get_page_template_slug($post->ID), PATHINFO_FILENAME)))
-      )
-      {
-        $id = !empty($data['div']) ? $data['div'] : 'piklist_meta_' . piklist::slug($part);
-        $textdomain = isset(piklist_add_on::$available_add_ons[$add_on]) && isset(piklist_add_on::$available_add_ons[$add_on]['TextDomain']) ? piklist_add_on::$available_add_ons[$add_on]['TextDomain'] : null;
-         
-        add_meta_box(
-          $id
-          ,!empty($textdomain) ? __($name, $textdomain) : $name
-          ,array('piklist_cpt', 'meta_box')
-          ,$type
-          ,!empty($data['context']) ? $data['context'] : 'normal'
-          ,!empty($data['priority']) ? $data['priority'] : 'low'
-          ,array(
-            'part' => $part
-            ,'add_on' => $add_on
-            ,'order' => $data['order'] ? $data['order'] : null
-            ,'config' => $data
-          )
-        );
-
-        if (isset($data['box']) && strtolower($data['box']) == 'false')
-        {
-          add_filter("postbox_classes_{$type}_{$id}", array('piklist_cpt', 'lock_meta_boxes'));
-          add_filter("postbox_classes_{$type}_{$id}", array('piklist_cpt', 'no_meta_boxes'));
-
-          if ($name == 'piklist_meta_' . piklist::slug($part))
-          {
-            add_filter("postbox_classes_{$type}_{$id}", array('piklist_cpt', 'no_title_meta_boxes'));
-          }
-        }
-        else
-        {
-          if (isset($data['lock']) && strtolower($data['lock']) == 'true')
-          {
-            add_filter("postbox_classes_{$type}_{$id}", array('piklist_cpt', 'lock_meta_boxes'));
-          }
-          if (isset($data['collapse']) && strtolower($data['collapse']) == 'true')
-          {
-            add_filter("postbox_classes_{$type}_{$id}", array('piklist_cpt', 'collapse_meta_boxes'));
-          }
-        }
-        add_filter("postbox_classes_{$type}_{$id}", array('piklist_cpt', 'default_classes'));
-      }
-    }
-  }
-
-  public static function meta_box($post, $meta_box)
-  {
-    global $typenow;
-
-    if (!self::$meta_box_nonce)
-    {
-      piklist_form::render_field(array(
-        'type' => 'hidden'
-        ,'field' => 'nonce'
-        ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
-        ,'scope' => piklist::$prefix
-      ));
-
-      self::$meta_box_nonce = true;
-    }
-
-    do_action('piklist_pre_render_meta_box', $post, $meta_box);
-
-    piklist::render(piklist::$paths[$meta_box['args']['add_on']] . '/parts/meta-boxes/' . $meta_box['args']['part'], array(
-      'type' => $typenow
-      ,'prefix' => 'piklist'
-      ,'plugin' => 'piklist'
-    ), false);
-    
-    do_action('piklist_post_render_meta_box', $post, $meta_box);
-  }
-
-  public static function sort_meta_boxes($post_type, $context, $post)
+  
+  /**
+   * quick_edit_post_statuses
+   * Add custom post statuses field to quick edit area on list tables.
+   *
+   * @param $column_name
+   * @param $post_type
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function quick_edit_post_statuses($column_name)
   {
     global $pagenow;
-
-    if (in_array($pagenow, array('edit.php', 'post.php', 'post-new.php')) && post_type_exists(get_post_type()))
+    
+    if ($pagenow == 'edit.php')
     {
-      global $wp_meta_boxes;
+      $post_statuses = self::get_post_statuses_for_type();
 
-      foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
+      if (!empty($post_statuses))
       {
-        if (isset($wp_meta_boxes[$post_type][$context][$priority]))
+        $choices = array();
+      
+        foreach ($post_statuses as $status => $data)
         {
-          uasort($wp_meta_boxes[$post_type][$context][$priority], array('piklist', 'sort_by_args_order'));
+          $choices[$status == 'auto-draft' ? 'draft' : $status] = is_array($data) ? $data['label'] : $data->label;
         }
-      }
 
-      add_filter('get_user_option_meta-box-order_' . $post_type, array('piklist_cpt', 'user_sort_meta_boxes'), 100, 3);
+        piklist::render('shared/list-table-post-statuses', array(
+          'choices' => $choices
+        ));
+      }
     }
   }
 
-  public static function user_sort_meta_boxes($result, $option, $user)
-  {
-    global $wp_meta_boxes;
-
-    $post_type = str_replace('meta-box-order_', '', $option);
-
-    $order = array(
-      'side' => ''
-      ,'normal' => ''
-      ,'advanced' => ''
-    );
-
-    foreach (array('side', 'normal', 'advanced') as $context)
-    {
-      foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
-      {
-        if (isset($wp_meta_boxes[$post_type][$context][$priority]) && !empty($wp_meta_boxes[$post_type][$context][$priority]))
-        {
-          $order[$context] .= (!empty($order[$context]) ? ',' : '') . implode(',', array_keys($wp_meta_boxes[$post_type][$context][$priority]));
-        }
-      }
-
-    }
-
-    return $order;
-  }
-
-  public static function lock_meta_boxes($classes)
-  {
-    array_push($classes, 'piklist-meta-box-lock hide-all');
-    return $classes;
-  }
-
-  public static function no_title_meta_boxes($classes)
-  {
-    array_push($classes, 'piklist-meta-box-no-title');
-    return $classes;
-  }
-
-  public static function no_meta_boxes($classes)
-  {
-    array_push($classes, 'piklist-meta-box-none');
-    return $classes;
-  }
-
-  public static function default_classes($classes)
-  {
-    array_push($classes, 'piklist-meta-box');
-    return $classes;
-  }
-
-  public static function collapse_meta_boxes($classes)
-  {
-    array_push($classes, 'piklist-meta-box-collapse');
-    return $classes;
-  }
-
-  public static function default_post_title($id)
-  {
-    $post = get_post($id);
-
-    wp_update_post(array(
-      'ID' => $id
-      ,'post_title' => ucwords(str_replace(array('-', '_'), ' ', $post->post_type)) . ' ' . $id
-    ));
-  }
-
+  /**
+   * post_updated_messages_filter
+   * Customizes the messaging in the admin when post types are saved.
+   * Messages are specific to the individual post type.
+   *
+   * @param $messages
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function post_updated_messages_filter($messages)
   {
     global $post, $post_ID;
@@ -762,23 +916,36 @@ class PikList_CPT
     $singular = $obj->labels->singular_name;
 
     $messages[$post_type] = array(
-      0 => ''
+      0 => false
       ,1 => sprintf(__($singular . ' updated. <a href="%s">View ' . $singular . '</a>'), esc_url(get_permalink($post_ID)))
       ,2 => __('Custom field updated.')
       ,3 => __('Custom field deleted.')
       ,4 => __($singular.' updated.')
-      ,5 => isset($_GET['revision']) ? sprintf( __($singular . ' restored to revision from %s'), wp_post_revision_title((int) $_GET['revision'], false )) : false
+      ,5 => isset($_REQUEST['revision']) ? sprintf( __($singular . ' restored to revision from %s'), wp_post_revision_title((int) $_REQUEST['revision'], false )) : false
       ,6 => sprintf(__($singular.' published. <a href="%s">View ' . $singular . '</a>'), esc_url(get_permalink($post_ID)))
       ,7 => __('Page saved.')
-      ,8 => sprintf(__($singular . ' submitted. <a target="_blank" href="%s">Preview ' . $singular . '</a>'), esc_url( add_query_arg('preview', 'true', get_permalink($post_ID))))
+      ,8 => sprintf(__($singular . ' submitted. <a target="_blank" href="%s">Preview ' . $singular . '</a>'), esc_url(add_query_arg('preview', 'true', get_permalink($post_ID))))
       ,9 => sprintf(__($singular.' scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview ' . $singular . '</a>'), date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date)), esc_url(get_permalink($post_ID)))
-      ,10 => sprintf(__($singular . ' draft updated. <a target="_blank" href="%s">Preview ' . $singular . '</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID))))
+      ,10 => sprintf(__($singular . ' draft updated. <a target="_blank" href="%s">Preview ' . $singular . '</a>'), esc_url(add_query_arg('preview', 'true', get_permalink($post_ID))))
     );
 
     return $messages;
 
   }
 
+  /**
+   * enter_title_here
+   * Customizes the placeholder text in the title post on the add new post screen.
+   * Post Type parameter: 'title' => 'Enter my title'
+   *
+   * @param $title
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function enter_title_here($title)
   {
     $post_type = get_post_type();
@@ -786,6 +953,18 @@ class PikList_CPT
     return isset(self::$post_types[$post_type]['title']) ? self::$post_types[$post_type]['title'] : $title;
   }
 
+  /**
+   * hide_screen_options
+   * Hide the screen options tab on the post edit screens.
+   * Post Type parameter: 'hide_screen_options' => true
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function hide_screen_options()
   {
     global $pagenow;
@@ -805,6 +984,18 @@ class PikList_CPT
     }
   }
 
+  /**
+   * get_post_statuses
+   * Return a list of post statuses for an object type.
+   *
+   * @param $object_type
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function get_post_statuses($object_type = null)
   {
     global $wp_post_statuses;
@@ -823,151 +1014,261 @@ class PikList_CPT
     return $status_list;
   }
 
+  /**
+   * wp_insert_post_data
+   * Insert description here
+   *
+   * @param $data
+   * @param $post_array
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function wp_insert_post_data($data, $post_array)
   {
     if (($data['post_status'] != 'auto-draft') && (($data['post_title'] == 'Auto Draft') || empty($data['post_title'])))
     {
+      /**
+       * piklist_empty_post_title
+       * Filter the post title on save if empty.
+       * Primarily used when registering a post type and the 'supports' parameter does not contain 'title'.
+       *
+       * @param array $post_array 
+       *
+       * @since 1.0
+       */
       $data['post_title'] = apply_filters('piklist_empty_post_title', $data['post_title'], $post_array);
     }
 
     return $data;
   }
 
+  /**
+   * pre_get_posts
+   * Insert description here
+   *
+   * @param $query
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function pre_get_posts(&$query)
   {
     if ($query->is_main_query() && isset($_REQUEST) && (isset($_REQUEST[piklist::$prefix]['filter']) && strtolower($_REQUEST[piklist::$prefix]['filter']) == 'true') && isset($_REQUEST[piklist::$prefix]['fields_id']))
     {
       $args = array(
-        'meta_query' => array(
-          'relation' => isset($_REQUEST[piklist::$prefix . 'post_meta']['relation']) && in_array(strtoupper($_REQUEST[piklist::$prefix . 'post_meta']['relation'][0]), array('AND', 'OR')) ? strtoupper($_REQUEST[piklist::$prefix . 'post_meta']['relation'][0]) : 'AND'
-        )
-        ,'tax_query' => array(
-          'relation' => isset($_REQUEST[piklist::$prefix . 'taxonomy']['relation']) && in_array(strtoupper($_REQUEST[piklist::$prefix . 'taxonomy']['relation'][0]), array('AND', 'OR')) ? strtoupper($_REQUEST[piklist::$prefix . 'taxonomy']['relation'][0]) : 'AND'
-        )
+        'meta_query' => array()
+        ,'tax_query' => array()
+        ,'s' => array()
+        ,'meta_relation' => false
+        ,'taxonomy_relation' => false
       );
 
       $fields = get_transient(piklist::$prefix . $_REQUEST[piklist::$prefix]['fields_id']);
 
       self::$search_data = $_REQUEST;
-
-      foreach ($fields as $filter => $_fields)
+      
+      foreach (self::$search_data as $key => $values)
       {
-        foreach ($fields[$filter] as $field => $field_config)
+        foreach ($values as $_key => $_values)
         {
-          if (isset($field_config['include_fields']))
+          foreach ($_values as $_value)
           {
-            foreach ($field_config['include_fields'] as $include_scope => $include_fields)
+            $filter = substr($key, 0, 1) == piklist::$prefix ? substr($key, strlen(piklist::$prefix)) : $key;
+            $_value = is_array($_value) ? array_filter($_value) : $_value;
+            
+            if (empty($_value))
             {
-              $value = self::$search_data[piklist::$prefix . $filter][$field];
-              if (isset($include_field) && $include_field == 's')
+              break;
+            }
+            
+            array_push($fields[$filter][$_key]['query'], array(
+              'scope' => $filter
+              ,'field' => $_key
+            ));
+            
+            foreach ($fields[$filter][$_key]['query'] as $_query)
+            {
+              switch ($_query['scope'])
               {
-                $query->set('s', is_array($value) ? current($value) : $value);
-              }
-              else
-              {
-                foreach ($include_fields as $include_field)
-                {
-                  self::$search_data[piklist::$prefix . $include_scope][$include_field] = $value;
-                  $fields[$include_scope][$include_field] = $fields[$filter][$field];
-                }
+                case 'post':
+                
+                  switch ($_query['field'])
+                  {
+                    case 'post_title':
+                    case 'post_content':
+                    case 'post_excerpt':
+                    
+                      array_push($args['s'], $_value);
+                    
+                    break;
+                    
+                    case 'cat':
+                    case 'tag_id':
+                    case 'p':
+                    case 'page_id':
+                    case 'post_parent':
+                    case 'posts_per_page':
+                    case 'posts_per_archive_page':
+                    case 'offset':
+                    case 'page':
+                    case 'paged':
+                                     
+                      $args[$_query['field']] = (int) $_value;
+                      
+                    break;
+                    
+                    case 'author':
+                    
+                      $args[$_query['field']] = is_array($_values) ? implode(',', $_values) : $_values;
+                      
+                    break;
+                    
+                    case 'author_name':
+                    case 'category_name':
+                    case 'tag':
+                    case 'post_password':
+                    case 'perm':
+                    case 'fields':
+                    case 'order':
+                    case 'orderby':
+                    
+                      $args[$_query['field']] = $_value;
+                    
+                    break;
+
+                    case 'author__in':
+                    case 'author__not_in':
+                    case 'category__and':
+                    case 'category__in':
+                    case 'category__not_in':
+                    case 'tag__and':
+                    case 'tag__in':
+                    case 'tag__not_in':
+                    case 'tag_slug__and':
+                    case 'tag_slug__in':
+                    case 'post_parent__in':
+                    case 'post_parent__not_in':
+                    case 'post__in':
+                    case 'post__not_in':
+                    case 'post_status':
+                    case 'post_type':
+
+                      $args[$_query['field']] = is_array($_values) ? $_values : array($_values);
+                    
+                    break;
+                    
+                    case 'has_password':
+                    case 'cache_results':
+                    case 'update_post_meta_cache':
+                    case 'update_post_term_cache':
+                    case 'nopaging':
+                    case 'ignore_sticky_posts':
+
+                      $args[$_query['field']] = (bool) $_value;
+                        
+                    break;
+                  }
+              
+                break;
+      
+                case 'post_meta':
+
+                  if (isset($_query['relation']))
+                  {
+                    $args['meta_query']['relation'] = strtoupper($_query['relation']);
+                  }
+  
+                  if (isset($_query['scope_relation']))
+                  {
+                    $args['meta_relation'] = strtoupper($_query['scope_relation']);
+                  }
+
+                  if (!isset($_query['relation']) && !isset($_query['scope_relation']))
+                  {
+                    if (strstr($_query['field'], '__min'))
+                    {
+                      array_push($args['meta_query'], array(
+                        'key' => str_replace('__min', '', $_query['field'])
+                        ,'value' => array($_value, self::$search_data[$key][str_replace('__min', '__max', $_query['field'])])
+                        ,'type' => 'NUMERIC'
+                        ,'compare' => 'BETWEEN'
+                      ));
+                    }
+                    elseif (!strstr($_query['field'], '__min') && !strstr($_query['field'], '__max'))
+                    {
+                      array_push($args['meta_query'], array(
+                        'key' => $_query['field']
+                        ,'value' => $_value
+                        ,'type' => isset($_query['type']) ? $_query['type'] : 'CHAR' 
+                        ,'compare' => isset($_query['compare']) ? $_query['compare'] : '=' 
+                      ));
+                    }
+                  }
+                    
+                break;
+          
+                case 'taxonomy':
+
+                  if (isset($_query['relation']))
+                  {
+                    $args['tax_query']['relation'] = strtoupper($_query['relation']);
+                  }
+
+                  if (isset($_query['scope_relation']))
+                  {
+                    $args['taxonomy_relation'] = strtoupper($_query['scope_relation']);
+                  }
+
+                  if (!isset($_query['relation']) && !isset($_query['scope_relation']))
+                  {
+                    array_push(
+                      $args['tax_query']
+                      ,array(
+                        'taxonomy' => $_query['field']
+                        ,'terms' => !is_array($_value) && strstr($_value, ',') ? explode(',', $_value) : $_value
+                        ,'field' => isset($_query['attribute']) ? $_query['attribute'] : 'term_id'
+                        ,'include_children' => isset($_query['include_children']) ? $_query['include_children'] : true
+                        ,'operator' => isset($_query['operator']) ? $_query['operator'] : 'IN'
+                      )
+                    );
+                  }
+
+                break;
               }
             }
           }
         }
       }
-
-      foreach (self::$search_data as $key => $values)
+      
+      if (isset($args['meta_query']))
       {
-        $filter = substr($key, strlen(piklist::$prefix));
-
-        switch ($filter)
-        {
-          case 'post_meta':
-
-            foreach ($values as $meta_key => $meta_value)
-            {
-              $field = $fields[$filter][$meta_key];
-
-              $meta_value = is_array($meta_value) ? array_filter($meta_value) : $meta_value;
-
-              if (!empty($meta_value) && $meta_key != 'relation')
-              {
-                if (strstr($meta_key, '__min'))
-                {
-                  array_push(
-                    $args['meta_query']
-                    ,array(
-                      'key' => str_replace('__min', '', $meta_key)
-                      ,'value' => array($meta_value, $_REQUEST[$key][str_replace('__min', '__max', $meta_key)])
-                      ,'type' => 'NUMERIC'
-                      ,'compare' => 'BETWEEN'
-                    )
-                  );
-                }
-                elseif (!strstr($meta_key, '__min') && !strstr($meta_key, '__max'))
-                {
-                  array_push(
-                    $args['meta_query']
-                    ,array(
-                      'key' => $meta_key
-                      ,'value' => is_array($meta_value) && count($meta_value) > 1 ? $meta_value : stripslashes(is_array($meta_value) ? $meta_value[0] : $meta_value)
-                      ,'compare' => is_array($meta_value) && count($meta_value) > 1 ? 'IN' : (isset($field['meta_query']['compare']) ? $field['meta_query']['compare'] : '=')
-                      ,'type' => is_numeric(is_array($meta_value) ? $meta_value[0] : $meta_value) ? 'NUMERIC' : (isset($field['meta_query']['type']) ? $field['meta_query']['type'] : 'CHAR')
-                    )
-                  );
-                }
-              }
-            }
-
-          break;
-
-          case 'taxonomy':
-
-            foreach ($values as $taxonomy => $terms)
-            {
-              $field = $fields[$filter][$taxonomy];
-
-              $terms = is_array($terms) ? array_filter($terms) : $terms;
-
-              if (!empty($terms) && $taxonomy != 'relation')
-              {
-                array_push(
-                  $args['tax_query']
-                  ,array(
-                    'taxonomy' => $taxonomy
-                    ,'terms' => !is_array($terms) && strstr($terms, ',') ? explode(',', $terms) : $terms
-                    ,'field' => isset($field['tax_query']['field']) ? $field['tax_query']['field'] : 'term_id'
-                    ,'include_children' => isset($field['tax_query']['include_children']) ? $field['tax_query']['include_children'] : true
-                    ,'operator' => isset($field['tax_query']['operator']) ? $field['tax_query']['operator'] : 'IN'
-                  )
-                );
-              }
-            }
-
-          break;
-        }
+        $args['meta_query'] = empty($query->query_vars['meta_query']) ? $args['meta_query'] : array_merge($query->query_vars['meta_query'], $args['meta_query']);
+        $args['meta_query'] = array_map('unserialize', array_unique(array_map('serialize', $args['meta_query'])));;
       }
 
-      if (isset($_REQUEST[piklist::$prefix . 'post_type']))
+      if (isset($args['tax_query']))
       {
-        $post_type = is_array($_REQUEST[piklist::$prefix . 'post_type']) ? implode(',', array_walk($_REQUEST[piklist::$prefix . 'post_type'], 'esc_attr')) : esc_attr($_REQUEST[piklist::$prefix . 'post_type']);
-        $query->set('post_type', $post_type);
+        $args['tax_query'] = empty($query->query_vars['tax_query']) ? $args['tax_query'] : array_merge($query->query_vars['tax_query'], $args['tax_query']);
+        $args['tax_query'] = array_map('unserialize', array_unique(array_map('serialize', $args['tax_query'])));;
+      }
+      
+      if (isset($args['s']))
+      {
+        $args['s'] = empty($query->query_vars['s']) ? $args['s'] : array_merge($query->query_vars['s'], $args['s']);
+        $args['s'] = array_map('unserialize', array_unique(array_map('serialize', $args['s'])));
+        $args['s'] = implode(' ', $args['s']);
       }
 
-      if (isset($_REQUEST[piklist::$prefix . 'posts_per_page']))
+      foreach ($args as $var => $value)
       {
-        $posts_per_page = (int) $_REQUEST[piklist::$prefix . 'posts_per_page'];
-        $query->set('posts_per_page', $posts_per_page);
-      }
-
-      if (count($args['meta_query']) > 1)
-      {
-        $query->set('meta_query', empty($query->query_vars['meta_query']) ? $args['meta_query'] : array_merge($query->query_vars['meta_query'], $args['meta_query']));
-      }
-
-      if (count($args['tax_query']) > 1)
-      {
-        $query->set('tax_query', empty($query->query_vars['tax_query']) ? $args['tax_query'] : array_merge($query->query_vars['tax_query'], $args['tax_query']));
+        $query->set($var, $value);
       }
 
       if (isset(self::$search_data[piklist::$prefix . 'post']))
@@ -977,10 +1278,23 @@ class PikList_CPT
     }
   }
 
+  /**
+   * posts_search
+   * Insert description here
+   *
+   * @param $search
+   * @param $query
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function posts_search($search, &$query)
   {
     global $wpdb;
-
+    
     if ($query->is_main_query() && !empty(self::$search_data[piklist::$prefix . 'post']) && empty($query->query_vars['s']))
     {
       $n = !empty($query->query_vars['exact']) ? '' : '%';
@@ -991,7 +1305,7 @@ class PikList_CPT
         $search_join = empty($search) ? '' : ' OR ';
         foreach ($terms as $term)
         {
-          $term = esc_sql(like_escape($term));
+          $term = function_exists('like_escape') ? like_escape($term) : $wpdb->esc_like($term);
           $search_terms .= "{$search_or}$wpdb->posts.$field LIKE '{$n}{$term}{$n}'";
           $search_or = ' OR ';
         }
@@ -1009,5 +1323,98 @@ class PikList_CPT
     }
 
     return $search;
+  }
+
+  /**
+   * taxonomy_filters_list_table
+   * Adds a filter for a taxonomy on the list table. Currently only works for taxonomies associated with Post Types
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function taxonomy_filters_list_table()
+  {
+    global $pagenow;
+
+    if ($pagenow == 'edit.php')
+    {
+      $object_type = isset($_REQUEST['post_type']) ? esc_attr($_REQUEST['post_type']) : 'post';
+    
+      $taxonomies = get_object_taxonomies($object_type);
+
+      foreach (self::$taxonomies as $taxonomy)
+      {
+        if (in_array($taxonomy['name'], $taxonomies))
+        {
+          if (isset($taxonomy['configuration']['list_table_filter']) && $taxonomy['configuration']['list_table_filter'] == '1')
+          {
+            $tax_obj = get_taxonomy($taxonomy['name']);
+            $tax_name = $tax_obj->labels->name;
+            $tax_slug = $taxonomy['name'];
+
+            $terms = get_terms(array($taxonomy['name']), array('hide_empty' => false));
+
+            if (count($terms) > 0)
+            {
+              echo '<select name="' . $tax_slug . '" id="' . $tax_slug . '" class="postform" style="max-width:90%;">';
+              echo '<option value="">Show All ' . $tax_name . '</option>';
+
+              foreach ($terms as $term)
+              { 
+                echo '<option value='. $term->slug, isset($_REQUEST[$tax_slug]) ? $term->slug == esc_attr($_REQUEST[$tax_slug]) ? ' selected="selected"' : '' : '','>' . $term->name .'</option>'; 
+              }
+              echo '</select>';
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  /**
+   * detect_post_type
+   * Attempts to detect the post type given the state of the system when called.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function detect_post_type($post_id = null)
+  {
+    global $typenow, $post;
+    
+    $post_type = false;
+    
+    if (piklist_admin::is_post())
+    {
+      if (is_null($post_id))
+      {
+        if ($post)
+        {
+          $post_id = $post->ID;
+        }
+        elseif (isset($_REQUEST['post']))
+        {
+          $post_id = (int) $_REQUEST['post'];
+        }
+      }
+      
+      $post_type = get_post_type($post_id);
+    
+      if (!$post_type)
+      {
+        if ($typenow)
+        {
+          $post_type = $typenow;
+        }
+        elseif (isset($_REQUEST['post_type']))
+        {
+          $post_type = esc_attr($_REQUEST['post_type']);
+        }
+      }      
+    }
+    
+    return $post_type;
   }
 }

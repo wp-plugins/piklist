@@ -5,10 +5,11 @@ Description: This is an example of some fields built with Piklist. Only displays
 Capability: manage_options
 */
 
+
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_class_small'
-    ,'label' => 'Small'
+    ,'label' => __('Small', 'piklist-demo')
     ,'description' => 'class="small-text"'
     ,'value' => 'Lorem'
     ,'attributes' => array(
@@ -19,7 +20,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_required'
-    ,'label' => 'Text Required'
+    ,'label' => __('Text Required', 'piklist-demo')
     ,'description' => "required' => true"
     ,'attributes' => array(
       'class' => 'small-text'
@@ -30,7 +31,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_null'
-    ,'label' => 'Text Null'
+    ,'label' => __('Text Null', 'piklist-demo')
     ,'value' => 'null'
     ,'description' => "required' => true"
     ,'attributes' => array(
@@ -42,7 +43,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_false'
-    ,'label' => 'Text False'
+    ,'label' => __('Text False', 'piklist-demo')
     ,'value' => 'false'
     ,'description' => "required' => true"
     ,'attributes' => array(
@@ -54,7 +55,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_columns_element'
-    ,'label' => 'Columns Element'
+    ,'label' => __('Columns Element', 'piklist-demo')
     ,'description' => 'columns="6"'
     ,'value' => 'Lorem'
     ,'attributes' => array(
@@ -66,7 +67,7 @@ Capability: manage_options
     'type' => 'text'
     ,'field' => 'text_add_more'
     ,'add_more' => true
-    ,'label' => 'Add More'
+    ,'label' => __('Add More', 'piklist-demo')
     ,'description' => 'add_more="true" columns="8"'
     ,'value' => 'Lorem'
     ,'attributes' => array(
@@ -77,7 +78,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'number'
     ,'field' => 'number'
-    ,'label' => 'Number'
+    ,'label' => __('Number', 'piklist-demo')
     ,'description' => 'ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 5
     ,'attributes' => array(
@@ -90,7 +91,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'select'
-    ,'label' => 'Select'
+    ,'label' => __('Select', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
       'first' => 'First Choice'
@@ -102,13 +103,13 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'radio_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'radio'
         ,'field' => 'radio_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'third'
         ,'choices' => array(
@@ -121,7 +122,7 @@ Capability: manage_options
       ,array(
         'type' => 'radio'
         ,'field' => 'radio_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
@@ -136,7 +137,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_nested'
-    ,'label' => 'Nested Field'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => array(
       'first'
@@ -144,7 +145,7 @@ Capability: manage_options
     )
     ,'choices' => array(
       'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=checkbox_nested_text] input.'
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=checkbox_nested_text]')
       ,'third' => 'Third Choice'
     )
     ,'fields' => array(
@@ -165,7 +166,7 @@ Capability: manage_options
     'type' => 'datepicker'
     ,'field' => 'date_add_more'
     ,'add_more' => true
-    ,'label' => 'Add More'
+    ,'label' => __('Add More', 'piklist-demo')
     ,'description' => 'Choose a date'
     ,'options' => array(
       'dateFormat' => 'M d, yy'
@@ -183,7 +184,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'colorpicker'
     ,'field' => 'color'
-    ,'label' => 'Color Picker'
+    ,'label' => __('Color Picker', 'piklist-demo')
     ,'value' => '#03ADEF'
   ));
 
@@ -191,7 +192,7 @@ Capability: manage_options
     'type' => 'colorpicker'
     ,'field' => 'color_add_more'
     ,'add_more' => true
-    ,'label' => 'Add More'
+    ,'label' => __('Add More', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'on_post_status' => array(
       'value' => 'lock'
@@ -201,7 +202,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'show_hide'
-    ,'label' => 'Toggle a field'
+    ,'label' => __('Toggle a field', 'piklist-demo')
     ,'choices' => array(
       'show' => 'Show'
       ,'hide' => 'Hide'
@@ -212,7 +213,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'show_hide_field'
-    ,'label' => 'Show/Hide Field'
+    ,'label' => __('Show/Hide Field', 'piklist-demo')
     ,'description' => 'This field is toggled by the field above'
     ,'conditions' => array(
       array(
@@ -225,7 +226,7 @@ Capability: manage_options
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'change'
-    ,'label' => 'Update a field'
+    ,'label' => __('Update a field', 'piklist-demo')
     ,'choices' => array(
       'hello-world' => 'Hello World'
       ,'clear' => 'Clear'
@@ -251,12 +252,11 @@ Capability: manage_options
     'type' => 'text'
     ,'field' => 'update_field'
     ,'value' => 'Hello World!'
-    ,'label' => 'Update This Field'
+    ,'label' => __('Update This Field', 'piklist-demo')
     ,'description' => 'This field is updated by the field above'
   ));
 
-  piklist('shared/meta-field-welcome', array(
+  piklist('shared/code-locater', array(
     'location' => __FILE__
+    ,'type' => 'Meta Box'
   ));
-
-?>

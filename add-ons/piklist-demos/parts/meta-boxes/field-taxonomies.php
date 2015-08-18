@@ -6,12 +6,14 @@ Order: 20
 Priority: default
 Context: side
 Collapse: true
+Tab: All
+Flow: Edit Demo
 */
 ?>
 
-<h3 class="demo-highlight">
-  <?php _e('Create your own Taxonomy metabox, and display the terms as a checkbox, radio, select or any field you can imagine.','piklist-demo');?>
-</h3>
+<p class="piklist-demo-highlight">
+  <?php _e('Create your own Taxonomy metabox, and display the terms as a checkbox, radio, select or any field you can imagine.', 'piklist-demo');?>
+</p>
 
 <?php
 
@@ -19,8 +21,8 @@ Collapse: true
     'type' => 'radio'
     ,'scope' => 'taxonomy'
     ,'field' => 'piklist_demo_type'
-    ,'label' => 'Demo Types'
-    ,'description' => 'Terms will appear when they are added to <a href="' . network_admin_url() . 'edit-tags.php?taxonomy=piklist_demo_type&post_type=piklist_demo">the Demo taxonomy</a>.'
+    ,'label' => __('Demo Types', 'piklist-demo')
+    ,'description' => sprintf(__('Terms will appear when they are added to %1$s the Demo taxonomy %2$s.','piklist-demo'), '<a href="' . network_admin_url() . 'edit-tags.php?taxonomy=piklist_demo_type&post_type=piklist_demo">', '</a>')
     ,'choices' => piklist(
       get_terms('piklist_demo_type', array(
         'hide_empty' => false

@@ -1,88 +1,130 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList_Dashboard
+if (!is_admin()) return;
+
+/**
+ * Piklist_Dashboard
+ * Controls admin dashboard widgets and features.
+ *
+ * @package     Piklist
+ * @subpackage  Dashboard
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist_Dashboard
 {
+  /**
+   * @var array Registered dashboard widgets.
+   * @access private
+   */
   private static $widgets = array();
   
+  /**
+   * _construct
+   * Class constructor.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function _construct()
   {
-    add_action('wp_dashboard_setup', array('piklist_dashboard', 'wp_dashboard_setup'));
-    add_action('wp_network_dashboard_setup', array('piklist_dashboard', 'register_dashboard_widgets'));
+    if (is_admin())
+    {
+      add_filter('piklist_part_process-dashboard', array('piklist_meta', 'part_process'), 10, 2);
+      
+      add_action('wp_dashboard_setup', array('piklist_dashboard', 'register_dashboard_widgets'));
+      add_action('wp_network_dashboard_setup', array('piklist_dashboard', 'register_dashboard_widgets'));
+    }
   }
 
-  public static function wp_dashboard_setup()
-  {
-    self::unregister_dashboard_widgets();
-    self::register_dashboard_widgets();
-  }
-
-  public static function unregister_dashboard_widgets()
-  {
-    global $wp_meta_boxes;
-    
-    unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_right_now']);
-  }
-
+  /**
+   * register_dashboard_widgets
+   * Register dashboard widgets.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function register_dashboard_widgets()
   {
-    piklist::process_views('dashboard', array('piklist_dashboard', 'register_dashboard_widgets_callback'));
-  }
-
-  public static function register_dashboard_widgets_callback($arguments)
-  {
-    global $current_screen;
-
-    extract($arguments);
-    
-    $file = $path . '/parts/' . $folder . '/' . $part;
-    
-    $data = get_file_data($file, apply_filters('piklist_get_file_data', array(
+    $data = array(
               'title' => 'Title'
               ,'capability' => 'Capability'
               ,'role' => 'Role'
-              ,'id' => 'ID'
               ,'network' => 'Network'
-            ), 'dashboard'));
-
-    $data = apply_filters('piklist_add_part', $data, 'dashboard');
-
-    if (($data['network'] == 'only') && ($current_screen->id != 'dashboard-network'))
-    {
-      return;
-    }
-    
-    if ((empty($data['network']) || $data['network'] == 'false') && (isset($current_screen) && $current_screen->id == 'dashboard-network'))
-    {
-      return;
-    }
-
-    if ((isset($data['capability']) && current_user_can($data['capability']))
-        || (isset($data['role']) && piklist_user::current_user_role($data['role']))
-    )
-    {
-      $id = empty($data['id']) ? piklist::dashes($add_on . '-' . $part) : $data['id'];    
-
-      self::$widgets[$id] = array(
-        'id' => $id
-        ,'file' => $file
-        ,'data' => $data
-      );
-
-      wp_add_dashboard_widget(
-        $id
-        ,self::$widgets[$id]['data']['title']
-        ,array('piklist_dashboard', 'render_widget')
-      );
-    }
+            );
+            
+    piklist::process_parts('dashboard', $data, array('piklist_dashboard', 'register_dashboard_widgets_callback'));
   }
 
-  public static function render_widget($null, $data)
+  /**
+   * register_dashboard_widgets_callback
+   * Handle the registration of a dashboard widget.
+   *
+   * @param array $arguments The dashboard widget configuration.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function register_dashboard_widgets_callback($arguments)
   {
-    piklist::render(self::$widgets[$data['id']]['file']);
+    extract($arguments);
+    
+  	$screen = get_current_screen();
+    
+    self::$widgets[$id] = $arguments;
+    
+    if (piklist_meta::update_meta_box($screen, $id))
+    {
+      piklist_meta::update_meta_box($screen, $id, 'remove');
+    }
+    
+    wp_add_dashboard_widget(
+      $id
+      ,__($data['title'])
+      ,array('piklist_dashboard', 'render_dashboad_widget')
+    );
+  }
+  
+  /**
+   * render_dashboad_widget
+   * Render the dashboad widget
+   *
+   * @param mixed $null No data.
+   * @param array $data Widget configuration.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function render_dashboad_widget($null, $data)
+  {
+    $widget = self::$widgets[$data['id']];
+    
+    do_action('piklist_pre_render_dashboard_widget', $null, $widget);
+    
+    if ($widget['render'])
+    {
+      foreach ($widget['render'] as $render)
+      {
+        if (is_array($render))
+        {
+          call_user_func($render['callback'], $null, $render['args']);
+        }
+        else
+        {
+          piklist::render($render, array(
+            'data' => $widget['data']
+          ));
+        }
+      }
+    }
+    
+    do_action('piklist_post_render_dashboard_widget', $null, $widget);
   }
 }

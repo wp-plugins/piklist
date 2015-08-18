@@ -1,37 +1,49 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList_Menu
+/**
+ * Piklist_Menu
+ * Controls menu modifications and features.
+ *
+ * @package     Piklist
+ * @subpackage  Menu
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist_Menu
 {
+  /**
+   * _construct
+   * Class constructor.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function _construct()
   {    
-    add_action('init', array('piklist_menu', 'init'));
-
     add_filter('wp_nav_menu', array('piklist_menu', 'wp_nav_menu_updates'));
   }
- 
-  public static function init()
-  {    
-    self::register_nav_menus();
-  }
   
-  public static function register_nav_menus()
-  {
-    $menus = apply_filters('piklist_menus', array());
-    
-    foreach ($menus as $menu)
-    {
-      register_nav_menus($menu);
-    }
-  }
-  
+  /**
+   * wp_nav_menu_updates
+   * Insert description here
+   *
+   * @param $output
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function wp_nav_menu_updates($output) 
   {
-    // NOTE: Replace with custom walker and use descriptions instead of titles
     $permalink_structure = get_option('permalink_structure');
     
     if (!empty($permalink_structure))

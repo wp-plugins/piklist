@@ -32,7 +32,7 @@ Tab: Conditions
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'attending'
-    ,'label' => 'Are you coming to the party?'
+    ,'label' => __('Are you coming to the party?', 'piklist-demo')
     ,'choices' => array(
       '' => ''
       ,'yes' => 'Yes'
@@ -52,11 +52,11 @@ Tab: Conditions
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'guest_meal'
-    ,'label' => 'Choose meal type'
+    ,'label' => __('Choose meal type', 'piklist-demo')
     ,'choices' => array(
-      'chicken' => 'Chicken'
-      ,'steak' => 'Steak'
-      ,'vegetarian' => 'Vegetarian'
+      'chicken' => __('Chicken', 'piklist-demo')
+      ,'steak' => __('Steak', 'piklist-demo')
+      ,'vegetarian' => __('Vegetarian', 'piklist-demo')
     )
     ,'conditions' => array(
       array(
@@ -70,11 +70,11 @@ Tab: Conditions
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'guests'
-    ,'label' => 'Are you bringing guests'
-    ,'description' => 'Coming to party != (No or empty)'
+    ,'label' => __('Are you bringing guests', 'piklist-demo')
+    ,'description' => __('Coming to party != (No or empty)', 'piklist-demo')
     ,'choices' => array(
-      'yes' => 'Yes'
-      ,'no' => 'No'
+      'yes' => __('Yes', 'piklist-demo')
+      ,'no' => __('No', 'piklist-demo')
     )
     ,'conditions' => array(
       array(
@@ -101,8 +101,8 @@ Tab: Conditions
   piklist('field', array(
     'type' => 'number'
     ,'field' => 'guests_number'
-    ,'label' => 'How many guests?'
-    ,'description' => 'Coming to party != (No or empty) AND Guests = Yes'
+    ,'label' => __('How many guests?', 'piklist-demo')
+    ,'description' => __('Coming to party != (No or empty) AND Guests = Yes', 'piklist-demo')
     ,'value' => 1
     ,'attributes' => array(
       'class' => 'small-text'
@@ -125,23 +125,23 @@ Tab: Conditions
 
   piklist('field', array(
     'type' => 'group'
-    ,'label' => 'Guest One'
+    ,'label' => __('Guest One', 'piklist-demo')
     ,'field' => 'guest_one'
-    ,'description' => 'Number of guests != empty'
+    ,'description' => __('Number of guests != empty', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'guest_one_name'
-        ,'label' => 'Name'
+        ,'label' => __('Name', 'piklist-demo')
       )
       ,array(
         'type' => 'radio'
         ,'field' => 'guest_one_meal'
-        ,'label' => 'Meal choice'
+        ,'label' => __('Meal choice', 'piklist-demo')
         ,'choices' => array(
-          'chicken' => 'Chicken'
-          ,'steak' => 'Steak'
-          ,'vegetarian' => 'Vegetarian'
+          'chicken' => __('Chicken', 'piklist-demo')
+          ,'steak' => __('Steak', 'piklist-demo')
+          ,'vegetarian' => __('Vegetarian', 'piklist-demo')
         )
       )
     )
@@ -165,19 +165,19 @@ Tab: Conditions
 
   piklist('field', array(
     'type' => 'group'
-    ,'label' => 'Guest Two'
+    ,'label' => __('Guest Two', 'piklist-demo')
     ,'field' => 'guest_two'
-    ,'description' => 'Number of guests != (empty or 1)'
+    ,'description' => __('Number of guests != (empty or 1)', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'guest_two_name'
-        ,'label' => 'Name'
+        ,'label' => __('Name', 'piklist-demo')
       )
       ,array(
         'type' => 'radio'
         ,'field' => 'guest_two_meal'
-        ,'label' => 'Meal choice'
+        ,'label' => __('Meal choice', 'piklist-demo')
         ,'choices' => array(
           'chicken' => 'Chicken'
           ,'steak' => 'Steak'
@@ -197,6 +197,11 @@ Tab: Conditions
         ,'compare' => '!='
       )
     )
-  ));      
+  ));   
+
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Settings Section'
+  ));   
 
 ?>

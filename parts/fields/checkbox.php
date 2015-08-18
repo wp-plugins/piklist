@@ -10,26 +10,16 @@
   <?php 
     $values = array_keys($choices);
     for ($_index = 0; $_index < count($choices); $_index++):
-      
       $checked = '';
-      
       if (!is_array($value) && $value == $values[$_index]):
-    
         $checked = 'checked="checked"';
-    
       elseif (is_array($value)):
-    
         foreach ($value as $_value):
-
           if ($_value != '' && $values[$_index] == $_value):
-    
             $checked = 'checked="checked"';
             break;
-    
           endif;
-    
         endforeach;
-    
       endif;
   ?>
 

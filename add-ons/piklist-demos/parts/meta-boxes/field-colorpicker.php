@@ -4,19 +4,21 @@ Title: ColorPicker Fields
 Post Type: piklist_demo
 Order: 60
 Collapse: true
+Tab: Basic
+Flow: Edit Demo
 */
 ?>
 
-<h3 class="demo-highlight">
-  <?php _e('WordPress ColorPicker fields are super simple to create. Piklist handles all the Javascript.','piklist-demo');?>
-</h3>
+<p class="piklist-demo-highlight">
+  <?php _e('WordPress ColorPicker fields are super simple to create. Piklist handles all the Javascript.', 'piklist-demo');?>
+</p>
 
 <?php
     
   piklist('field', array(
     'type' => 'colorpicker'
     ,'field' => 'color'
-    ,'label' => 'Color Picker'
+    ,'label' => __('Color Picker', 'piklist-demo')
     ,'on_post_status' => array(
       'value' => 'lock'
     )
@@ -26,7 +28,7 @@ Collapse: true
     'type' => 'colorpicker'
     ,'add_more' => true
     ,'field' => 'color_add_more'
-    ,'label' => 'Color Picker'
+    ,'label' => __('Color Picker', 'piklist-demo')
     ,'on_post_status' => array(
       'value' => 'lock'
     )

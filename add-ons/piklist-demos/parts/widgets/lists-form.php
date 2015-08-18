@@ -1,38 +1,34 @@
 <?php
-/*
-Width: 720
-*/
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'select'
     ,'field' => 'multiselect'
-    ,'label' => 'Multiselect'
+    ,'label' => __('Multiselect', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'attributes' => array(
       'multiple' => 'multiple'
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'multiselect_add_more'
-    ,'label' => 'Multiselect Add More'
+    ,'label' => __('Multiselect Add More', 'piklist-demo')
     ,'add_more' => true
-    ,'description' => 'A grouped field. Data is not searchable, since it is saved in an array.'
+    ,'description' => __('A grouped field. Data is not searchable, since it is saved in an array.', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'select'
         ,'field' => 'multiselect_add_more_field'
         ,'choices' => array(
-          'first' => 'First Choice'
-          ,'second' => 'Second Choice'
-          ,'third' => 'Third Choice'
+          'first' => __('First Choice', 'piklist-demo')
+          ,'second' => __('Second Choice', 'piklist-demo')
+          ,'third' => __('Third Choice', 'piklist-demo')
         )
         ,'attributes' => array(
           'multiple' => 'multiple'
@@ -41,124 +37,118 @@ piklist('field', array(
     )
   ));
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'select'
     ,'field' => 'select'
-    ,'label' => 'Select'
+    ,'label' => __('Select', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'select_add_more'
-    ,'label' => 'Select Add More'
+    ,'label' => __('Select Add More', 'piklist-demo')
     ,'add_more' => true
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
-     
   ));
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox'
-    ,'label' => 'Checkbox'
+    ,'label' => __('Checkbox', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_add_more'
-    ,'label' => 'Checkbox Add More'
+    ,'label' => __('Checkbox Add More', 'piklist-demo')
     ,'add_more' => true
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_inline'
-    ,'label' => 'Single Line'
+    ,'label' => __('Single Line', 'piklist-demo')
     ,'value' => 'that'
     ,'list' => false
     ,'choices' => array(
-      'this' => 'This'
-      ,'that' => 'That'
+      'this' => __('This', 'piklist-demo')
+      ,'that' => __('That', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'checkbox_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'list' => false
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'checkbox'
         ,'field' => 'checkbox_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => '1-1 Choice'
-          ,'second' => '1-2 Choice'
+          'first' => __('1-1 Choice', 'piklist-demo')
+          ,'second' => __('1-2 Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
       ,array(
         'type' => 'checkbox'
         ,'field' => 'checkbox_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => '2-1 Choice'
-          ,'second' => '2-2 Choice'
-          ,'third' => '2-3 Choice'
+          'first' => __('2-1 Choice', 'piklist-demo')
+          ,'second' => __('2-2 Choice', 'piklist-demo')
+          ,'third' => __('2-3 Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_nested'
-    ,'label' => 'Nested Field'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => array(
       'first'
       ,'third'
     )
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=checkbox_nested_text] input.'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=checkbox_nested_text]')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'fields' => array(
       array(
@@ -171,67 +161,62 @@ piklist('field', array(
         )
       )
     )
-     
   ));
 
-
-piklist('field', array(
+  piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio'
-    ,'label' => 'Radio'
+    ,'label' => __('Radio', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_add_more'
-    ,'label' => 'Radio Add More'
+    ,'label' => __('Radio Add More', 'piklist-demo')
     ,'add_more' => true
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'second'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_inline'
-    ,'label' => 'Single Line'
+    ,'label' => __('Single Line', 'piklist-demo')
     ,'value' => 'no'
     ,'list' => false
     ,'choices' => array(
-      'yes' => 'Yes'
-      ,'no' => 'No'
+      'yes' => __('Yes', 'piklist-demo')
+      ,'no' => __('No', 'piklist-demo')
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'radio_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'radio'
         ,'field' => 'radio_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => '1-1 Choice'
-          ,'second' => '1-2 Choice'
+          'first' => __('1-1 Choice', 'piklist-demo')
+          ,'second' => __('1-2 Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
@@ -242,26 +227,25 @@ piklist('field', array(
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => '2-1 Choice'
-          ,'second' => '2-2 Choice'
-          ,'third' => '2-3 Choice'
+          'first' => __('2-1 Choice', 'piklist-demo')
+          ,'second' => __('2-2 Choice', 'piklist-demo')
+          ,'third' => __('2-3 Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
     )
-     
   ));
 
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_nested'
-    ,'label' => 'Nested Field'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=radio_nested_text] input.'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=radio_nested_text]')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'fields' => array(
       array(
@@ -274,8 +258,10 @@ piklist('field', array(
         )
       )
     )
-     
   ));
 
 
-?>
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Widget'
+  ));

@@ -2,7 +2,7 @@
 /*
 Title: Users
 Setting: piklist_core
-Order: 1
+Tab Order: 0
 */
 
 

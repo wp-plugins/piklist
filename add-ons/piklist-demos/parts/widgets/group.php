@@ -1,6 +1,8 @@
 <?php
 /*  
 Title: Group
+Class: custom-class-1 custom-class-2
+Width: 720
 */
 ?>
 

@@ -1,94 +1,19 @@
 <div class="wrap">
 
-  <?php if (isset($page_icon)) : ?>
-
-    <?php
-      piklist_admin::$page_icon = array(
-        'page_id' => '#icon-' . $section
-        ,'icon_url' => $page_icon
-      );
-    ?>
-
-    <?php $page_icon = $section; ?>
-
-  <?php elseif (isset($icon)) : ?>
-
-    <?php $page_icon = $icon; ?>
-
-  <?php else: ?>
-
-    <?php $page_icon = null; ?>
-
-  <?php endif;?>
-
-
-  <?php if ($page_icon) screen_icon($page_icon); ?>
-
-  <?php if (isset($single_line) && !$single_line && isset($title)): ?>
-
-    <h2><?php echo esc_html($title); ?></h2>
-
-  <?php else: ?>
-
-    <?php if (!empty($tabs) && count($tabs) > 1): ?>
-
-      <h2 class="nav-tab-wrapper piklist-single-line-tab">
-
-      <?php echo (isset($title)) ? $title : ''; ?>
-
-    <?php elseif (isset($title)): ?>
-
-      <h2><?php echo esc_html($title); ?></h2>
-
-    <?php endif;?>
-
-  <?php endif;?>
-        
-  <?php echo (isset($single_line) && !$single_line) ? '</h2>' : ''; ?>
-
-  <?php if (!empty($tabs) && count($tabs) > 1): ?>
-
-    <?php echo (isset($single_line) && !$single_line) ? '<h2 class="nav-tab-wrapper">' : ''; ?>
-            
-      <?php 
-        foreach ($tabs as $tab)
-        {
-          parse_str($_SERVER['QUERY_STRING'], $url_defaults);
-
-          foreach (array('message', 'paged') as $variable)
-          {
-            unset($url_defaults[$variable]);
-          }
-          
-          $url = array_merge(
-                  $url_defaults
-                  ,array(
-                    'page' => $_REQUEST['page']
-                    ,'tab' => isset($tab['page']) ? $tab['page'] : false
-                  )
-                );   
-          ?><a class="nav-tab <?php echo (isset($tab['page']) && (isset($_REQUEST['tab'])) && ($_REQUEST['tab'] == $tab['page'])) || (!isset($_REQUEST['tab']) && !isset($tab['page'])) ? 'nav-tab-active' : null; ?>" href="?<?php echo http_build_query(array_filter($url)); ?>"><?php echo esc_html($tab['title']); ?></a><?php 
-        }
-      ?>
-
-    </h2>
-
-  <?php elseif ($title): ?>
-    
-    </h2>
-    
-  <?php endif; ?>
+  <h2><?php echo esc_html($title); ?></h2>
+  
+  <?php do_action('piklist_admin_page_after_title'); ?>
   
   <?php 
-    foreach ($page_sections as $page_section):
-      if ($page_section['position'] == 'before' 
-          && ((empty($page_section['tab']) && !isset($_REQUEST['tab'])) 
-              || (!empty($page_section['tab']) && piklist('dashes', $page_section['tab']) == $_REQUEST['tab'])
-              )
-          ):
-        piklist($page_section['part']);
-      endif;
-    endforeach;
+    if ($page_sections):
+      foreach ($page_sections as $page_section):
+        if ($page_section['data']['position'] == 'before'):
+          foreach ($page_section['render'] as $render):
+            piklist($render);
+          endforeach;
+        endif;
+      endforeach;
+    endif;
   ?>
 
   <?php if (isset($setting) && !empty($setting)): ?>
@@ -104,20 +29,68 @@
       <form action="<?php echo admin_url('options.php'); ?>" method="post" enctype="multipart/form-data">
 
         <?php settings_fields($setting); ?>
-
+        
+        <?php if ($layout == 'container'): ?>
+          
+          <?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false); ?>
+          
+          <div id="poststuff">
+            
+            <div id="post-body" class="metabox-holder columns-2">
+            
+        <?php endif; ?>
+        
         <?php do_action('piklist_pre_render_settings_form'); ?>
 
-    <?php endif; ?>
+    <?php endif; ?>            
 
+    <?php if ($layout == 'container'): ?>
+      
+      <?php piklist_setting::do_settings_sections($setting); ?>
+    
+    <?php else: ?>
+      
       <?php do_settings_sections($setting); ?>
+    
+    <?php endif; ?>
+    
+    <?php if ($layout == 'container'): ?>
+      
+      <div id="postbox-container-1" class="postbox-container">
+        
+        <?php do_meta_boxes($current_screen->id, 'side', $setting); ?>
 
+      </div>
+      
+      <div id="postbox-container-2" class="postbox-container">
+        
+        <?php do_meta_boxes($current_screen->id, 'normal', $setting); ?>
+
+        <?php do_meta_boxes($current_screen->id, 'advanced', $setting); ?>
+    
+      </div>
+      
+    <?php endif; ?>
+      
     <?php if ($save): ?>
     
+        <?php if ($layout == 'container'): ?>
+          
+            </div>
+            
+          </div>
+            
+        <?php endif; ?>
+        
         <?php do_action('piklist_post_render_settings_form'); ?>
         
         <?php do_action('piklist_settings_form'); ?>
        
-        <?php submit_button(esc_html($save_text)); ?>
+        <?php if ($layout != 'container'): ?>
+          
+          <?php submit_button(esc_html__($save_text)); ?>
+            
+        <?php endif; ?>
          
       </form>
 
@@ -126,15 +99,28 @@
   <?php endif; ?>
   
   <?php 
-    foreach ($page_sections as $page_section):
-      if ($page_section['position'] != 'before' 
-          && ((empty($page_section['tab']) && !isset($_REQUEST['tab'])) 
-              || (!empty($page_section['tab']) && piklist('dashes', $page_section['tab']) == $_REQUEST['tab'])
-              )
-          ):
-        piklist($page_section['part']);
-      endif;
-    endforeach;
+    if ($page_sections):
+      foreach ($page_sections as $page_section):
+        if ($page_section['data']['position'] == 'after'):
+          foreach ($page_section['render'] as $render):
+            piklist($render);
+          endforeach;
+        endif;
+      endforeach;
+    endif;
   ?>
   
 </div>
+
+<script type="text/javascript">
+
+  (function($)
+  {
+    $(document).ready(function()
+    {
+      postboxes.add_postbox_toggles('<?php echo $current_screen->id; ?>');
+    });
+  })(jQuery);
+
+</script>
+  

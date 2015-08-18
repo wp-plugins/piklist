@@ -2,69 +2,59 @@
 /*
 Title: Checkbox Fields
 Post Type: piklist_demo
-Order: 40
-Collapse: true
+Order: 10
+Tab: Common
+Sub Tab: Lists
+Flow: Edit Demo
 */
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox'
-    ,'label' => 'Normal'
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Checkbox', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
       'first' => 'First Choice'
       ,'second' => 'Second Choice'
       ,'third' => 'Third Choice'
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
     )
   ));
   
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_add_more'
-    ,'label' => 'Normal Add More'
+    ,'label' => __('Checkbox Add More', 'piklist-demo')
     ,'add_more' => true
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
       'first' => 'First Choice'
       ,'second' => 'Second Choice'
       ,'third' => 'Third Choice'
     )
-    ,'on_post_status' => array(
-      'value' => 'lock'
-    )
   ));
   
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_inline'
-    ,'label' => 'Single Line'
+    ,'label' => __('Single Line', 'piklist-demo')
     ,'value' => 'that'
     ,'list' => false
     ,'choices' => array(
       'this' => 'This'
       ,'that' => 'That'
     )
-    ,'on_post_status' => array(
-      'value' => 'lock'
-    )
   ));
  
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'checkbox_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'list' => false
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'checkbox'
         ,'field' => 'checkbox_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'third'
         ,'choices' => array(
@@ -76,7 +66,7 @@ Collapse: true
       ,array(
         'type' => 'checkbox'
         ,'field' => 'checkbox_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
@@ -87,23 +77,19 @@ Collapse: true
         ,'columns' => 6
       )
     )
-    ,'on_post_status' => array(
-      'value' => 'lock'
-    )
   ));
   
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_nested'
-    ,'label' => 'Nested Field'
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'value' => array(
       'first'
       ,'third'
     )
     ,'choices' => array(
       'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=checkbox_nested_text] input.'
+      ,'second' => sprintf(__('Second Choices with a nested %s input.', 'piklist-demo'), '[field=checkbox_nested_text]')
       ,'third' => 'Third Choice'
     )
     ,'fields' => array(
@@ -116,9 +102,6 @@ Collapse: true
           'class' => 'small-text'
         )
       )
-    )
-    ,'on_post_status' => array(
-      'value' => 'lock'
     )
   ));
 

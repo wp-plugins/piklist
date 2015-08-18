@@ -6,6 +6,7 @@
                 ,'basic' => false
                 ,'preview_size' => 'thumbnail'
                 ,'textarea_rows' => 5
+                ,'save' => 'id'
               )
               ,isset($options) && is_array($options) ? $options : array()
             );  
@@ -71,21 +72,39 @@
       <?php 
         $value = is_array($value) ? $value : array($value);
         if (!empty($value)):
-          foreach ($value as $attachment_id): 
-            $mime_type = get_post_mime_type($attachment_id);
+          foreach ($value as $attachment): 
+            $mime_type = null;
+            if ($attachment):
+              if ((string) (int) $attachment == $attachment):
+                $attachment_id = (int) $attachment;
+                $mime_type = get_post_mime_type($attachment_id);
+                $image_data = wp_get_attachment_image_src($attachment_id);
+              else:
+                $attachment_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid = %s", $attachment)); 
+                $image_data = getimagesize($attachment);
+                $mime_type = $image_data['mime'];
+                $image_data = array(
+                  $attachment
+                  ,$image_data[0]
+                  ,$image_data[1]
+                  ,false
+                );
+              endif;
+            endif;
+            
             if ($mime_type):
               if (in_array($mime_type, array('image/jpeg', 'image/png', 'image/gif'))):
-                $image = wp_get_attachment_image_src($attachment_id, $options['preview_size'], false, true);
+                $image = !is_int($attachment) ? $image_data : wp_get_attachment_image_src($attachment_id, $options['preview_size'], false, true);
       ?>
 
                 <li class="attachment selected">
                    <div class="attachment-preview <?php echo (int) $image[1] > (int) $image[2] ? 'landscape' : 'portrait'; ?>">
                      <div class="centered">
                        <a href="#">
-                        <img src="<?php echo $image[0]; ?>" />
+                        <img src="<?php echo esc_attr($image[0]); ?>" />
                       </a>
                      </div>
-                     <a class="check" href="#" title="Deselect" data-attachment-id="<?php echo $attachment_id; ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
+                     <a class="check" href="#" title="Deselect" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment_id; ?>" data-attachment-url="<?php echo esc_attr($image[0]); ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
                    </div>
                  </li>
 
@@ -108,7 +127,7 @@
                          <div><?php echo basename($attachment_path); ?></div>
                        </div>
                      </div>
-                     <a class="check" href="#" title="Deselect" data-attachment-id="<?php echo $attachment_id; ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
+                     <a class="check" href="#" title="Deselect" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment_id; ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
                    </div>
                  </li>
     

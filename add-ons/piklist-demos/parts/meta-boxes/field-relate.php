@@ -6,6 +6,8 @@ Order: 10
 Priority: default
 Context: side
 Collapse: true
+Tab: All
+Flow: Edit Demo
 */
 
   // Let's show the Meta Box 

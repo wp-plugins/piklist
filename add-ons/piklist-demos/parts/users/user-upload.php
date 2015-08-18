@@ -3,6 +3,7 @@
 Title: Upload Fields
 Capability: manage_options
 Order: 10
+Tab: Basic
 */
 
   // Any field with the scope set to the field name of the upload field will be treated as related
@@ -17,9 +18,8 @@ Order: 10
   piklist('field', array(
     'type' => 'file'
     ,'field' => 'upload_basic'
-    ,'scope' => 'post_meta'
-    ,'label' => __('Add File','piklist')
-    ,'description' => __('This is the basic upload field.', 'piklist')
+    ,'label' => __('Add File', 'piklist-demo')
+    ,'description' => __('This is the basic upload field.', 'piklist-demo')
     ,'options' => array(
       'basic' => true
     )
@@ -28,12 +28,11 @@ Order: 10
   piklist('field', array(
     'type' => 'file'
     ,'field' => 'upload_media'
-    ,'scope' => 'post_meta'
-    ,'label' => __('Add File(s)','piklist')
-    ,'description' => __('This is the uploader seen in the admin by default.', 'piklist')
+    ,'label' => __('Add File(s)','piklist-demo')
+    ,'description' => __('This is the uploader seen in the admin by default.', 'piklist-demo')
     ,'options' => array(
-      'modal_title' => __('Add File(s)', 'piklist')
-      ,'button' => __('Add', 'piklist')
+      'modal_title' => __('Add File(s)', 'piklist-demo')
+      ,'button' => __('Add', 'piklist-demo')
     )
     ,'validate' => array(
       array(
@@ -50,35 +49,38 @@ Order: 10
     'type' => 'group'
     ,'field' => 'slides'
     ,'add_more' => true
-    ,'label' => 'Slide Images'
-    ,'description' => 'Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.'
+    ,'label' => __('Slide Images', 'piklist-demo')
+    ,'description' => __('Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.', 'piklist-demo')
     ,'fields'  => array(
       array(
         'type' => 'file'
         ,'field' => 'image'
-        ,'label' => __('Slides', 'plugin')
+        ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
       )
       ,array(
         'type' => 'text'
         ,'field' => 'url'
-        ,'label' => 'URL'
+        ,'label' => __('URL', 'piklist-demo')
         ,'columns' => 12
       )
     )
   ));
+  
+  // piklist::pre($profileuser);
+  // piklist::pre(get_user_meta($profileuser->ID, 'slides_basic', true));
 
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'slides_basic'
     ,'add_more' => true
-    ,'label' => 'Slide Images'
-    ,'description' => 'Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.'
+    ,'label' => __('Slide Images', 'piklist-demo')
+    ,'description' => __('Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.', 'piklist-demo')
     ,'fields'  => array(
       array(
         'type' => 'file'
         ,'field' => 'image'
-        ,'label' => __('Slides', 'plugin')
+        ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
         ,'options' => array(
           'basic' => true
@@ -87,7 +89,7 @@ Order: 10
       ,array(
         'type' => 'text'
         ,'field' => 'url'
-        ,'label' => 'URL'
+        ,'label' => __('URL', 'piklist-demo')
         ,'columns' => 12
       )
     )
@@ -95,5 +97,5 @@ Order: 10
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));

@@ -1,6 +1,8 @@
 <?php
 /*  
 Title: Basic
+Class: custom-class-1 custom-class-2
+Width: 500
 */
 ?>
 
@@ -10,6 +12,6 @@ Title: Basic
   
   <?php echo $after_title; ?>
 
-    <?php piklist::pre($settings); ?>
+  <?php piklist::pre($settings); ?>
     
 <?php echo $after_widget; ?>

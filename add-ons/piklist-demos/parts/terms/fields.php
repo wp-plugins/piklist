@@ -9,10 +9,10 @@ Order: 0
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_class_regular'
-    ,'label' => 'Text'
+    ,'label' => __('Text', 'piklist-demo')
     ,'description' => 'class="regular-text"'
     ,'value' => 'Lorem'
-    ,'help' => 'You can easily add tooltips to your fields with the help parameter.'
+    ,'help' => __('You can easily add tooltips to your fields with the help parameter.', 'piklist-demo')
     ,'attributes' => array(
       'class' => 'regular-text'
     )
@@ -22,7 +22,7 @@ Order: 0
     'type' => 'text'
     ,'field' => 'text_add_more'
     ,'add_more' => true
-    ,'label' => 'Add More'
+    ,'label' => __('Add More', 'piklist-demo')
     ,'description' => 'add_more="true" columns="8"'
     ,'value' => 'Lorem'
     ,'attributes' => array(
@@ -33,7 +33,7 @@ Order: 0
   piklist('field', array(
     'type' => 'number'
     ,'field' => 'number'
-    ,'label' => 'Number'
+    ,'label' => __('Number', 'piklist-demo')
     ,'description' => 'ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 5
     ,'attributes' => array(
@@ -46,43 +46,43 @@ Order: 0
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'select'
-    ,'label' => 'Select'
+    ,'label' => __('Select', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
 
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'radio_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'radio'
         ,'field' => 'radio_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'third'
         ,'choices' => array(
-          'first' => 'First Choice'
-          ,'second' => 'Second Choice'
-          ,'third' => 'Third Choice'
+          'first' => __('First Choice', 'piklist-demo')
+          ,'second' => __('Second Choice', 'piklist-demo')
+          ,'third' => __('Third Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
       ,array(
         'type' => 'radio'
         ,'field' => 'radio_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'forth' => 'Forth Choice'
-          ,'fifth' => 'Fifth Choice'
+          'forth' => __('Forth Choice', 'piklist-demo')
+          ,'fifth' => __('Fifth Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
@@ -92,16 +92,16 @@ Order: 0
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_nested'
-    ,'label' => 'Nested Field'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => array(
       'first'
       ,'third'
     )
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=checkbox_nested_text] input.'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=checkbox_nested_text]')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'fields' => array(
       array(
@@ -119,14 +119,14 @@ Order: 0
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'date_time'
-    ,'label' => 'Date / Time'
+    ,'label' => __('Date / Time', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'datepicker'
         ,'field' => 'date'
-        ,'label' => 'Date'
-        ,'description' => 'Choose a date'
+        ,'label' => __('Date', 'piklist-demo')
+        ,'description' => __('Choose a date', 'piklist-demo')
         ,'options' => array(
           'dateFormat' => 'M d, yy'
         )
@@ -144,7 +144,7 @@ Order: 0
   piklist('field', array(
     'type' => 'colorpicker'
     ,'field' => 'color'
-    ,'label' => 'Color Picker'
+    ,'label' => __('Color Picker', 'piklist-demo')
     ,'value' => '#03ADEF'
   ));
 
@@ -152,7 +152,7 @@ Order: 0
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'show_hide_select'
-    ,'label' => 'Toggle a field'
+    ,'label' => __('Toggle a field', 'piklist-demo')
     ,'choices' => array(
       'show' => 'Show'
       ,'hide' => 'Hide'
@@ -163,8 +163,8 @@ Order: 0
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'show_hide_field_select'
-    ,'label' => 'Show/Hide Field'
-    ,'description' => 'This field is toggled by the Select field above'
+    ,'label' => __('Show/Hide Field', 'piklist-demo')
+    ,'description' => __('This field is toggled by the Select field above', 'piklist-demo')
     ,'conditions' => array(
       array(
         'field' => 'show_hide_select'
@@ -176,17 +176,17 @@ Order: 0
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'change'
-    ,'label' => 'Update a field'
+    ,'label' => __('Update a field', 'piklist-demo')
     ,'choices' => array(
-      'hello-world' => 'Hello World'
-      ,'clear' => 'Clear'
+      'hello-world' => __('Hello World', 'piklist-demo')
+      ,'clear' => __('Clear', 'piklist-demo')
     )
     ,'value' => 'hello-world'
     ,'conditions' => array(
       array(
         'field' => 'update_field'
         ,'value' => 'hello-world' 
-        ,'update' => 'Hello World!' 
+        ,'update' => __('Hello World!', 'piklist-demo')
         ,'type' => 'update'
       )
       ,array(
@@ -201,9 +201,9 @@ Order: 0
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'update_field'
-    ,'value' => 'Hello World!' 
-    ,'label' => 'Update This Field'
-    ,'description' => 'This field is updated by the field above'
+    ,'value' => __('Hello World!' , 'piklist-demo')
+    ,'label' => __('Update This Field', 'piklist-demo')
+    ,'description' => __('This field is updated by the field above', 'piklist-demo')
   ));
 
   piklist('shared/code-locater', array(

@@ -1,29 +1,24 @@
 <?php
-/*
-Width: 720
-*/
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'colorpicker'
     ,'field' => 'color'
-    ,'label' => 'Color Picker'
- 
+    ,'label' => __('Color Picker', 'piklist-demo')
   ));
 
   piklist('field', array(
     'type' => 'colorpicker'
     ,'add_more' => true
     ,'field' => 'color_add_more'
-    ,'label' => 'Color Picker Add More'
- 
+    ,'label' => __('Color Picker Add More', 'piklist-demo')
   ));
 
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'datepicker'
     ,'field' => 'date'
-    ,'label' => 'Date'
-    ,'description' => 'Choose a date'
+    ,'label' => __('Date', 'piklist-demo')
+    ,'description' => __('Choose a date', 'piklist-demo')
     ,'options' => array(
       'dateFormat' => 'M d, yy'
     )
@@ -38,8 +33,8 @@ piklist('field', array(
     'type' => 'datepicker'
     ,'field' => 'date_add_more'
     ,'add_more' => true
-    ,'label' => 'Date Add More'
-    ,'description' => 'Choose a date'
+    ,'label' => __('Date Add More', 'piklist-demo')
+    ,'description' => __('Choose a date', 'piklist-demo')
     ,'options' => array(
       'dateFormat' => 'M d, yy'
     )
@@ -50,30 +45,29 @@ piklist('field', array(
  
   ));
 
-
-piklist('field', array(
+  piklist('field', array(
     'type' => 'group'
-    ,'label' => __('Newsletter Signup (Grouped)')
-    ,'description' => __('Add email addresses with topic selectivity')
+    ,'label' => __('Newsletter Signup (Grouped)', 'piklist-demo')
+    ,'description' => __('Add email addresses with topic selectivity', 'piklist-demo')
     ,'field' => 'newsletter_signup'
     ,'add_more' => true
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'first_name'
-        ,'label' => 'First Name'
+        ,'label' => __('First Name', 'piklist-demo')
         ,'columns' => 4
       )
       ,array(
         'type' => 'text'
         ,'field' => 'last_name'
-        ,'label' => 'Last Name'
+        ,'label' => __('Last Name', 'piklist-demo')
         ,'columns' => 4
       )
       ,array(
         'type' => 'text'
         ,'field' => 'email'
-        ,'label' => 'Email Address'
+        ,'label' => __('Email Address', 'piklist-demo')
         ,'columns' => 4
       )
       ,array(
@@ -83,37 +77,37 @@ piklist('field', array(
           array(
             'type' => 'checkbox'
             ,'field' => 'newsletter_a'
-            ,'label' => 'Newsletter A'
+            ,'label' => __('Newsletter A', 'piklist-demo')
             ,'columns' => 4
             ,'value' => 'first'
             ,'choices' => array(
-              'first' => 'A-1'
-              ,'second' => 'A-2'
-              ,'third' => 'A-3'
+              'first' => __('A-1', 'piklist-demo')
+              ,'second' => __('A-2', 'piklist-demo')
+              ,'third' => __('A-3', 'piklist-demo')
             )
           )
           ,array(
             'type' => 'checkbox'
             ,'field' => 'newsletter_b'
             ,'columns' => 4
-            ,'label' => 'Newsletter B'
+            ,'label' => __('Newsletter B', 'piklist-demo')
             ,'value' => 'second'
             ,'choices' => array(
-              'first' => 'B-1'
-              ,'second' => 'B-2'
-              ,'third' => 'B-3'
+              'first' => __('B-1', 'piklist-demo')
+              ,'second' => __('B-2', 'piklist-demo')
+              ,'third' => __('B-3', 'piklist-demo')
             )
           )
           ,array(
             'type' => 'checkbox'
             ,'field' => 'newsletter_c'
             ,'columns' => 4
-            ,'label' => 'Newsletter C'
+            ,'label' => __('Newsletter C', 'piklist-demo')
             ,'value' => 'third'
             ,'choices' => array(
-              'first' => 'C-1'
-              ,'second' => 'C-2'
-              ,'third' => 'C-3'
+              'first' => __('C-1', 'piklist-demo')
+              ,'second' => __('C-2', 'piklist-demo')
+              ,'third' => __('C-3', 'piklist-demo')
             )
           )
         )
@@ -125,15 +119,15 @@ piklist('field', array(
     'type' => 'group'
     ,'field' => 'work_order_repair'
     ,'add_more' => true
-    ,'label' => 'REPAIR'
-    ,'description' => 'Enter TYPE of Work, PRICE and DUE DATE'
+    ,'label' => __('REPAIR', 'piklist-demo')
+    ,'description' => __('Enter TYPE of Work, PRICE and DUE DATE', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'work'
         ,'columns' => 6
         ,'attributes' => array(
-          'placeholder' => 'Type of work'
+          'placeholder' => __('Type of work', 'piklist-demo')
         )
       )
       ,array(
@@ -141,7 +135,7 @@ piklist('field', array(
         ,'field' => 'price'
         ,'columns' => 2
         ,'attributes' => array(
-          'placeholder' => '$'
+          'placeholder' => __('$', 'piklist-demo')
         )
       )
       ,array(
@@ -152,7 +146,7 @@ piklist('field', array(
           'dateFormat' => 'M d, yy'
         )
         ,'attributes' => array(
-          'placeholder' => 'Due date'
+          'placeholder' => __('Due date', 'piklist-demo')
         )
       )
     )
@@ -162,24 +156,24 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'demo_add_more_group_todo'
-    ,'label' => __('Todo\'s (Grouped)')
+    ,'label' => __('Todo\'s (Grouped)', 'piklist-demo')
     ,'add_more' => true
     ,'fields' => array(
       array(
         'type' => 'select'
         ,'field' => 'user'
-        ,'label' => 'Assigned to'
+        ,'label' => __('Assigned to', 'piklist-demo')
         ,'columns' => 4
         ,'choices' => array (
-          'adam' => 'Adam'
-          ,'bill' => 'Bill'
-          ,'carol' => 'Carol'
+          'adam' => __('Adam', 'piklist-demo')
+          ,'bill' => __('Bill', 'piklist-demo')
+          ,'carol' => __('Carol', 'piklist-demo')
           )
         )
         ,array(
           'type' => 'text'
           ,'field' => 'task'
-          ,'label' => 'Task'
+          ,'label' => __('Task', 'piklist-demo')
           ,'columns' => 8
         )
     )
@@ -187,24 +181,24 @@ piklist('field', array(
 
   piklist('field', array(
     'type' => 'group'
-    ,'label' => __('Todo\'s (Un-Grouped)')
+    ,'label' => __('Todo\'s (Un-Grouped)', 'piklist-demo')
     ,'add_more' => true
     ,'fields' => array(
       array(
         'type' => 'select'
         ,'field' => 'demo_add_more_todo_user'
-        ,'label' => 'Assigned to'
+        ,'label' => __('Assigned to', 'piklist-demo')
         ,'columns' => 4
         ,'choices' => array (
-          'adam' => 'Adam'
-          ,'bill' => 'Bill'
-          ,'carol' => 'Carol'
+          'adam' => __('Adam', 'piklist-demo')
+          ,'bill' => __('Bill', 'piklist-demo')
+          ,'carol' => __('Carol', 'piklist-demo')
           )
         )
         ,array(
           'type' => 'text'
           ,'field' => 'demo_add_more_todo_task'
-          ,'label' => 'Task'
+          ,'label' => __('Task', 'piklist-demo')
           ,'columns' => 8
         )
     )
@@ -212,15 +206,15 @@ piklist('field', array(
 
   piklist('field', array(
     'type' => 'group'
-    ,'label' => __('Content Section (Grouped)')
-    ,'description' => __('When an add-more field is nested it should be grouped to maintain the data relationships.')
+    ,'label' => __('Content Section (Grouped)', 'piklist-demo')
+    ,'description' => __('When an add-more field is nested it should be grouped to maintain the data relationships.', 'piklist-demo')
     ,'field' => 'demo_content'
     ,'add_more' => true
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'csg_title'
-        ,'label' => 'Title'
+        ,'label' => __('Title', 'piklist-demo')
         ,'columns' => 12
         ,'attributes' => array(
           'class' => 'large-text'
@@ -229,7 +223,7 @@ piklist('field', array(
       ,array(
         'type' => 'text'
         ,'field' => 'csg_section'
-        ,'label' => 'Section'
+        ,'label' => __('Section', 'piklist-demo')
         ,'columns' => 12
         ,'attributes' => array(
           'class' => 'large-text'
@@ -243,7 +237,7 @@ piklist('field', array(
           array(
             'type' => 'select'
             ,'field' => 'post_id'
-            ,'label' => 'Grade'
+            ,'label' => __('Grade', 'piklist-demo')
             ,'columns' => 12
             ,'choices' => array (
               'a' => 'A'
@@ -258,15 +252,15 @@ piklist('field', array(
 
   piklist('field', array(
     'type' => 'group'
-    ,'label' => __('Content Section with Siblings (Grouped)')
-    ,'decription' => __('When an add-more field is nested it should be grouped to maintain the data relationships.')
+    ,'label' => __('Content Section with Siblings (Grouped)', 'piklist-demo')
+    ,'decription' => __('When an add-more field is nested it should be grouped to maintain the data relationships.', 'piklist-demo')
     ,'field' => 'demo_content_sibling'
     ,'add_more' => true
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'title'
-        ,'label' => 'Section Title'
+        ,'label' => __('Section Title', 'piklist-demo')
         ,'columns' => 12
         ,'attributes' => array(
           'class' => 'large-text'
@@ -275,7 +269,7 @@ piklist('field', array(
       ,array(
         'type' => 'text'
         ,'field' => 'tagline'
-        ,'label' => 'Section Tagline'
+        ,'label' => __('Section Tagline', 'piklist-demo')
         ,'columns' => 12
         ,'attributes' => array(
           'class' => 'large-text'
@@ -289,7 +283,7 @@ piklist('field', array(
           array(
             'type' => 'select'
             ,'field' => 'post_id_sibling_1'
-            ,'label' => 'Content One Title'
+            ,'label' => __('Content One Title', 'piklist-demo')
             ,'columns' => 12
             ,'choices' => piklist(
               get_posts(
@@ -315,7 +309,7 @@ piklist('field', array(
           array(
             'type' => 'select'
             ,'field' => 'post_id_sibling_2'
-            ,'label' => 'Content Two Title'
+            ,'label' => __('Content Two Title', 'piklist-demo')
             ,'columns' => 12
             ,'choices' => piklist(
               get_posts(
@@ -336,10 +330,7 @@ piklist('field', array(
     )
   ));
 
-
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Widget'
   ));
-
-?>

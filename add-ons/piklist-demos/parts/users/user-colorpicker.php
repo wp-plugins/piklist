@@ -3,25 +3,23 @@
 Title: ColorPicker Fields
 Capability: manage_options
 Order: 60
-Collapse: false
+Tab: Advanced
 */
 
   piklist('field', array(
     'type' => 'colorpicker'
     ,'field' => 'color'
-    ,'label' => 'Color Picker'
+    ,'label' => __('Color Picker', 'piklist-demo')
   ));
 
   piklist('field', array(
     'type' => 'colorpicker'
     ,'add_more' => true
     ,'field' => 'color_add_more'
-    ,'label' => 'Color Picker Add More'
+    ,'label' => __('Color Picker Add More', 'piklist-demo')
   ));
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
-
-?>

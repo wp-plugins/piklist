@@ -1,11 +1,11 @@
 
 <?php echo piklist_form::template_tag_fetch('field_wrapper', $wrapper, 'end'); ?>
 
-<h3><?php echo $meta_box['config']['name']; ?></h3>
+<h3><?php echo $meta_box['data']['title']; ?></h3>
   
-<?php if (!empty($meta_box['config']['description'])): ?>
+<?php if (!empty($meta_box['data']['description'])): ?>
   
-  <?php echo wpautop($meta_box['config']['description']); ?>
+  <?php echo wpautop($meta_box['data']['description']); ?>
   
 <?php endif; ?>
   

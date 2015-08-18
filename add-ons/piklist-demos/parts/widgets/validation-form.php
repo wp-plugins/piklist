@@ -1,12 +1,9 @@
 <?php
-/*
-Width: 720
-*/
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_required'
-    ,'label' => 'Text Required'
+    ,'label' => __('Text Required', 'piklist-demo')
     ,'description' => "required => true"
     ,'attributes' => array(
       'class' => 'large-text'
@@ -17,26 +14,26 @@ piklist('field', array(
   piklist('field', array(
     'type'    => 'group'
     ,'field'   => 'group_required'
-    ,'label'   => 'Group Required'
+    ,'label'   => __('Group Required', 'piklist-demo')
     ,'add_more'=> true
     ,'fields'  => array(
       array(
         'type' => 'text'
         ,'field' => 'name'
-        ,'label' => 'Name'
-        ,'required' => true
-        ,'columns' => 12
+        ,'label' => __('Name', 'piklist-demo')
+        ,'columns' => 9
       )
       ,array(
         'type' => 'checkbox'
         ,'field' => 'hierarchical'
+        ,'label' => __('Type', 'piklist-demo')
         ,'required' => true
-        ,'columns' => 12
+        ,'columns' => 3
         ,'choices' => array(
           'true' => 'Hierarchical'
         )
         ,'attributes' => array(
-          'placeholder' => 'placeholder'
+          'placeholder' => __('placeholder', 'piklist-demo')
         )
       )
     )
@@ -44,9 +41,9 @@ piklist('field', array(
 
   piklist('field', array(
     'type' => 'text'
-    ,'label' => 'File Name'
+    ,'label' => __('File Name', 'piklist-demo')
     ,'field' => 'file_name'
-    ,'description' => 'Converts multiple words to a valid file name'
+    ,'description' => __('Converts multiple words to a valid file name', 'piklist-demo')
     ,'sanitize' => array(
       array(
         'type' => 'file_name'
@@ -60,8 +57,8 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'validate_emaildomain'
-    ,'label' => 'Email address'
-    ,'description' => __('Validate Email and Email Domain')
+    ,'label' => __('Email address', 'piklist-demo')
+    ,'description' => __('Validate Email and Email Domain', 'piklist-demo')
     ,'attributes' => array(
       'class' => 'large-text'
     )
@@ -78,8 +75,8 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'validate_file_exists'
-    ,'label' => __('File exists?')
-    ,'description' => 'Test with: http://wordpress.org/plugins/about/readme.txt'
+    ,'label' => __('File exists?', 'piklist-demo')
+    ,'description' => sprintf(__('Test with: %s', 'piklist-demo'), 'http://wordpress.org/plugins/about/readme.txt')
     ,'attributes' => array(
       'class' => 'large-text'
     )
@@ -94,8 +91,8 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'validate_image'
-    ,'label' => __('Image')
-    ,'description' => 'Test with: http://piklist.com/wp-content/themes/piklistcom-base/images/piklist-logo@2x.png'
+    ,'label' => __('Image', 'piklist-demo')
+    ,'description' => sprintf(__('Test with: %s', 'piklist-demo'), 'http://piklist.com/wp-content/themes/piklistcom-base/images/piklist-logo@2x.png')
     ,'attributes' => array(
       'class' => 'large-text'
     )
@@ -106,44 +103,16 @@ piklist('field', array(
     )
   ));
 
-
-  // piklist('field', array(
-  //   'type' => 'text'
-  //   ,'field' => 'text_class_small'
-  //   ,'label' => 'Text'
-  //   ,'value' => '<em>Click</em> <a href=\'http://wp.tutsplus.com\'>here</a> to visit <strong> wptuts+</strong>'
-  //   ,'sanitize' => array(
-  //     array(
-  //       'type' => 'wp_kses'
-  //       ,'options' => array(
-  //         'allowed_html' => array(
-  //           'strong' => array()
-  //           ,'a' => array(
-  //             'href' => array()
-  //             ,'title' => array()
-  //           )
-  //         )
-  //         ,'allowed_protocols' => array('http')
-  //       )
-  //     )
-  //   )
-  //   ,'help' => 'You can easily add tooltips to your fields with the help parameter.'
-  //   ,'attributes' => array(
-  //     'class' => 'regular-text'
-  //   )
-  // ));
-  // 
-
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox'
-    ,'label' => 'Checkbox'
+    ,'label' => __('Checkbox', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'validate' => array(
       array(
@@ -160,10 +129,10 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'file'
     ,'field' => 'upload_media'
-    ,'label' => __('Add File(s)','piklist-demo')
+    ,'label' => __('Add File(s)', 'piklist-demo')
     ,'options' => array(
-      'modal_title' => __('Add File(s)','piklist-demo')
-      ,'button' => __('Add','piklist-demo')
+      'modal_title' => __('Add File(s)', 'piklist-demo')
+      ,'button' => __('Add', 'piklist-demo')
     )
     ,'attributes' => array(
       'class' => 'large-text'
@@ -184,19 +153,19 @@ piklist('field', array(
     'type' => 'group'
     ,'field' => 'address_group_add_more'
     ,'add_more' => true
-    ,'label' => 'Grouped/Add-More with Limit'
-    ,'description' => 'No more than 2'
+    ,'label' => __('Grouped/Add-More with Limit', 'piklist-demo')
+    ,'description' => __('No more than 2', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'group_field_1'
-        ,'label' => 'Field 1'
+        ,'label' => __('Field 1', 'piklist-demo')
         ,'columns' => 12
       )
       ,array(
         'type' => 'text'
         ,'field' => 'group_field_2'
-        ,'label' => 'Field 2'
+        ,'label' => __('Field 2', 'piklist-demo')
         ,'columns' => 12
       )
     )
@@ -209,7 +178,9 @@ piklist('field', array(
         )
       )
     )
- 
   ));
 
-?>
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Widget'
+  ));

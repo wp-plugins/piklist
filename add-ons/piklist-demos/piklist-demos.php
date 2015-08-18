@@ -6,6 +6,8 @@ Description: Creates a Demo post type, Taxonomy, Settings Page, User fields, Das
 Version: 0.3
 Author: Piklist
 Author URI: http://piklist.com/
+Text Domain: piklist-demo
+Domain Path: /languages
 */
 
   if (!defined('ABSPATH'))
@@ -19,11 +21,12 @@ Author URI: http://piklist.com/
     $post_types['piklist_demo'] = array(
       'labels' => piklist('post_type_labels', 'Piklist Demos')
       ,'title' => __('Enter a new Demo Title')
-      ,'menu_icon' => piklist_admin::responsive_admin() == true ? plugins_url('piklist/parts/img/piklist-menu-icon.svg') : plugins_url('piklist/parts/img/piklist-icon.png') 
+      ,'menu_icon' => plugins_url('piklist/parts/img/piklist-menu-icon.svg')
       ,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
       ,'supports' => array(
         'title'
         ,'revisions'
+        ,'post-formats'
       )
       ,'public' => true
       ,'admin_body_class' => array (
@@ -44,9 +47,13 @@ Author URI: http://piklist.com/
         ,'author'
       )
       ,'status' => array(
-        'draft' => array(
+        'new' => array(
           'label' => 'New'
           ,'public' => true
+        )
+        ,'pending' => array(
+          'label' => 'Pending Review'
+          ,'public' => false
         )
         ,'demo' => array(
           'label' => 'Demo'
@@ -65,7 +72,7 @@ Author URI: http://piklist.com/
     $post_types['piklist_lite_demo'] = array(
       'labels' => piklist('post_type_labels', 'Lite Demo')
       ,'title' => __('Enter a new Demo Title')
-      ,'menu_icon' => piklist_admin::responsive_admin() == true ? plugins_url('piklist/parts/img/piklist-menu-icon.svg') : plugins_url('piklist/parts/img/piklist-menu-icon.png')
+      ,'menu_icon' => plugins_url('piklist/parts/img/piklist-menu-icon.svg')
       ,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
       ,'show_in_menu' => 'edit.php?post_type=piklist_demo'
       ,'supports' => array(
@@ -104,6 +111,8 @@ Author URI: http://piklist.com/
           'slug' => 'demo-type' 
         )
         ,'show_admin_column' => true
+        ,'list_table_filter' => true
+        ,'meta_box_filter' => true
         ,'comments' => true
       )
     );
@@ -121,6 +130,7 @@ Author URI: http://piklist.com/
           'slug' => 'demo-user-type' 
         )
         ,'show_admin_column' => true
+        ,'list_table_filter' => true
       )
     );
   
@@ -140,8 +150,8 @@ Author URI: http://piklist.com/
       ,'setting' => 'piklist_demo_fields'
       ,'menu_icon' => plugins_url('piklist/parts/img/piklist-icon.png')
       ,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
-      ,'single_line' => true
       ,'default_tab' => 'Basic'
+      // ,'layout' => 'container'
       ,'save_text' => 'Save Demo Settings'
     );
   
@@ -153,8 +163,8 @@ Author URI: http://piklist.com/
   function piklist_demo_field_templates($templates)
   {
     $templates['piklist_demo'] = array(
-                                'name' => __('User', 'piklist')
-                                ,'description' => __('Default layout for User fields from Piklist Demos.', 'piklist')
+                                'name' => __('User', 'piklist-demo')
+                                ,'description' => __('Default layout for User fields from Piklist Demos.', 'piklist-demo')
                                 ,'template' => '[field_wrapper]
                                                   <div id="%1$s" class="%2$s">
                                                     [field_label]
@@ -167,8 +177,8 @@ Author URI: http://piklist.com/
                               );
                                     
     $templates['theme_tight'] = array(
-                                  'name' => __('Theme - Tight', 'piklist')
-                                  ,'description' => __('A front end form wrapper example from Piklist Demos.', 'piklist')
+                                  'name' => __('Theme - Tight', 'piklist-demo')
+                                  ,'description' => __('A front end form wrapper example from Piklist Demos.', 'piklist-demo')
                                   ,'template' => '[field_wrapper]
                                                     <div id="%1$s" class="%2$s piklist-field-container">
                                                       [field_label]
@@ -259,5 +269,3 @@ Author URI: http://piklist.com/
     
     return $assets;
   }
-
-?>

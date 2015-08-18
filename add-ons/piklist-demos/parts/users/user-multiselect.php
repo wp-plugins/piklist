@@ -1,20 +1,20 @@
-dv<?php
+<?php
 /*
 Title: Multiselect Fields
 Capability: manage_options
 Order: 20
-Collapse: false
+Tab: Lists
 */
 
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'multiselect'
-    ,'label' => 'Multiselect'
+    ,'label' => __('Multiselect', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'attributes' => array(
       'multiple' => 'multiple'
@@ -24,14 +24,14 @@ Collapse: false
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'multiselect_add_more'
-    ,'label' => 'Multiselect Add More'
+    ,'label' => __('Multiselect Add More', 'piklist-demo')
     ,'add_more' => true
-    ,'description' => 'A grouped field. Data is not searchable, since it is saved in an array.'
+    ,'description' => __('A grouped field. Data is not searchable, since it is saved in an array.', 'piklist-demo')
     ,'field' => 'multiselect_add_more_field'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'attributes' => array(
       'multiple' => 'multiple'
@@ -40,6 +40,6 @@ Collapse: false
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
 ?>

@@ -1,24 +1,52 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList_Media
+/**
+ * Piklist_Media
+ * Controls media modifications and features.
+ *
+ * @package     Piklist
+ * @subpackage  Media
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist_Media
 {
   private static $meta_boxes = array();
-  
-  private static $meta_box_nonce = false;
-  
+    
+  /**
+   * _construct
+   * Insert description here
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function _construct()
   {    
     add_action('init', array('piklist_media', 'init'));
     
-    add_filter('attachment_fields_to_save', array('piklist_media', 'process_form'), 10, 2);
     add_filter('attachment_fields_to_edit', array('piklist_media', 'attachment_fields_to_edit'), 100, 2);
   }
 
+  /**
+   * attachment_fields_to_edit
+   * Checks if there are meta boxes to render.
+   *
+   * @param $form_fields
+   * @param $post
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function attachment_fields_to_edit($form_fields, $post)
   {
     global $typenow;
@@ -34,74 +62,104 @@ class PikList_Media
     return $form_fields;
   }
   
+  /**
+   * init
+   * Initializes system.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function init()
   {   
     self::register_meta_boxes();
   }
 
+  /**
+   * register_meta_boxes
+   * register meta boxes.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function register_meta_boxes()
   {
-    piklist::process_views('media', array('piklist_media', 'register_meta_boxes_callback'));
-  }
-
-  public static function register_meta_boxes_callback($arguments)
-  {
-    extract($arguments);
-    
-    $current_user = wp_get_current_user();
-    
-    $data = get_file_data($path . '/parts/' . $folder . '/' . $part, apply_filters('piklist_get_file_data', array(
-              'name' => 'Title'
+    $data = array(
+              'title' => 'Title'
               ,'description' => 'Description'
               ,'capability' => 'Capability'
               ,'role' => 'Role'
               ,'order' => 'Order'
-              ,'Status' => 'Status'
               ,'new' => 'New'
               ,'id' => 'ID'
-            ), 'media'));
+            );
+            
+    piklist::process_parts('media', $data, array('piklist_media', 'register_meta_boxes_callback'));
+  }
+
+  /**
+   * register_meta_boxes_callback
+   * Handle the registration of a meta box for media.
+   *
+   * @param $arguments
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function register_meta_boxes_callback($arguments)
+  {
+    global $pagenow;
     
-    $data = apply_filters('piklist_add_part', $data, 'media');
+    extract($arguments);
     
-    $meta_box = array(
-      'id' => piklist::slug($data['name'])
-      ,'config' => $data
-      ,'part' => $path . '/parts/' . $folder . '/' . $part
-    );
-    
-    if ((!$data['capability'] || ($data['capability'] && current_user_can(strtolower($data['capability']))))
-      && (!$data['role']) || piklist_user::current_user_role($data['role'])
-      && (!$data['new'] || ($data['new'] && !in_array($pagenow, array('async-upload.php', 'media-new.php'))))
-    )
+    if (!$data['new'] || ($data['new'] && !in_array($pagenow, array('async-upload.php', 'media-new.php'))))
     {    
+      foreach (self::$meta_boxes as $key => $meta_box)
+      {
+        if ($id == $meta_box['id'])
+        {
+          unset(self::$meta_boxes[$key]);
+        }
+      }
+      
       if (isset($order))
       {
-        self::$meta_boxes[$order] = $meta_box;
+        self::$meta_boxes[$order] = $arguments;
       }
       else
       {
-        array_push(self::$meta_boxes, $meta_box);
+        array_push(self::$meta_boxes, $arguments);
       }
     }
   }
 
+  /**
+   * meta_box
+   * Render the meta box.
+   *
+   * @param $post
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function meta_box($post)
   {
     if (!empty(self::$meta_boxes))
     {
       ob_start();
-      
-      if (!self::$meta_box_nonce)
-      {
-        piklist_form::render_field(array(
-          'type' => 'hidden'
-          ,'field' => 'nonce'
-          ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
-          ,'scope' => piklist::$prefix
-        ));
-      
-        self::$meta_box_nonce = true;
-      }
       
       $GLOBALS['piklist_attachment'] = $post;
       
@@ -114,11 +172,12 @@ class PikList_Media
         
         do_action('piklist_pre_render_media_meta_box', $post, $meta_box);
         
-        piklist::render($meta_box['part'], array(
-          'post_id' => $post->ID
-          ,'prefix' => 'piklist'
-          ,'plugin' => 'piklist'
-        ), false);
+        foreach ($meta_box['render'] as $render)
+        {
+          piklist::render($render, array(
+            'data' => $meta_box['data']
+          ), false);
+        }
                 
         do_action('piklist_post_render_media_meta_box', $post, $meta_box);
                 
@@ -138,14 +197,5 @@ class PikList_Media
     }
     
     return null;
-  }
-  
-  public static function process_form($post, $attachment)
-  {
-    piklist_form::process_form(array(
-      'post' => $post['ID']
-    ));
-
-    return $post;
   }
 }

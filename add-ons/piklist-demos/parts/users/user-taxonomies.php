@@ -3,6 +3,7 @@
 Title: Taxonomies
 Capability: manage_options
 Order: 30
+Tab: Default
 */
 
 
@@ -10,8 +11,8 @@ Order: 30
     'type' => 'checkbox'
     ,'scope' => 'taxonomy'
     ,'field' => 'piklist_demo_user_type'
-    ,'label' => 'Demo Types'
-    ,'description' => 'Terms will appear when they are added to this taxonomy.'
+    ,'label' => __('Demo Types', 'piklist-demo')
+    ,'description' => __('Terms will appear when they are added to this taxonomy.', 'piklist-demo')
     ,'choices' => piklist(
       get_terms('piklist_demo_user_type', array(
         'hide_empty' => false

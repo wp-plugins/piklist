@@ -1,46 +1,39 @@
-<div class="hidden" id="role_stub">
+<?php
   
-  <input type="hidden" value="<?php echo esc_attr($user_roles[0]); ?>" name="role"/>
+  $fields = piklist('field', array(
+    'type' => 'hidden'
+    ,'scope' => false
+    ,'field' => 'role'
+    ,'value' => $user_roles[0]
+    ,'return' => true
+  ));
 
-  <?php
-    
-    piklist('field', array(
-      'type' => 'checkbox'
-      ,'scope' => false
-      ,'field' => 'roles'
-      ,'template' => 'field'
-      ,'choices' => $roles
-      ,'value' => $user_roles
-    ));
-  ?>
-
-  <style type="text/css">
+  $fields .= piklist('field', array(
+    'type' => 'checkbox'
+    ,'scope' => false
+    ,'field' => 'roles'
+    ,'template' => 'field'
+    ,'choices' => $roles
+    ,'value' => $user_roles
+    ,'return' => true
+  ));
   
-    select#role {
-      display: none !important;
-    }
-  
-  </style>
+?>
 
-  <script type="text/javascript">
+<script type="text/javascript">
 
-    (function($)
+  (function($)
+  {
+    $(document).ready(function()
     {
-      $(document).ready(function()
-      {
-        var role_field = 'select[name="role"]';
+      var field = $('select[name="role"]');
       
-        if ($(role_field).length > 0)
-        {
-          var stub = $('div#role_stub').html();
-        
-          $(stub).insertAfter(role_field);
-          $(role_field).parents('.form-field').removeClass('form-field');
-          $(role_field + ', div#role_stub').remove();
-        }
-      });
-    })(jQuery);
+      field
+        .parents('.form-field')
+        .removeClass('form-field');
+      
+      field.replaceWith('<?php echo $fields; ?>');
+    });
+  })(jQuery);
 
-  </script>
-
-</div>
+</script>

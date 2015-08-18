@@ -9,8 +9,8 @@ Order: 30
   piklist('field', array(
     'type' => 'datepicker'
     ,'field' => 'date'
-    ,'label' => 'Date'
-    ,'description' => 'Choose a date'
+    ,'label' => __('Date', 'piklist-demo')
+    ,'description' => __('Choose a date', 'piklist-demo')
     ,'options' => array(
       'dateFormat' => 'M d, yy'
     )
@@ -24,8 +24,8 @@ Order: 30
     'type' => 'datepicker'
     ,'field' => 'date_add_more'
     ,'add_more' => true
-    ,'label' => 'Add More'
-    ,'description' => 'Choose a date'
+    ,'label' => __('Add More', 'piklist-demo')
+    ,'description' => __('Choose a date', 'piklist-demo')
     ,'options' => array(
       'dateFormat' => 'M d, yy'
     )
@@ -37,7 +37,5 @@ Order: 30
     
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Settings Section'
   ));
-  
-?>

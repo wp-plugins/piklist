@@ -2,7 +2,9 @@
 /*
 Title: Piklist Demos
 Capability: manage_options
-Page: piklist_demo,piklist_demo_page_piklist_demo_fields,profile
+Page: piklist_demo,piklist_demo_page_piklist_demo_fields,profile.php
+Flow: All
+Tab: All
 */
 ?>
 

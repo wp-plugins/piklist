@@ -3,36 +3,36 @@
 Title: Select Fields
 Capability: manage_options
 Order: 30
-Collapse: false
+Tab: Lists
 */
 
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'select'
-    ,'label' => 'Select'
+    ,'label' => __('Select', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
 
   piklist('field', array(
     'type' => 'select'
     ,'field' => 'select_add_more'
-    ,'label' => 'Select Add More'
+    ,'label' => __('Select Add More', 'piklist-demo')
     ,'add_more' => true
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
 ?>

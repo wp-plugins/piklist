@@ -1,0 +1,17 @@
+<?php
+/*
+Title: Enhancements
+Setting: piklist_core
+Tab Order: 0
+*/
+
+  piklist('field', array(
+    'type' => 'checkbox'
+    ,'field' => 'meta_queries'
+    ,'label' => __('Accelerate meta queries', 'piklist')
+    ,'description' => __('May conflict with certain plugins', 'piklist')
+    ,'help' => __('Allow Piklist to speed up all meta queries in WordPress or any plugin.', 'piklist')
+    ,'choices' => array(
+      'true' => __('Allow', 'piklist')
+    )
+  ));

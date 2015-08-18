@@ -1,30 +1,45 @@
 <?php
 /*
-Title: Validation Fields <span class="piklist-title-right">Order 10</span>
+Title: Validation Fields
 Post Type: piklist_demo
 Order: 10
+Tab: Validation
+Flow: Edit Demo
 */
 
   piklist('field', array(
     'type' => 'text'
-    ,'field' => 'text_required'
-    ,'label' => 'Text Required'
+    ,'field' => 'validate_text_required'
+    ,'label' => __('Text Required', 'piklist-demo')
     ,'description' => "required => true"
     ,'attributes' => array(
       'class' => 'large-text'
+      ,'placeholder' => __('Enter text or this page won\'t save.', 'piklist-demo')
     )
     ,'required' => true
+    ,'validate' => array(
+      array(
+        'type' => 'limit'
+        ,'options' => array(
+          'min' => 2
+          ,'max' => 6
+          ,'count' => 'characters'
+        )
+      )
+    )
   ));
 
   piklist('field', array(
     'type'    => 'group'
-    ,'field'   => 'group_required'
-    ,'label'   => 'Group Required'
+    ,'field'   => 'validate_group_required'
+    ,'label'   => __('Group Required', 'piklist-demo')
+    ,'description' =>__('Only the checkbox is required', 'piklist-demo')
     ,'add_more'=> true
     ,'fields'  => array(
       array(
         'type' => 'text'
         ,'field' => 'name'
+        ,'label' => 'Name'
         ,'columns' => 8
         ,'attributes' => array(
           'placeholder' => 'Name'
@@ -33,6 +48,7 @@ Order: 10
       ,array(
         'type' => 'checkbox'
         ,'field' => 'hierarchical'
+        ,'label' => 'Type'
         ,'required' => true
         ,'columns' => 4
         ,'choices' => array(
@@ -44,9 +60,9 @@ Order: 10
 
   piklist('field', array(
     'type' => 'text'
-    ,'label' => 'File Name'
-    ,'field' => 'file_name'
-    ,'description' => 'Converts multiple words to a valid file name'
+    ,'label' => __('File Name', 'piklist-demo')
+    ,'field' => 'sanitize_file_name'
+    ,'description' => __('Converts multiple words to a valid file name', 'piklist-demo')
     ,'sanitize' => array(
       array(
         'type' => 'file_name'
@@ -60,8 +76,8 @@ Order: 10
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'validate_emaildomain'
-    ,'label' => 'Email address'
-    ,'description' => __('Validate Email and Email Domain')
+    ,'label' => __('Email address', 'piklist-demo')
+    ,'description' => __('Validate Email and Email Domain', 'piklist-demo')
     ,'attributes' => array(
       'class' => 'large-text'
     )
@@ -78,8 +94,8 @@ Order: 10
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'validate_file_exists'
-    ,'label' => __('File exists?')
-    ,'description' => 'Test with: http://wordpress.org/plugins/about/readme.txt'
+    ,'label' => __('File exists?', 'piklist-demo')
+    ,'description' => sprintf(__('Test with: %s', 'piklist-demo'), 'http://wordpress.org/plugins/about/readme.txt')
     ,'attributes' => array(
       'class' => 'large-text'
     )
@@ -94,7 +110,7 @@ Order: 10
     'type' => 'text'
     ,'field' => 'validate_image'
     ,'label' => __('Image')
-    ,'description' => 'Test with: http://piklist.com/wp-content/themes/piklistcom-base/images/piklist-logo@2x.png'
+    ,'description' => sprintf(__('Test with: %s', 'piklist-demo'), 'http://piklist.com/wp-content/themes/piklistcom-base/images/piklist-logo@2x.png')
     ,'attributes' => array(
       'class' => 'large-text'
     )
@@ -107,15 +123,16 @@ Order: 10
 
   piklist('field', array(
     'type' => 'checkbox'
-    ,'field' => 'checkbox'
-    ,'label' => 'Checkbox'
+    ,'field' => 'validate_checkbox_limit'
+    ,'label' => __('Checkbox', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
+    ,'required' => true
     ,'validate' => array(
       array(
         'type' => 'limit'
@@ -132,12 +149,12 @@ Order: 10
 
   piklist('field', array(
     'type' => 'file'
-    ,'field' => 'upload_media'
-    ,'label' => __('Add File(s)','piklist-demo')
-    ,'description' => 'No more than one file is allowed'
+    ,'field' => 'validate_upload_media_limit'
+    ,'label' => __('Add File(s)', 'piklist-demo')
+    ,'description' => __('No more than one file is allowed', 'piklist-demo')
     ,'options' => array(
-      'modal_title' => __('Add File(s)','piklist-demo')
-      ,'button' => __('Add','piklist-demo')
+      'modal_title' => __('Add File(s)', 'piklist-demo')
+      ,'button' => __('Add', 'piklist-demo')
     )
     ,'attributes' => array(
       'class' => 'large-text'
@@ -155,21 +172,21 @@ Order: 10
 
   piklist('field', array(
     'type' => 'group'
-    ,'field' => 'address_group_add_more'
+    ,'field' => 'validate_group_add_more_limit'
     ,'add_more' => true
-    ,'label' => 'Grouped/Add-More with Limit'
-    ,'description' => 'No more than two add-mores are allowed'
+    ,'label' => __('Grouped/Add-More with Limit', 'piklist-demo')
+    ,'description' => __('No more than two add-mores are allowed', 'piklist-demo')
     ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'group_field_1'
-        ,'label' => 'Field 1'
+        ,'label' => __('Field 1', 'piklist-demo')
         ,'columns' => 12
       )
       ,array(
         'type' => 'text'
         ,'field' => 'group_field_2'
-        ,'label' => 'Field 2'
+        ,'label' => __('Field 2', 'piklist-demo')
         ,'columns' => 12
       )
     )

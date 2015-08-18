@@ -1,15 +1,10 @@
 <?php
-/*
-Width: 720
-*/
-
-
-piklist('field', array(
+  piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_class_small'
-    ,'label' => 'Text'
+    ,'label' => __('Text', 'piklist-demo')
     ,'value' => 'Lorem'
-    ,'help' => 'You can easily add tooltips to your fields with the help parameter.'
+    ,'help' => __('You can easily add tooltips to your fields with the help parameter.', 'piklist-demo')
     ,'attributes' => array(
       'class' => 'regular-text'
     )
@@ -18,7 +13,7 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_columns_element'
-    ,'label' => 'Columns Element'
+    ,'label' => __('Columns Element', 'piklist-demo')
     ,'description' => 'columns="6"'
     ,'value' => 'Lorem'
     ,'columns' => 6
@@ -29,7 +24,7 @@ piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_add_more'
     ,'add_more' => true
-    ,'label' => 'Text Add More'
+    ,'label' => __('Text Add More', 'piklist-demo')
     ,'description' => 'add_more="true"'
     ,'value' => 'Lorem'
  
@@ -38,7 +33,7 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'number'
     ,'field' => 'number'
-    ,'label' => 'Number'
+    ,'label' => __('Number', 'piklist-demo')
     ,'description' => 'ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 5
     ,'attributes' => array(
@@ -53,7 +48,7 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'textarea'
     ,'field' => 'demo_textarea_large'
-    ,'label' => 'Large Code'
+    ,'label' => __('Large Code', 'piklist-demo')
     ,'description' => 'class="large-text code" rows="10" columns="50"'
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'attributes' => array(
@@ -67,7 +62,7 @@ piklist('field', array(
   piklist('field', array(
     'type' => 'file'
     ,'field' => 'upload_media'
-    ,'label' => __('Add File(s)','piklist-demo')
+    ,'label' => __('Add File(s)', 'piklist-demo')
     ,'description' => __('This is the uploader seen in the admin by default.', 'piklist-demo')
     ,'options' => array(
       'modal_title' => __('Add File(s)', 'piklist-demo')
@@ -88,19 +83,19 @@ piklist('field', array(
     'type' => 'group'
     ,'field' => 'slides'
     ,'add_more' => true
-    ,'label' => 'Slide Images'
-    ,'description' => 'Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.'
+    ,'label' => __('Slide Images', 'piklist-demo')
+    ,'description' => __('Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.', 'piklist-demo')
     ,'fields'  => array(
       array(
         'type' => 'file'
         ,'field' => 'image'
-        ,'label' => __('Slides', 'plugin')
+        ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
       )
       ,array(
         'type' => 'text'
         ,'field' => 'url'
-        ,'label' => 'URL'
+        ,'label' => __('URL', 'piklist-demo')
         ,'columns' => 12
       )
     )
@@ -110,13 +105,13 @@ piklist('field', array(
     'type' => 'group'
     ,'field' => 'slides_basic'
     ,'add_more' => true
-    ,'label' => 'Slide Images'
-    ,'description' => 'Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.'
+    ,'label' => __('Slide Images', 'piklist-demo')
+    ,'description' => __('Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.', 'piklist-demo')
     ,'fields'  => array(
       array(
         'type' => 'file'
         ,'field' => 'image'
-        ,'label' => __('Slides', 'plugin')
+        ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
         ,'options' => array(
           'basic' => true
@@ -125,9 +120,13 @@ piklist('field', array(
       ,array(
         'type' => 'text'
         ,'field' => 'url'
-        ,'label' => 'URL'
+        ,'label' => __('URL', 'piklist-demo')
         ,'columns' => 12
       )
     )
   ));
 
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Widget'
+  ));

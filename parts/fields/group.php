@@ -13,7 +13,7 @@
   
     $value_count = max($cardinalities);
   }
-
+  
   $columns_to_render = array();
   
   foreach ($fields as $column)
@@ -22,13 +22,10 @@
     $_values = null;
     
     $column['prefix'] = $prefix;
-    
-    if (isset($column['columns']) || !isset($column['label']))
-    {
-      $column['template'] = isset($column['template']) ? $column['template'] : 'field';
-      $column['child_field'] = true;
-    }
-    
+    $column['relate'] = $relate;
+    $column['columns'] = isset($column['columns']) ? $column['columns'] : '12';
+    $column['template'] = isset($column['template']) ? $column['template'] : 'field';
+    $column['child_field'] = true;
     $column['attributes']['wrapper_class'] = (isset($column['attributes']['wrapper_class']) ? $column['attributes']['wrapper_class'] : null) . ($template != 'field' ? ' piklist-field-part' : null);
     
     if (in_array('piklist-error', $attributes['class']))
@@ -85,7 +82,7 @@
     
     if (!$_values)
     {
-      if (piklist_form::is_widget())
+      if (piklist_admin::is_widget())
       {
         $_values = isset(piklist_widget::widget()->instance[$column['field']]) ? maybe_unserialize(piklist_widget::widget()->instance[$column['field']]) : (isset($column['value']) ? $column['value'] : null);
       }
@@ -117,12 +114,12 @@
         {
           $columns_to_render[$_index] = array();
         }
-      
+
         if (!empty($field) && !stristr($column['field'], ':'))
         {
           $column['field'] = $field . (substr_count($field, ':') == 1 ? ':' . $column['index'] . ':' : ':') . $column['field'];
         }
-      
+
         array_push($columns_to_render[$_index], $column);
       }
     }
@@ -139,11 +136,6 @@
       $first_value = null;
       foreach ($_values as $_index => $_value)
       {
-        if (!isset($columns_to_render[$_index]))
-        {
-          $columns_to_render[$_index] = array();
-        }
-
         if ($column['type'] == 'html')
         {
           if ($_index == 0)
@@ -168,11 +160,16 @@
           $column['field'] = $field . (substr_count($field, ':') == 1 ? ':' . $column['index'] . ':' : ':') . $column['field'];
         }
         
+        if (!isset($columns_to_render[$_index]))
+        {
+          $columns_to_render[$_index] = array();
+        }
+        
         array_push($columns_to_render[$_index], $column);
       }
     }
   }
-  
+
   foreach ($columns_to_render as $_index => $_columns)
   {
     if (isset($columns_to_render[0]))
@@ -187,15 +184,15 @@
       }
     }
   }
-  
-  foreach ($columns_to_render as $column_to_render)
+    
+  foreach ($columns_to_render as $column_index => $column_to_render)
   {
     $group_index = piklist::unique_id();
     $group_add_more = false;
     
     foreach ($column_to_render as $column)
     {
-      $column['attributes']['data-piklist-field-group'] = $group_index; 
+      $column['attributes']['data-piklist-field-group'] = $group_index;
 
       if ($column['type'] == 'group')
       {
@@ -205,27 +202,42 @@
         }
       }
 
+      if (isset($attributes['data-piklist-field-sortable']))
+      {
+        $column['attributes']['data-piklist-field-sortable'] = $attributes['data-piklist-field-sortable'];
+      }
+
       if ($column['type'] != 'group' && !$group_add_more && isset($attributes['data-piklist-field-addmore']))
       {
         $column['attributes']['data-piklist-field-addmore'] = $attributes['data-piklist-field-addmore'];
-        $group_add_more = true;
         
+        $group_add_more = true;
+
         if (isset($attributes['data-piklist-field-addmore-actions']))
         {
           $column['attributes']['data-piklist-field-addmore-actions'] = $attributes['data-piklist-field-addmore-actions'];
         }
       }
       
-      if (isset($column['add_more']) && $column['add_more'])
+      if (isset($column['add_more']) && $column['add_more'] && isset($attributes['data-piklist-field-addmore']))
       {
         $column['attributes']['data-piklist-field-addmore-single'] = $attributes['data-piklist-field-addmore'];
+      }
+      
+      if (isset($attributes['data-piklist-field-sortable']))
+      {
+        $column['attributes']['data-piklist-field-sortable'] = $attributes['data-piklist-field-sortable'];
       }
       
       if ($column['type'] == 'group')
       {
         foreach ($column['fields'] as &$_field)
         {
-          $_field['field'] = $column['field'] . ':' . $column['index'] . ':' . $_field['field']; 
+          if(isset($_field['field']))
+          {
+            $_field['field'] = $column['field'] . ':' . $column['index'] . ':' . $_field['field']; 
+          }
+          
         }
       }
       

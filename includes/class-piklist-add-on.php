@@ -1,26 +1,48 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList_Add_On
+/**
+ * Piklist_Add_On
+ * Loads and manages any Piklist plugins or add-ons included within Piklist plugin.
+ *
+ * @package     Piklist
+ * @subpackage  Add ons
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist_Add_On
 {
+  /**
+   * @var string Available piklist add-ons and their locations.
+   * @access public
+   */
   public static $available_add_ons = array();
   
+  /**
+   * _construct
+   * Class constructor.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function _construct()
-  {    
-    add_action('init', array('piklist_add_on', 'init'), 0);
+  {
+    add_action('init', array('piklist_add_on', 'include_add_ons'), 0);
   }
 
-  public static function init()
-  {    
-    self::include_add_ons();
-  }
-  
+  /**
+   * include_add_ons
+   * Inlcude add-ons registered with piklist.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function include_add_ons()
-  { 
+  {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
     
     $site_wide_plugins = get_site_option('active_sitewide_plugins');
@@ -30,7 +52,7 @@ class PikList_Add_On
     }
     else
     {
-      $plugins = get_option('active_plugins');      
+      $plugins = get_option('active_plugins');
     }
 
     foreach ($plugins as $plugin)
@@ -39,11 +61,11 @@ class PikList_Add_On
       
       if (file_exists($path))
       {
-        $data = get_file_data($path, array(
+        $data = piklist::get_file_data($path, array(
                   'type' => 'Plugin Type'
                   ,'version' => 'Version'
                 ));
-                
+
         if ($data['type'] && strtolower($data['type']) == 'piklist')
         {
           piklist::add_plugin(basename(dirname($plugin)), dirname($path));
@@ -101,18 +123,29 @@ class PikList_Add_On
     do_action('piklist_activate_add_on');
   }
 
+  /**
+   * register_add_on
+   * Activate any add-ons that are activated.
+   *
+   * @param string $add_on Add-on slug.
+   * @param string $file File name of the add-on plugin file.
+   * @param string $path Path to the filename.
+   * @param bool $plugin Whether or not its a plugin or included as an add-on in a plugin.
+   *
+   * @access private
+   * @static
+   * @since 1.0
+   */
   private static function register_add_on($add_on, $file, $path, $plugin = false)
   {
     if (file_exists($file))
     {
-      $active_add_ons = piklist::get_settings('piklist_core_addons', 'add-ons');
-      
       $data = get_plugin_data($file);
       $data['plugin'] = $plugin;
       
       self::$available_add_ons[$add_on] = $data;
 
-      if (in_array($add_on, is_array($active_add_ons) ? $active_add_ons : array($active_add_ons)))
+      if (self::is_active($add_on))
       {
         include_once $file;
 
@@ -124,22 +157,37 @@ class PikList_Add_On
         }
   
         piklist::$paths[$add_on] = $path . (!$plugin ? '/' . $add_on : '');
+        
+        $path = str_replace(chr(92), '/', $path);
+
+        piklist::$urls[$add_on] = plugins_url() . substr($path, strrpos($path, '/'));
       }
     }
   }
 
+  /**
+   * is_active
+   * Check whether an add-on is active.
+   *
+   * @param string $add_on Add-on slug.
+   *
+   * @return bool Whether or not the add-on is active.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
   public static function is_active($add_on = '')
   {
-    $piklist_core_addons = get_option('piklist_core_addons');
-
-    if ((!empty($piklist_core_addons)) && in_array($add_on, is_array($piklist_core_addons['add-ons']) ? $piklist_core_addons['add-ons'] : array($piklist_core_addons['add-ons'])))
+    $add_ons = get_option('piklist_core_addons');
+    
+    if (isset($add_ons['add-ons']))
     {
-      return true;
+      $add_ons = is_array($add_ons['add-ons']) ? $add_ons['add-ons'] : array($add_ons['add-ons']);
+      
+      return !empty($add_ons) && in_array($add_on, $add_ons) && isset(self::$available_add_ons[$add_on]);
     }
-    else
-    {
-      return false;
-    }
+    
+    return false;
   }
-
 }

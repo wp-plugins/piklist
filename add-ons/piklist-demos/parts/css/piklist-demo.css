@@ -1,5 +1,5 @@
 
-  body.responsive-admin a.menu-icon-piklist_demo img {
+  a.menu-icon-piklist_demo img {
     width: 18px;
     height: 16px;
   }
@@ -12,12 +12,28 @@
       max-width: 100%;
     }
 
-  .demo-highlight,
-  .piklist-meta-box-none.postbox h3.demo-highlight {
-    color: #8a6d3b !important;
-    background-color: #fcf8e3 !important;
-    border: 1px solid #faebcc !important;
-    font-weight: normal;
-    font-size: 12px !important;
-    padding: 5px !important;
+  .piklist-demo-highlight {
+      background: #FFFFFF;
+      border-left: 4px solid #dd3726;
+      box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+      margin: 15px 0 10px 0;
+      padding: 10px 12px;
+      clear: both;
   }
+
+    .piklist-demo-highlight h3 {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .piklist-demo-highlight p:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    .postbox .piklist-demo-highlight {
+      background: #F1F1F1;
+    }
+
+    .piklist-meta-box-none .piklist-demo-highlight {
+      background: #FFFFFF;
+    }

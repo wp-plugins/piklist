@@ -1,6 +1,8 @@
 <?php
 /*  
 Title: Advanced
+Class: custom-class-1 custom-class-2
+Width: 720
 */
 ?>
 
@@ -10,6 +12,6 @@ Title: Advanced
   
   <?php echo $after_title; ?>
 
-    <?php piklist::pre($settings); ?>
+  <?php piklist::pre($settings); ?>
     
 <?php echo $after_widget; ?>

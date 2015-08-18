@@ -6,19 +6,24 @@ Order: 30
 Priority: default
 Context: side
 Collapse: true
+Flow: Edit Demo
 */
 ?>
 
-<h3 class="demo-highlight">
-  <?php _e('Inline comments fields are a snap to add.','piklist-demo');?>
-</h3>
+<p class="piklist-demo-highlight">
+  <?php _e('Inline comments fields are a snap to add.', 'piklist-demo');?>
+</p>
 
 <?php
 
   piklist('field', array(
     'type' => 'comments'
-    ,'label' => 'Notes'
-    ,'description' => 'Add some notes'
+    ,'label' => __('Notes', 'piklist-demo')
+    ,'description' => __('Add some notes', 'piklist-demo')
+    ,'attributes' => array(
+      'class' => 'large-text code'
+      ,'rows' => 5
+    )
   ));
 
 ?>
@@ -81,5 +86,3 @@ Collapse: true
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-?>

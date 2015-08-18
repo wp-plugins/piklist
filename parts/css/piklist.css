@@ -32,7 +32,11 @@
     background-color: #ffe7e7 !important;
     border-color: #c00 !important;
   }
-
+  
+  .piklist-form {
+    display: block;
+  }
+  
   .piklist-field-container,
   .piklist-field-preview { 
     clear: both;
@@ -156,11 +160,6 @@
       .piklist-field-list-item input[type="radio"] {
         vertical-align: middle;
         position: relative;
-        bottom: 1px;
-      }
-    
-      .piklist-field-list-item input[type="radio"] {
-        bottom: 2px;
       }
     
   /* Conditions */
@@ -227,7 +226,6 @@
   
   .piklist-field-addmore-wrapper {
     position: relative;
-    cursor: move;
     border: 1px solid #dfdfdf;
     padding: 7px;
     margin-bottom: 7px;
@@ -238,6 +236,11 @@
     zoom: 1; 
     min-height: 28px;
   }
+  
+    .piklist-field-addmore-wrapper.ui-sortable,
+    .piklist-field-addmore-wrapper.ui-sortable-handle {
+      cursor: default;
+    }
 
     .piklist-field-addmore-wrapper:before, 
     .piklist-field-addmore-wrapper:after { 
@@ -282,7 +285,6 @@
       
       .piklist-field-addmore-wrapper  .piklist-addmore-placeholder {
         margin-bottom: 0px;
-        margin-top: 7px;
       }
       
       .attachments .piklist-addmore-placeholder {
@@ -397,10 +399,13 @@
         margin-top: 7px;
       }
 
-      .piklist-field-addmore-wrapper .piklist-field-addmore-wrapper:hover {
-        border-left-color: #cccccc;
+      .piklist-field-addmore-wrapper:hover {
         background: #f6f6f6;
       }
+
+        .piklist-field-addmore-wrapper .piklist-field-addmore-wrapper:hover {
+          border-left-color: #cccccc;
+        }
       
       .piklist-field-addmore-wrapper .piklist-field-column { 
         display: inline-block !important;
@@ -458,7 +463,14 @@
   .piklist-field-description {
     clear: both;
     display: block;
+    color: #666666;
   }
+  
+    #widgets-right .widgets-holder-wrap .piklist-field-description {
+      margin-top: 4px;
+      padding: 0;
+      font-style: italic;
+    }
 
 
 
@@ -473,7 +485,8 @@
     margin: 0 0 0 10px;
     font-size: 18px;
     text-align: left;
-    color: #000;
+    color: #000000;
+    float: right;
   }
 
   .piklist-tooltip:before {
@@ -486,6 +499,8 @@
     .piklist-tooltip:focus:after {
       visibility: visible;
       opacity: 1;
+      z-index: 999999999;
+      position: absolute;
     }
 
     .piklist-tooltip:after {
@@ -521,13 +536,17 @@
       -moz-transition: 0.3s ease;
       transition: 0.3s ease; 
     }
-
+      
       .piklist-tooltip:hover:before {
         cursor: pointer;
       }
 
     .piklist-tooltip.dashicons {
       vertical-align: middle;
+    }
+
+    body.plugins-php .plugins #piklist .plugin-title {
+      overflow: visible;
     }
 
 
@@ -671,8 +690,33 @@
   
 
 
+/* --------------------------------------------------------------------------------
+  Mobile Updates
+--------------------------------------------------------------------------------- */
 
+  @media screen and (max-width: 782px) {
+    
+    .piklist-field-list-item {
+      margin-bottom: 10px;
+    }
+    
+    .piklist-tooltip:after {
+      margin-left: -25px;
+      width: 330px;
+      left: -330px;
+    }
 
+    .wp-media-buttons a {
+      font-size: 16px;
+      line-height: 37px;
+      height: 39px;
+      padding: 0 20px 0 15px;
+    }
+      
+      .wp-media-buttons a span {
+        padding: 2px 0 0 5px;
+      }
+  }
 
 
 

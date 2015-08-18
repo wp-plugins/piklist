@@ -1,14 +1,13 @@
 === PIKLIST | Rapid development framework ===
 Contributors: piklist, p51labs, sbruner
-Tested up to: 4.2
+Tested up to: 4.3
 Requires at least: 3.7
-Stable tag: 0.9.4.27
+Stable tag: 0.9.4.28
 Donate link: http://piklist.com/get-involved/
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Tags: admin,admin notices,admin pages,admin pointers,advanced,alerts,cms,comments,content types,contextual help,custom,custom comment type,custom,custom field,custom fields,custom post types,custom taxonomies,edit,field,field sanitization,editor,field validation,file,framework,help,help tabs,html5,image,images,integration,magic fields,media,media fields,more fields,piklist,pointers,post,posts,post type,post type fields,repeater,sanitization,sanitize,settings,settings pages,simple fields,tabbed sections,tabbed settings,tabs,taxonomy,taxonomy fields,term fields,text, textarea, type,upload,upload field,user fields,user profiles,users,validate,validation,widget,widgets
-
+Tags: piklist,framework,cms,admin,admin pages,settings,settings pages,content types,custom post types,post type,post type fields,custom taxonomies,taxonomy,taxonomy fields,term fields,custom comment type,comments,custom fields,widgets,help,help tabs,contextual help,media,media fields,admin notices,alerts,admin pointers,pointers,users,user profiles,user fields,validate,validation,field validation,field sanitization,sanitization,sanitize,tabs,tabbed sections,tabbed settings
 
 Piklist is the most powerful framework available for WordPress.
 Easy for beginners... built for developers. Piklist helps you build things - fast.
@@ -47,7 +46,6 @@ Piklist is a rapid development framework for WordPress that will let you concent
 *   Help Tabs
 *   Admin Notices
 *   Pointers
-
 
 = Better Custom Post Types =
 *   Powerful Custom Post Types 
@@ -106,10 +104,6 @@ Piklist is a rapid development framework for WordPress that will let you concent
 *   Hide form fields, and just show field values
 
 
-= Please Review Piklist =
-<a href="http://wordpress.org/support/view/plugin-reviews/piklist">Your reviews really make a difference! Thanks.</a>
-
-
 > #### Getting Started with Piklist is Easy.
 > <a href="https://piklist.com/user-guide/tutorials/getting-started-with-piklist/">Read our getting started tutorial.</a>
 
@@ -145,51 +139,97 @@ Code-based frameworks also allows you to version control your code, which is ver
 3. <a href="https://piklist.com/user-guide/tutorials/piklists-built-demos/">Activate the built-in Demos</a> to get an idea of what you can build. If you like something in the demos, you can just copy and paste it into your own project.
 4. Ask questions on our <a href="https://piklist.com/support/">Support Forum</a>. (We love hearing from our users)
 
-
-
 == Changelog ==
-= 0.9.4.27 =
-Release Date: June 19, 2015
 
-* ENHANCED: Only load conditional scripts with Piklist functions, for WP v4.1 and under.
+= 0.9.9b =
+* ENCHANCED: Easily display post statuses in a select field. Demos updated as well.
 
-= 0.9.4.26 =
+= 0.9.9a =
+* Tons of fixes and enhancements.
+* Started Unit Testing.
+* ENHANCED: Changed how assigning sections to WorkFlows. Now they work like all other Piklist features.
+
+
+= 0.9.5w =
+* NEW: Custom Post Statuses work in quick edit.
+* NEW: admin-login-message partial.
+* ENHANCED: URL Validation update. Props @jasontheadams
+
+= 0.9.5v =
 * FIX: Security update for admin notices. @props joostdevalk
 
-= 0.9.4.25 =
-* FIX: Better Windows support
+= 0.9.5u =
+* ENHANCED: 'limit' validation rule now support character and word count.
+* ENHANCED: Multiple templates can be assigned in comment block. Props @jasontheadams
+* ENHANCED: Revisions work as expected.
+* CHANGE: 'anchor' parameter is now 'anchor_id'
+* CHANGE: 'type' parameter is now 'post_type'
+* CHANGE: 'name' parameter is now 'title'
+* CHANGE: 'box' parameter is now 'meta_box'
+* CHANGE: 'ID' parameter for class-piklist-dashboard is now 'Extend'
 
-= 0.9.4.24 =
-* ENHANCED: CSS updates
+= 0.9.5t =
+* Requires WordPress 3.8
 
-= 0.9.4.23 =
+= 0.9.5s =
+* NEW: 'list_table_filter' parameter adds taxonomy filter to list table.
+* NEW: 'meta_box_filter' parameter adds taxonomy filter to meta boxes.
+
+= 0.9.5o =
+* NEW: Dynamic Meta Boxes
+
+= 0.9.5n =
+* ENHANCED: Added easier pulling of Add-more data. Props @jasontheadams
+* ENHANCED: 'multiple' => false works with Media Uploader.
+* ENHANCED: 'sortable' => true/false works with Add-mores.
+
+= 0.9.5m =
 * FIXED: Non-image files can be removed from file upload field.
 * ENHANCED: Updates to group fields.
+* Lots and lots of bug fixes.
 
-= 0.9.4.22 =
-* FIXED: Workflows now work as expected.
+= 0.9.5l =
+* ENHANCED: Query enhancements
 
-= 0.9.4.21 =
-* ENHANCED: Define your own CSS Classes for Widgets.
-* ENHANCED: Allow 'page' parameter to work on individual Workflow tabs.
-* FIXED: Dashboard widget now shows correct count for Media.
-* FIXED: Datepicker works as expected.
-
-= 0.9.4.20 =
+= 0.9.5k =
+* ENHANCED: Add custom classes to widgets.
 * ENHANCED: Admin notices can now dismiss.
+* ENHANCED: Allow 'page' parameter to work on individual Workflow tabs.
 * FIXED: Notice on conditional scripts.
+* FIXED: Replaced wpdb::esc_like() for like_escape() in WordPress 4.0+
 
-= 0.9.4.19 =
-* ENHANCEMENT: File upload preview images look better.
+= 0.9.5j =
+* ENHANCED: WordPress Meta Query.
+* ENHANCED: Allow HTML5 inputs.
+* ENHANCED: Allow Piklist to set default Validation and Sanitization rules for fields.
+* ENHANCED: Add new Workflow position 'permalink', to support WordPress 4.1 'edit_form_before_permalink' hook.
+* ENHANCED: Demos are 100% localized.
 
-= 0.9.4.18 =
-* NEW: HTML 5 field support.
+= 0.9.5i =
+* ENHANCED: Allow targeting of Default page template
 
-= 0.9.4.17 =
-* FIXED: CSS Tweak for upload fields and WordPress 4.0.
+= 0.9.5h =
+* ENHANCED: Allow for different sizes of images previews.
+* FIXED: Updated editors
+* FIXED: Better Javascript wrapping
+* FIXED: Drag and drop issues work as expected.
+* FIXED: Editors work nicely in grouped add-mores.
+* FIXED: Tool tips look great in the main post column and the side sortables.
+* Lots of bug fixes.
 
-= 0.9.4.16 =
-* FIXED: Admin notices work as expected.
+= 0.9.5g =
+* NEW: Admin notices
+* FIXED: show_admin_column works for User Taxonomies
+* FIXED: Front end forms work with media_handle_sideload()
+* Lots of bug fixes.
+
+= 0.9.5e =
+* NEW: username_exists validation rule
+* NEW: email_exists validation rule
+
+= 0.9.5 =
+* NEW: Front end forms!
+* ENHANCED: WordPress 4.0 support.
 
 = 0.9.4.15 =
 * NEW: Admin notices
@@ -375,7 +415,7 @@ Release Date: June 19, 2015
 * FIXED: Media meta saves without errors.
 * FIXED: Settings save properly when using multiple tabs.
 * FIXED: Logged-in user can now save user meta for any user.
-* FIXED: Fixed typo in process_form function in class-piklist-taxonomy. Props @James_Mc
+* FIXED: Fixed typo in self:: function in class-piklist-taxonomy. Props @James_Mc
 * FIXED: Empty Time and Date fields no longer return "false".
 
 = 0.7.0 =
@@ -497,10 +537,10 @@ Release Date: June 19, 2015
 == Upgrade Notice ==
 
 = 0.6.7 =
-* Major upgrade. Lots of awesome new features.
+* Major upgrade. Looks of awesome new features.
 
 = 0.6.4 =
-* Fixed major issue with Publish box. Please upgrade.
+* Fixes major issue with Publish box. Please upgrade.
 
 == Screenshots ==
 

@@ -1,18 +1,34 @@
 <?php
 
-if (!defined('ABSPATH'))
-{
-  exit;
-}
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-class PikList_Taxonomy
+/**
+ * Piklist_Taxonomy
+ * Controls taxonomy modifications and features.
+ *
+ * @package     Piklist
+ * @subpackage  Taxonomy
+ * @copyright   Copyright (c) 2012-2015, Piklist, LLC.
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       1.0
+ */
+class Piklist_Taxonomy
 {
   private static $meta_boxes;
-  
-  private static $meta_box_nonce = false;
-  
+    
   private static $taxonomies = array();
   
+  /**
+   * _construct
+   * Class constructor.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function _construct()
   {    
     add_action('piklist_activate', array('piklist_taxonomy', 'activate'));
@@ -23,102 +39,160 @@ class PikList_Taxonomy
     
     add_filter('parent_file', array('piklist_taxonomy', 'parent_file'));
     add_filter('sanitize_user', array('piklist_taxonomy', 'restrict_username'));
- }
+  }
   
+  /**
+   * init
+   * Initializes system.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function init()
   {   
     self::register_tables();
     self::register_meta_boxes();
   }
   
+  /**
+   * register_tables
+   * Insert description here
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function register_tables()
   {
     global $wpdb;
     
-    array_push($wpdb->tables, 'termmeta');
+    $termmeta_table = $wpdb->prefix . 'termmeta';
     
-    $wpdb->termmeta = $wpdb->prefix . 'termmeta';
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$termmeta_table}'") == $termmeta_table)
+    {
+      array_push($wpdb->tables, 'termmeta');
+    
+      $wpdb->termmeta = $wpdb->prefix . 'termmeta';      
+    }
   }
   
+  /**
+   * register_meta_boxes
+   * Register term sections.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function register_meta_boxes()
   {
-    piklist::process_views('terms', array('piklist_taxonomy', 'register_meta_boxes_callback'));
-  }
-
-  public static function register_meta_boxes_callback($arguments)
-  {
-    extract($arguments);
-    
-    $data = get_file_data($path . '/parts/' . $folder . '/' . $part, apply_filters('piklist_get_file_data', array(
-              'name' => 'Title'
+    $data = array(
+              'title' => 'Title'
               ,'description' => 'Description'
               ,'capability' => 'Capability'
               ,'role' => 'Role'
               ,'order' => 'Order'
               ,'taxonomy' => 'Taxonomy'
               ,'new' => 'New'
-            ), 'terms'));
-    
-    $data = apply_filters('piklist_add_part', $data, 'terms');
+            );
+            
+    piklist::process_parts('terms', $data, array('piklist_taxonomy', 'register_meta_boxes_callback'));
+  }
 
-    $taxonomies = empty($data['taxonomy']) ? get_taxonomies() : explode(',', $data['taxonomy']);
+  /**
+   * register_meta_boxes_callback
+   * Handle the registration of a term section.
+   *
+   * @param $arguments
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function register_meta_boxes_callback($arguments)
+  {
+    extract($arguments);
+    
+    $taxonomies = empty($data['taxonomy']) ? get_taxonomies() : $data['taxonomy'];
 
     foreach ($taxonomies as $taxonomy)
     {
       $data['taxonomy'] = trim($taxonomy);
 
-      if (((!isset($data['capability']) || empty($data['capability'])) || ($data['capability'] && current_user_can(strtolower($data['capability']))))
-        && ((!isset($data['role']) || empty($data['role'])) || piklist_user::current_user_role($data['role']))
-      )
+      if (!isset(self::$meta_boxes[$data['taxonomy']]))
       {
-        if (!isset(self::$meta_boxes[$data['taxonomy']]))
-        {
-          self::$meta_boxes[$data['taxonomy']] = array();
+        self::$meta_boxes[$data['taxonomy']] = array();
 
-          add_action($data['taxonomy'] . '_edit_form_fields', array('piklist_taxonomy', 'meta_box'), 10, 2);
-          add_action('edited_' . $data['taxonomy'], array('piklist_taxonomy', 'process_form'), 10, 2);
-        }
-
-        $meta_box = array(
-          'config' => $data
-          ,'part' => $path . '/parts/' . $folder . '/' . $part
-        );
-        
-        if (isset($order))
+        add_action($data['taxonomy'] . '_edit_form_fields', array('piklist_taxonomy', 'meta_box'), 10, 2);
+      }
+    
+      foreach (self::$meta_boxes[$data['taxonomy']] as $key => $meta_box)
+      {
+        if ($id == $meta_box['id'])
         {
-          self::$meta_boxes[$data['taxonomy']][$order] = $meta_box;
+          unset(self::$meta_boxes[$data['taxonomy']][$key]);
         }
-        else
-        {
-          array_push(self::$meta_boxes[$data['taxonomy']], $meta_box);
-        }
+      }
+      
+      if (isset($order))
+      {
+        self::$meta_boxes[$data['taxonomy']][$order] = $arguments;
+      }
+      else
+      {
+        array_push(self::$meta_boxes[$data['taxonomy']], $arguments);
       }
     }
   }
   
+  /**
+   * meta_box_add
+   * Insert description here
+   *
+   * @param $taxonomy
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function meta_box_add($taxonomy)
   {
     self::meta_box(null, $taxonomy);
   }
   
+  /**
+   * meta_box
+   * Insert description here
+   *
+   * @param $tag
+   * @param $taxonomy
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function meta_box($tag = null, $taxonomy)
   {
     if ($taxonomy)
     {
-      if (!self::$meta_box_nonce)
-      {
-        piklist_form::render_field(array(
-          'type' => 'hidden'
-          ,'field' => 'nonce'
-          ,'value' => wp_create_nonce(plugin_basename(piklist::$paths['piklist'] . '/piklist.php'))
-          ,'scope' => piklist::$prefix
-        ));
-        
-        self::$meta_box_nonce = true;
-      }
-    
       $wrapper = 'term_meta';
-      
+
       foreach (self::$meta_boxes[$taxonomy] as $taxonomy => $meta_box)
       {
         piklist::render('shared/meta-box-start', array(
@@ -126,11 +200,13 @@ class PikList_Taxonomy
           ,'wrapper' => $wrapper
         ), false);
         
-        piklist::render($meta_box['part'], array(
-          'taxonomy' => $taxonomy
-          ,'prefix' => 'piklist'
-          ,'plugin' => 'piklist'
-        ), false);
+        foreach ($meta_box['render'] as $render)
+        {
+          piklist::render($render, array(
+            'taxonomy' => $taxonomy
+            ,'data' => $meta_box['data']
+          ), false);
+        }
 
         piklist::render('shared/meta-box-end', array(
           'meta_box' => $meta_box
@@ -140,13 +216,18 @@ class PikList_Taxonomy
     }
   }
   
-  public static function process_form($term_id, $taxonomy_id)
-  {
-    piklist_form::process_form(array(
-      'term' => $term_id
-    ));
-  }
-  
+  /**
+   * activate
+   * Creates custom tables
+   *
+   * @param $network_wide
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function activate($network_wide)
   {
     $table = piklist::create_table(
@@ -162,6 +243,20 @@ class PikList_Taxonomy
    );
   }
   
+  /**
+   * registered_taxonomy
+   * Insert description here
+   *
+   * @param $taxonomy
+   * @param $object_type
+   * @param $arguments
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function registered_taxonomy($taxonomy, $object_type, $arguments) 
   {
     global $wp_taxonomies;
@@ -184,6 +279,19 @@ class PikList_Taxonomy
     }
   }
   
+  /**
+   * user_update_count
+   * Insert description here
+   *
+   * @param $terms
+   * @param $taxonomy
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function user_update_count($terms, $taxonomy) 
   {
     global $wpdb;
@@ -202,6 +310,17 @@ class PikList_Taxonomy
     }
   }
   
+  /**
+   * admin_menu
+   * Insert description here
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function admin_menu() 
   {
     $taxonomies  = self::$taxonomies;
@@ -214,6 +333,18 @@ class PikList_Taxonomy
     }
   }
 
+  /**
+   * parent_file
+   * Insert description here
+   *
+   * @param $file
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function parent_file($file = '') 
   {
     global $pagenow;
@@ -226,6 +357,18 @@ class PikList_Taxonomy
     return $file;
   }
   
+  /**
+   * user_taxonomy_column
+   * Add a 'Users' column header to all user taxonomy edit pages.
+   *
+   * @param $columns
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function user_taxonomy_column($columns) 
   {
     $columns['users']  = __('Users', 'piklist');
@@ -235,6 +378,20 @@ class PikList_Taxonomy
     return $columns;
   }
   
+  /**
+   * user_taxonomy_column_value
+   * Adds term data to 'Users' column on all user taxonomy edit pages.
+   *
+   * @param $display
+   * @param $column
+   * @param $term_id
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function user_taxonomy_column_value($display, $column, $term_id) 
   {
     switch ($column)
@@ -249,6 +406,18 @@ class PikList_Taxonomy
     }
   }
   
+  /**
+   * restrict_username
+   * Insert description here
+   *
+   * @param $username
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function restrict_username($username) 
   {
     if (isset(self::$taxonomies[$username]))
@@ -259,6 +428,18 @@ class PikList_Taxonomy
     return $username;
   }  
 
+  /**
+   * redirect
+   * Insert description here
+   *
+   * @param $location
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
   public static function redirect($location)
   {
     $url = parse_url($location);
@@ -367,7 +548,7 @@ if (!function_exists('delete_term_meta_by_key'))
 if (!function_exists('get_term_custom'))
 {
   /**
-   * Retrieve term meta fields, based on term ID.
+   * Retrieve all term meta fields, based on term ID.
    *
    * The term meta fields are retrieved from the cache where possible,
    * so the function is optimized to be called more than once.

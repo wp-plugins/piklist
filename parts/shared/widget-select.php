@@ -8,15 +8,15 @@
         '' => __('Select a Widget', 'piklist')
       );
 
-      foreach ($widgets as $w)
-      {
-        if ($widget == $w['name'])
-        {
-          $widget_data = $w;
-        }
+      foreach ($widgets as $w):
       
-        $choices[$w['name']] = $w['data']['title'];
-      }
+        if ($widget == $w['id']):
+          $widget_data = $w;
+        endif;
+      
+        $choices[$w['id']] = $w['data']['title'];
+      
+      endforeach;
     
       $default_widget = current($widgets);
       
@@ -24,7 +24,6 @@
         'type' => 'select'
         ,'field' => 'widget'
         ,'label' => __('Select a Widget', 'piklist')
-        ,'editable' => false
         ,'attributes' => array(
           'class' => array(
             'widefat'
@@ -37,14 +36,22 @@
       ));
     
       $data_attributes = '';
-      if (isset($widget_data))
-      {
-        $data_attributes .= 'data-widget-title="' . $widget_data['data']['title'] . '" data-widget-height="' . $widget_data['form_data']['height'] . '" data-widget-width="' . $widget_data['form_data']['width'] . '"';
-      }
+      
+      if (isset($widget_data)):
+     
+        $data_attributes .= 'data-widget-title="' . $widget_data['data']['title'] . '" data-widget-height="' . $widget_data['data']['height'] . '" data-widget-width="' . $widget_data['data']['width'] . '"';
+     
+      endif;
     ?>
     
     <p>
-      <?php if (isset($widgets[$widget])) echo $widgets[$widget]['data']['description']; ?>
+      <?php
+       if (isset($widgets[$widget])):
+     
+         echo $widgets[$widget]['data']['description']; 
+     
+       endif;
+      ?>
     </p>
       
   </div>
@@ -54,12 +61,16 @@
     <?php 
       if ($widget):
         
-        do_action('piklist_widget_notices');
+        do_action('piklist_notices');
         
-        piklist::render($widgets[$widget]['form'], array(
-          'instance' => $instance
-        ));
-        
+        foreach ($widgets[$widget]['render'] as $render):
+          if (strstr($render, '-form.php')):
+            piklist::render($render, array(
+              'instance' => $instance
+            ));
+          endif;
+        endforeach;
+
         piklist_form::save_fields();
       
       endif;

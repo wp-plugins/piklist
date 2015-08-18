@@ -3,15 +3,14 @@
 Title: Editor
 Capability: manage_options
 Order: 1
-Collapse: false
+Tab: General
 */
-
 
   piklist('field', array(
     'type' => 'editor'
     ,'field' => 'editor_user'
-    ,'label' => 'Post Content'
-    ,'description' => 'This is the standard post box, now placed in a Piklist WorkFlow.'
+    ,'label' => __('Post Content', 'piklist-demo')
+    ,'description' => __('This is the standard post box, now placed in a Piklist WorkFlow.', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'options' => array (
       'wpautop' => true
@@ -29,9 +28,9 @@ Collapse: false
   piklist('field', array(
     'type' => 'editor'
     ,'field' => 'editor_user_add_more'
-    ,'label' => 'Post Content Add More'
+    ,'label' => __('Post Content Add More', 'piklist-demo')
     ,'add_more' => true
-    ,'description' => 'This is the teeny editor with an add more.'
+    ,'description' => __('This is the teeny editor with an add more.', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'options' => array (
       'media_buttons' => true
@@ -44,5 +43,3 @@ Collapse: false
     'location' => __FILE__
     ,'type' => 'Setting'
   ));
-
-?>

@@ -3,76 +3,77 @@
 Title: Checkbox Fields
 Capability: manage_options
 Order: 40
+Tab: Lists
 */
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox'
-    ,'label' => 'Checkbox'
+    ,'label' => __('Checkbox', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_add_more'
-    ,'label' => 'Checkbox Add More'
+    ,'label' => __('Checkbox Add More', 'piklist-demo')
     ,'add_more' => true
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_inline'
-    ,'label' => 'Single Line'
+    ,'label' => __('Single Line', 'piklist-demo')
     ,'value' => 'that'
     ,'list' => false
     ,'choices' => array(
-      'this' => 'This'
-      ,'that' => 'That'
+      'this' => __('This', 'piklist-demo')
+      ,'that' => __('That', 'piklist-demo')
     )
   ));
 
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'checkbox_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'list' => false
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'checkbox'
         ,'field' => 'checkbox_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => '1-1 Choice'
-          ,'second' => '1-2 Choice'
+          'first' => __('1-1 Choice', 'piklist-demo')
+          ,'second' => __('1-2 Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
       ,array(
         'type' => 'checkbox'
         ,'field' => 'checkbox_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => '2-1 Choice'
-          ,'second' => '2-2 Choice'
-          ,'third' => '2-3 Choice'
+          'first' => __('2-1 Choice', 'piklist-demo')
+          ,'second' => __('2-2 Choice', 'piklist-demo')
+          ,'third' => __('2-3 Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
@@ -82,16 +83,16 @@ Order: 40
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox_nested'
-    ,'label' => 'Nested Field'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => array(
       'first'
       ,'third'
     )
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=checkbox_nested_text] input.'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=checkbox_nested_text]')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'fields' => array(
       array(
@@ -108,7 +109,5 @@ Order: 40
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
-
-?>

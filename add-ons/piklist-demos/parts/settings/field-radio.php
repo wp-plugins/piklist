@@ -3,63 +3,62 @@
 Title: Radio Fields
 Setting: piklist_demo_fields
 Tab: Lists
-Tab Order: 30
 Order: 30
 */
 
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio'
-    ,'label' => 'Normal'
+    ,'label' => __('Normal', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
   
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_inline'
-    ,'label' => 'Single Line'
+    ,'label' => __('Single Line', 'piklist-demo')
     ,'value' => 'no'
     ,'list' => false
     ,'choices' => array(
-      'yes' => 'Yes'
-      ,'no' => 'No'
+      'yes' => __('Yes', 'piklist-demo')
+      ,'no' => __('No', 'piklist-demo')
     )
   ));
   
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'radio_list'
-    ,'label' => 'Group Lists'
+    ,'label' => __('Group Lists', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'radio'
         ,'field' => 'radio_list_1'
-        ,'label' => 'List #1'
+        ,'label' => __('List #1', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'third'
         ,'choices' => array(
-          'first' => 'First Choice'
-          ,'third' => 'Third Choice'
+          'first' => __('First Choice', 'piklist-demo')
+          ,'third' => __('Third Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
       ,array(
         'type' => 'radio'
         ,'field' => 'radio_list_2'
-        ,'label' => 'List #2'
+        ,'label' => __('List #2', 'piklist-demo')
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => 'First Choice'
-          ,'second' => 'Second Choice'
-          ,'third' => 'Third Choice'
+          'first' => __('First Choice', 'piklist-demo')
+          ,'second' => __('Second Choice', 'piklist-demo')
+          ,'third' => __('Third Choice', 'piklist-demo')
         )
         ,'columns' => 6
       )
@@ -69,13 +68,13 @@ Order: 30
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio_nested'
-    ,'label' => 'Nested Field'
+    ,'label' => __('Nested Field', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => 'First Choice'
-      ,'second' => 'Second Choice with a nested [field=radio_nested_text] input.'
-      ,'third' => 'Third Choice'
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => sprintf(__('Second Choice with a nested %s input.', 'piklist-demo'), '[field=radio_nested_text]')
+      ,'third' => __('Third Choice', 'piklist-demo')
     )
     ,'fields' => array(
       array(
@@ -92,7 +91,7 @@ Order: 30
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'Settings Section'
   ));
   
 ?>
