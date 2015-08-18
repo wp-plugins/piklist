@@ -148,6 +148,13 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 
 == Changelog ==
+= 0.9.4.28 =
+Release Date: August 18, 2015
+
+* ENHANCED: Widgets compatible with WordPress 4.3.
+* ENHANCED: Check if HTTP_USER_AGENT isset, before filtering the body class.
+
+
 = 0.9.4.27 =
 Release Date: June 19, 2015
 
