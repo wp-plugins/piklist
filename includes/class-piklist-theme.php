@@ -254,30 +254,33 @@ class PikList_Theme
   
   public static function body_class($classes)
   {
-    if (stristr($_SERVER['HTTP_USER_AGENT'], 'ipad')) 
+    if(isset($_SERVER['HTTP_USER_AGENT']))
     {
-      $device = 'ipad';
-    } 
-    elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'iphone') || strstr($_SERVER['HTTP_USER_AGENT'], 'iphone')) 
-    {
-      $device = 'iphone';
-    } 
-    elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'blackberry')) 
-    {
-      $device = 'blackberry';
-    } 
-    elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'android')) 
-    {
-      $device = 'android';
-    }
-    
-    if (!empty($device))
-    {
-      array_push($classes, $device);
-      
-      if ($device && $device != 'ipad')
+      if (stristr($_SERVER['HTTP_USER_AGENT'], 'ipad')) 
       {
-        array_push($classes, 'mobile');
+        $device = 'ipad';
+      } 
+      elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'iphone') || strstr($_SERVER['HTTP_USER_AGENT'], 'iphone')) 
+      {
+        $device = 'iphone';
+      } 
+      elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'blackberry')) 
+      {
+        $device = 'blackberry';
+      } 
+      elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'android')) 
+      {
+        $device = 'android';
+      }
+      
+      if (!empty($device))
+      {
+        array_push($classes, $device);
+        
+        if ($device && $device != 'ipad')
+        {
+          array_push($classes, 'mobile');
+        }
       }
     }
     

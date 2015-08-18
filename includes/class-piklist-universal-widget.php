@@ -30,7 +30,7 @@ class PikList_Universal_Widget extends WP_Widget
       $control_options['height'] = 200;
     }
       
-    $this->WP_Widget(
+    parent::__construct(
       ucwords(piklist::dashes($this->widget_name))
       ,__($title)
       ,array(
