@@ -2,7 +2,7 @@
 Contributors: piklist, p51labs, sbruner
 Tested up to: 4.3
 Requires at least: 3.7
-Stable tag: 0.9.4.28
+Stable tag: 0.9.4.29
 Donate link: http://piklist.com/get-involved/
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
