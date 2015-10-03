@@ -688,15 +688,6 @@ class Piklist_Admin
   public static function check_update($file, $version)
   {
     global $pagenow;
-
-    // TODO: Remove
-    // $_active = get_option('piklist_active_plugin_versions');
-    // $_active['piklist/piklist.php'] = array('0.9.0');
-    //
-    // update_option('piklist_active_plugin_versions', $_active);
-
-    // // piklist::pre($_active);
-    // // die;
   
     if (!is_admin() || !current_user_can('manage_options'))
     {
