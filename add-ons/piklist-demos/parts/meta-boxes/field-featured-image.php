@@ -7,7 +7,7 @@ Priority: default
 Context: side
 Collapse: true
 Tab: All
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 ?>
 

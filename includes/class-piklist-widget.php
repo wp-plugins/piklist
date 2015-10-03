@@ -15,9 +15,9 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 class Piklist_Widget
 {
   public static $current_widget = null;
-  
+
   private static $widget_classes = array();
-  
+
   /**
    * _construct
    * Class constructor.
@@ -30,10 +30,10 @@ class Piklist_Widget
    * @since 1.0
    */
   public static function _construct()
-  {    
+  {
     add_action('init', array('piklist_widget', 'init'));
     add_action('widgets_init', array('piklist_widget', 'widgets_init'));
-    
+
     add_filter('dynamic_sidebar_params', array('piklist_widget', 'dynamic_sidebar_params'));
   }
 
@@ -49,10 +49,10 @@ class Piklist_Widget
    * @since 1.0
    */
   public static function init()
-  {   
+  {
     self::register_sidebars();
   }
-  
+
   /**
    * register_sidebars
    * Register sidebars via the piklist_sidebars
@@ -73,11 +73,11 @@ class Piklist_Widget
      *
      * @param array Sidebar parameters.
      *
-     * 
+     *
      * @since 1.0
      */
     $sidebars = apply_filters('piklist_sidebars', array());
-    
+
     foreach ($sidebars as $sidebar)
     {
       register_sidebar(array_merge(array(
@@ -91,7 +91,7 @@ class Piklist_Widget
      ), $sidebar));
     }
   }
-  
+
   /**
    * widgets_init
    * Groups widgets for universal widgets.
@@ -106,10 +106,12 @@ class Piklist_Widget
   public static function widgets_init()
   {
     global $wp_widget_factory, $wp_version;
-    
+
     $widget_class = 'piklist_universal_widget';
 
-    foreach (piklist::$paths as $from => $path)
+    $addons_paths = piklist::paths();
+    
+    foreach ($addons_paths as $from => $path)
     {
       if (!piklist::directory_empty($path . '/parts/widgets'))
       {
@@ -118,7 +120,7 @@ class Piklist_Widget
         $suffix = '';
         $title = '';
         $description = '';
-      
+
         if (isset(piklist_add_on::$available_add_ons[$from]))
         {
           if (stripos(piklist_add_on::$available_add_ons[$from]['Name'], 'widget') === false)
@@ -147,7 +149,7 @@ class Piklist_Widget
       }
     }
   }
-  
+
   /**
    * widget
    * Insert description here
@@ -162,7 +164,7 @@ class Piklist_Widget
   public static function widget()
   {
     global $wp_widget_factory;
-    
+
     return isset($wp_widget_factory->widgets[self::$current_widget]) ? $wp_widget_factory->widgets[self::$current_widget] : null;
   }
 
@@ -178,10 +180,10 @@ class Piklist_Widget
    * @static
    * @since 1.0
    */
-  public static function dynamic_sidebar_params($params) 
+  public static function dynamic_sidebar_params($params)
   {
     $id = $params[0]['id'];
-    
+
     if (!isset(self::$widget_classes[$id]))
     {
       self::$widget_classes[$id] = 0;

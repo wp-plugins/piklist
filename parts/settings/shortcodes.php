@@ -2,17 +2,34 @@
 /*
 Title: Shortcodes
 Setting: piklist_core
-Tab Order: 10
+Order: 30
 */
   
-  $choices = piklist_shortcode::get_shortcodes();
-
   piklist('field', array(
-    'type' => 'checkbox'
+    'type' => 'group'
     ,'field' => 'shortocde_ui'
     ,'label' => __('Allow Shortcode UI', 'piklist')
-    ,'list' => count($choices) < 5 ? true : false
-    ,'columns' => count($choices) < 5 ? '12' : '4'
-    ,'help' => __('Enable the Shortcode UI for these non-Piklist shortcodes.', 'piklist')
-		,'choices' => $choices
+    ,'add_more' => true
+    ,'sortable' => false
+    ,'fields' => array(
+      array(
+        'type' => 'select'
+        ,'label' => 'Shortcode'
+        ,'field' => 'tag'
+        ,'columns' => 4
+        ,'choices' => piklist_shortcode::get_shortcodes()
+        ,'value' => 'piklist_form'
+      )
+      ,array(
+        'type' => 'checkbox'
+        ,'label' => 'Options'
+        ,'field' => 'options'
+        ,'list' => false
+        ,'columns' => 8
+        ,'choices' => array(
+          'preview' => 'Preview'
+        )
+        ,'value' => 'preview'
+      )
+    )
   ));

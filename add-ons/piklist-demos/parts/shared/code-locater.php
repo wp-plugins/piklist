@@ -1,9 +1,27 @@
+<?php
 
-<div class="piklist-demo-help-source">
-
-  <p>
-  	<?php printf(__('The code that built this %s can be found here:', 'piklist-demo'), '<strong>' . $type . '</strong>'); ?><br>
-    <code><?php echo str_replace(ABSPATH, '', $location); ?></code>
-  </p>
+  $arguments = array(
+    'type' => 'html'
+    ,'value' => sprintf(__('The code that built this %s can be found here:', 'piklist-demo'), '<strong>' . $type . '</strong>') . '<br><code>' . str_replace(ABSPATH, '', $location) . '</code>'
+  );
   
-</div>
+  switch ($type)
+  {
+    case 'Meta Box':
+      
+      $arguments['template'] = 'field';
+    
+      $arguments['attributes'] = array(
+        'class' => 'piklist-demo-highlight'
+      );
+    
+    break;
+    
+    case 'Help tab':
+    
+      $arguments['template'] = 'field';
+    
+    break;
+  }
+
+  piklist('field', $arguments);

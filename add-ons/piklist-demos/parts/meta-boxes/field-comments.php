@@ -6,7 +6,7 @@ Order: 30
 Priority: default
 Context: side
 Collapse: true
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 ?>
 

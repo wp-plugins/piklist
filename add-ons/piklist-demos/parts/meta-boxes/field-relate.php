@@ -1,13 +1,12 @@
 <?php
 /*
 Title: Post Relationships
-Post Type: piklist_demo
+Post Type: piklist_demo, page
 Order: 10
 Priority: default
 Context: side
-Collapse: true
 Tab: All
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   // Let's show the Meta Box 
@@ -16,6 +15,25 @@ Flow: Edit Demo
     ,'scope' => 'post'
     ,'template' => 'field'
   ));
+
+  // Or you could do it the new way, make your own relationship fields!
+  // piklist('field', array(
+  //   'type' => 'checkbox'
+  //   ,'field' => '_' . piklist::$prefix . 'relate_post'
+  //   ,'choices' => piklist(
+  //     get_posts(array(
+  //       'post_type' => 'post'
+  //       ,'numberposts' => -1
+  //       ,'orderby' => 'title'
+  //       ,'order' => 'ASC'
+  //     ))
+  //     ,array('ID', 'post_title')
+  //   )
+  //   ,'relate' => array(
+  //     'scope' => 'post'
+  //   )
+  // ));
+
 ?>
 
 <?php 
@@ -35,14 +53,10 @@ Flow: Edit Demo
     <h4><?php _e('Related Posts', 'piklist-demo');?></h4>
 
     <ol>
-
       <?php foreach ($related as $related_post): ?>
-
         <li><?php _e($related_post->post_title); ?></li>
-
       <?php endforeach; ?>
-
-    </ol>
+   </ol>
 
     <hr />
 
@@ -54,6 +68,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-
-?>

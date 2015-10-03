@@ -57,6 +57,18 @@ class Piklist_WordPress
   private static $meta_id_column;
 
   /**
+   * @var string The meta key used for orderby if applicable.
+   * @access public
+   */
+  private static $meta_key;
+  
+  /**
+   * @var string The order method for the meta query if the orderby is for meta.
+   * @access public
+   */
+  private static $meta_order = 'ASC';
+  
+  /**
    * @var string The orderby method for the meta table.
    * @access public
    */
@@ -87,10 +99,11 @@ class Piklist_WordPress
     add_action('pre_user_query', array('piklist_wordpress', 'pre_user_query'));
     add_action('posts_where', array('piklist_wordpress', 'relation_taxonomy'));
     add_action('wp_scheduled_delete', array('piklist_wordpress', 'garbage_collection'));
+    add_action('pre_get_posts', array('piklist_wordpress', 'pre_get_posts'));
     
     add_filter('get_meta_sql', array('piklist_wordpress', 'get_meta_sql'), 101, 6);
   }
-  
+
   /**
    * garbage_collection
    * Deletes all expired transients from the options table.
@@ -158,8 +171,34 @@ class Piklist_WordPress
     {
       $parent_relation = get_query_var('meta_relation') ? strtoupper(get_query_var('meta_relation')) : 'AND';
     }
-    
+
     return self::get_sql_for_query($query, 0, $parent_relation);
+  }
+  
+  /**
+   * pre_get_posts
+   * Get the order parameter if it has to do with meta
+   *
+   * @param object $query The current query object.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function pre_get_posts(&$query)
+  {
+    if (isset($query->query_vars['orderby']))
+    {
+      if (in_array($query->query_vars['orderby'], array('meta_value', 'meta_value_num')) && !is_null($query->query_vars['order']))
+      {
+        self::$meta_order = $query->query_vars['order'];
+      }
+    
+      if (!is_null($query->query_vars['meta_key']))
+      {
+        self::$meta_key = $query->query_vars['meta_key'];
+      }      
+    }
   }
   
   /**
@@ -235,7 +274,7 @@ class Piklist_WordPress
    */
   public static function get_sql_for_query($query, $depth = 0, $parent_relation = 'AND')
   {
-    global $wpdb;
+    global $wpdb, $wp_query;
     
     $sql_chunks = array(
       'join' => array()
@@ -310,16 +349,19 @@ class Piklist_WordPress
             $meta_compare = '=';
           }
           
+          $meta_order_string = 
           $meta_orderby_string = '';
           
           $meta_key_string = '';
           if (array_key_exists('key', $clause)) 
           {
+            $clause['key'] = trim($clause['key']);
+            
             $meta_key_string = $wpdb->prepare("meta_key = %s", trim($clause['key']));
             
-            $meta_orderby_string = "ORDER BY meta_value ASC";
+            $meta_order_string = $clause['key'] == self::$meta_key ? self::$meta_order : null;
+            $meta_orderby_string = "ORDER BY meta_value " . $meta_order_string;
             
-            // TODO: test_meta_query_with_role
             if (self::$capabilities_meta_key === $key)
             {
               $relation = 'AND';
@@ -365,7 +407,7 @@ class Piklist_WordPress
 
             $meta_value_string = $wpdb->prepare("CAST(meta_value AS {$meta_type}) {$meta_compare} {$meta_value_string}", $meta_value);
             
-            $meta_orderby_string = "ORDER BY CAST(meta_value AS {$meta_type}) ASC";
+            $meta_orderby_string = "ORDER BY CAST(meta_value AS {$meta_type}) " . $meta_order_string;
           }
           
           switch (self::$primary_type)
@@ -393,7 +435,7 @@ class Piklist_WordPress
           
           if ('AND' == $relation && !empty(self::$primary_ids))
           {
-            $meta_compare_string .= " $relation " . self::$meta_id_column . " IN (" . implode(',', self::$primary_ids) . ")";
+            $meta_compare_string .= " $relation " . self::$meta_id_column . " IN (" . implode(',', array_map('intval', self::$primary_ids)) . ")";
           }
 
           if (!empty($meta_compare_string)) 
@@ -442,7 +484,7 @@ class Piklist_WordPress
 
     self::$primary_ids = array_unique(self::$primary_ids);
     
-    $sql_chunks['where'][] = " " . self::$primary_table . "." . self::$primary_id_column . " IN (" . (!empty(self::$primary_ids) ? implode(',', self::$primary_ids) : '-1') . ") ";
+    $sql_chunks['where'][] = " " . self::$primary_table . "." . self::$primary_id_column . " IN (" . (!empty(self::$primary_ids) ? implode(',', array_map('intval', self::$primary_ids)) : '-1') . ") ";
     
     if (!empty($sql_chunks['where']))
     {

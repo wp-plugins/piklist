@@ -17,4 +17,3 @@ Tab: All
     'location' => __FILE__
     ,'type' => 'Help tab'
   ));
-?>

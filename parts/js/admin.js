@@ -8,9 +8,8 @@
 
   $(document).ready(function()
   {  
-    $('body')
-      .wptabs();
-      
+    $('body').wptabs();
+    
     piklist_admin.init();
   });
   
@@ -18,6 +17,7 @@
   
     init: function()
     {
+      piklist_admin.body_class();
       piklist_admin.meta_boxes();
       piklist_admin.post_name();
       piklist_admin.post_submit_meta_box();
@@ -26,9 +26,19 @@
       piklist_admin.empty_elements();
       piklist_admin.list_tables();
       piklist_admin.widgets();
+      piklist_admin.customizer();
       piklist_admin.shortcodes();
       piklist_admin.notices();
       piklist_admin.pointers();
+      piklist_admin.add_ons();
+    },
+    
+    body_class: function()
+    {
+      if (window.location != window.parent.location)
+      {
+        $('body').addClass('piklist-in-iframe');
+      }
     },
     
     notices: function()
@@ -49,29 +59,48 @@
     
     pointers: function()
     {
-      if (typeof $.pointers != 'undefined')
+      $.each(piklist.pointers, function(index) 
       {
-        $.each(piklist.pointers, function(index) 
+        var pointer_id = this.pointer_id,
+          options = $.extend(this.options, {
+            close: function() 
+            {
+              $.ajax({
+                type: 'POST',
+                url: ajaxurl,
+                dataType: 'json',
+                data: {
+                  action: 'dismiss-wp-pointer',
+                  pointer: pointer_id
+                }
+              });
+            }
+          });
+      
+        $(this.target)
+          .pointer(options)
+          .pointer('open');
+      });
+    },
+    
+    add_ons: function()
+    {
+      if ($('.piklist-field-add-on-button').length > 0)
+      {
+        $('.piklist-field-add-on-button').click(function(event)
         {
-          var pointer_id = this.pointer_id,
-            options = $.extend(this.options, {
-              close: function() 
-              {
-                $.ajax({
-                  type: 'POST',
-                  url: ajaxurl,
-                  dataType: 'json',
-                  data: {
-                    action: 'dismiss-wp-pointer',
-                    pointer: pointer_id
-                  }
-                });
-              }
-            });
+          event.preventDefault();
         
-          $(this.target)
-            .pointer(options)
-            .pointer('open');
+          if ($(this).hasClass('button-primary'))
+          {
+            $(this).removeClass('button-primary').addClass('button').text('Disable').prev(':checkbox').attr('checked', true);
+            $(this).next('a').show();
+          }
+          else
+          {
+            $(this).removeClass('button').addClass('button-primary').text('Activate').prev(':checkbox').attr('checked', false);
+            $(this).next('a').hide();
+          }
         });
       }
     },
@@ -106,7 +135,34 @@
 
     thickbox: function()
     {
-      $('.piklist-list-table-export-button').on('click', function() 
+      var frame;
+      
+      $(document).on('click', 'body.piklist-in-iframe .piklist-upload-file-button, body.piklist-in-iframe .wp-media-buttons button', function()
+      {
+        $('#TB_iframeContent', window.parent.document).css({
+          'position': 'absolute'
+          ,'top': 0
+          ,'left': 0
+          ,'height': $('#TB_window', window.parent.document).height()
+        });
+        
+        setTimeout(function()
+        {
+          var frame = typeof wp.media.frames.file_frame != 'undefined' ? wp.media.frames.file_frame : wp.media.frame;
+
+          frame.on('close', function() 
+          {
+            $('#TB_iframeContent', window.parent.document).css({
+              'position': 'relative'
+              ,'top': 'auto'
+              ,'left': 'auto'
+              ,'height': $('#TB_window', window.parent.document).height() - $('#TB_title', window.parent.document).height()
+            });
+          });
+        }, 100);
+      });
+      
+      $(document).on('click', '.piklist-list-table-export-button', function() 
       {
         setTimeout(function() 
         {
@@ -123,7 +179,7 @@
           $('#TB_ajaxContent').css({
             height: TB_HEIGHT - 45 + 'px'
           })
-        }, 100)
+        }, 100);
       });
     },
 
@@ -139,9 +195,15 @@
           .next('h3.hndle')
             .removeClass('hndle')
             .css('cursor', 'default');
-
-      $('.piklist-meta-box-lock').show();
       
+      $('.piklist-meta-box-lock').each(function()
+      {
+        if (!$(this).hasClass('hide-if-js'))
+        {
+          $(this).show();
+        }
+      });
+
       $('.piklist-meta-box > .inside').each(function()
       {
         if ($(this).find(' > *:first-child').hasClass('piklist-field-container'))
@@ -210,7 +272,7 @@
         if (wp.mce.views)
         {
           var tag = typeof shortcode.shortcode != 'undefined' ? shortcode.shortcode : shortcode;
-
+          
           wp.mce.views.register(tag, piklist_admin.shortcode(tag));
         }
       });
@@ -244,7 +306,7 @@
       {
         event.preventDefault(); 
         
-        var title = 'Insert Shortcode',
+        var title = $(this).prop('title'),
           editor = typeof parent.tinymce.activeEditor != 'undefined' ? parent.tinymce.activeEditor : false,
           frame_in_frame = window.location != window.parent.location,
           content = editor && !frame_in_frame ? editor.selection.getContent({format : 'html'}) : null,
@@ -253,7 +315,27 @@
           attributes = {
             page: 'shortcode_editor'
           };
+          
+        if ($(this).hasClass('mce-btn'))
+        {
+          title = $(this).attr('aria-label');
 
+          attributes[piklist.prefix + 'shortcode_data[name]'] = $(this).attr('role');
+          attributes[piklist.prefix + 'shortcode_data[action]'] = 'insert';
+        }
+        else if ($(this).hasClass('mce-ico'))
+        {
+          title = $(this).parents('.mce-btn').attr('aria-label');
+          
+          attributes[piklist.prefix + 'shortcode_data[name]'] = $(this).parents('.mce-btn').attr('role');
+          attributes[piklist.prefix + 'shortcode_data[action]'] = 'insert';
+        }
+        else if ($(this).data('piklist-shortcode'))
+        {
+          attributes[piklist.prefix + 'shortcode_data[name]'] = $(this).data('piklist-shortcode');
+          attributes[piklist.prefix + 'shortcode_data[action]'] = 'insert';
+        }
+        
         if (typeof pagenow != 'undefined' && $.inArray(pagenow, ['post', 'post-new']) > -1)
         {
           attributes[piklist.prefix + 'post[ID]'] = $('#post_ID').val();
@@ -263,7 +345,7 @@
         
         if (content && !frame_in_frame)
         {
-          attributes[piklist.prefix + 'shortcode_data[content][]'] = content;
+          attributes[piklist.prefix + 'shortcode_data[content]'] = content;
         }
         
         attributes['TB_iframe'] = 'true';
@@ -273,9 +355,9 @@
         $(window, parent).trigger('resize');
       });
       
-      if ($('form#_shortcode').length > 0)
+      if ($('form#' + piklist.prefix + 'shortcode').length > 0)
       {
-        if ($('div#piklist_form_admin_notice.update').length > 0)
+        if ($('div#piklist_notice.notice').length > 0)
         {
           var data = $(':input[name^="' + piklist.prefix + 'shortcode_data["]').serializeArray(),
             shortcode = {
@@ -338,7 +420,7 @@
         {
           $('ul.piklist-shortcodes > .attachment').on('click', function(event)
           {
-            $('input[name="' + piklist.prefix + 'shortcode_data[name][]"]').val($(this).attr('data-piklist-shortcode'));
+            $('input[name="' + piklist.prefix + 'shortcode_data[name]"]').val($(this).data('piklist-shortcode'));
           
             var data = $(':input[name^="' + piklist.prefix + 'shortcode_data["]').serializeArray(),
               post_id = typeof pagenow != 'undefined' && $.inArray(pagenow, ['post', 'post-new']) > -1 ? '&' + piklist.prefix + 'post[ID]=' + $('#post_ID').val() : null,
@@ -348,8 +430,8 @@
             {
               attributes[value['name']] = value['value'];
             });
-            
-            location.href = location.href + (location.href.indexOf('?') > -1 ? '&' : '?') + $.param(attributes) + (post_id ? post_id : '');
+
+            window.location.href = window.location.href + (window.location.href.indexOf('?') > -1 ? '&' : '?') + $.param(attributes) + (post_id ? post_id : '');
           });
         }
       }
@@ -362,7 +444,6 @@
         
         getContent: function()
         {
-          piklist.shortcodes[this.shortcode.tag].preview = true;
           if (piklist.shortcodes[this.shortcode.tag].preview === true)
           {
             var is_IE = typeof tinymce != 'undefined' ? tinymce.Env.ie : false,
@@ -407,7 +488,7 @@
                       {
                         preview.height(preview.contents().find('html').outerHeight());
                       };
-                    
+
                     $(this).contents().find('head').find('link').each(function()
                     {
                       head.append($(this).prop('outerHTML'));
@@ -415,7 +496,9 @@
                     
                     body
                       .css('min-height', '100%')
-                      .html(response.data.html);
+                      .html(response.data.html)
+                      .find('a')
+                      .attr('target', '_blank');
                     
                     resize();
 
@@ -447,7 +530,26 @@
 
             return preview.prop('outerHTML');
           }
-
+          else if (piklist.shortcodes[this.shortcode.tag].inline === true)
+          {
+            this.template = wp.media.template('piklist-shortcode-inline');
+            
+            var preview = [];
+            for (var attribute in this.shortcode.attrs.named)
+            {
+              preview.push(attribute + ': ' + this.shortcode.attrs.named[attribute]);
+            }
+            
+            return this.template({
+              tag: this.shortcode.tag,
+              attributes: this.shortcode.attrs.named,
+              preview: preview,
+              options: typeof piklist.shortcodes[this.shortcode.tag] != 'undefined' ? piklist.shortcodes[this.shortcode.tag] : {
+                name: this.shortcode.tag.replace(/_/g, ' ').toUpperCase()
+              }
+            });
+          }
+          
           return this.template({
             tag: this.shortcode.tag,
             attributes: this.shortcode.attrs.named,
@@ -457,14 +559,64 @@
           });
         },
         
-        ui: function()
+        replaceMarkers: function() 
         {
-          
-          return this.template({
-            tag: this.shortcode.tag,
-            attributes: this.shortcode.attrs.named,
-            options: typeof piklist.shortcodes[this.shortcode.tag] != 'undefined' ? piklist.shortcodes[this.shortcode.tag] : {
-              name: this.shortcode.tag.replace(/_/g, ' ').toUpperCase()
+          this.getMarkers(function(editor, node) 
+          {
+            var selected = node === editor.selection.getNode(),
+              $view_node;
+
+            if (!this.loader && $(node).text() !== this.text) 
+            {
+              editor.dom.setAttrib(node, 'data-wpview-marker', null);
+              return;
+            }
+
+            if (piklist.shortcodes[this.type].inline === true)
+            {
+              var prev_node = $(node).prev(),
+                next_node = $(node).next(),
+                prev_html = typeof prev_node != 'undefined' && typeof prev_node.html() != 'undefined' ? prev_node.html() : '',
+                next_html = typeof next_node != 'undefined' && typeof next_node.html() != 'undefined' ? next_node.html() : '',
+                tag = typeof prev_node != 'undefined' ? prev_node.prop('tagName') : next_node.prop('tagName');
+              
+              tag = tag ? tag : 'p';
+                
+              $view_node = editor.$(
+                '<' + tag + '>' + 
+                  (prev_html + (prev_html != '' && prev_html.substr(prev_html.length - 6) != '&nbsp;' ? '&nbsp;' : '')) + 
+                  '<span class="wpview-wrap wpview-wrap-inline" data-wpview-text="' + this.encodedText + '" data-wpview-type="' + this.type + '">' +
+                    '<span class="wpview-body" contenteditable="false">' +
+                      '<span class="wpview-content wpview-type-' + this.type + '"></span>' +
+                    '</span>' +
+                  '</span>' + 
+                  ((next_html != '' && next_html.substr(0, 6) != '&nbsp;' ? '&nbsp;' : '') + next_html) + 
+                '</' + tag + '>'
+              );
+              
+              editor.$(prev_node).remove();
+              editor.$(next_node).remove();
+              
+              editor.$(node).replaceWith($view_node);
+            }
+            else
+            {
+              $view_node = editor.$(
+                '<div class="wpview-wrap" data-wpview-text="' + this.encodedText + '" data-wpview-type="' + this.type + '">' +
+                  '<p class="wpview-selection-before">\u00a0</p>' +
+                  '<div class="wpview-body" contenteditable="false">' +
+                    '<div class="wpview-content wpview-type-' + this.type + '"></div>' +
+                  '</div>' +
+                  '<p class="wpview-selection-after">\u00a0</p>' +
+                '</div>'
+              );        
+
+              editor.$(node).replaceWith($view_node);
+            }
+
+            if (selected && typeof editor.wp != 'undefined' && typeof editor.wp.setViewCursor != 'undefined') 
+            {
+              editor.wp.setViewCursor(false, $view_node[0]);
             }
           });
         },
@@ -508,12 +660,12 @@
               attributes[piklist.prefix + 'shortcode[' + key + ']'] = value;
             });
 
-            attributes[piklist.prefix + 'shortcode_data[name][]'] = shortcode.tag;
-            attributes[piklist.prefix + 'shortcode_data[action][]'] = 'update';
+            attributes[piklist.prefix + 'shortcode_data[name]'] = shortcode.tag;
+            attributes[piklist.prefix + 'shortcode_data[action]'] = 'update';
 
             if (typeof shortcode.content != 'undefined')
             {
-              attributes[piklist.prefix + 'shortcode_data[content][]'] = switchEditors._wp_Nop(shortcode.content);
+              attributes[piklist.prefix + 'shortcode_data[content]'] = switchEditors._wp_Nop(shortcode.content);
             }
 
             attributes['TB_iframe'] = 'true';
@@ -524,6 +676,72 @@
           }
         }
       };
+    },
+    
+    customizer: function()
+    {
+      if ($('body').hasClass('wp-customizer'))
+      {
+        $('.widget-tpl').on('click', function()
+        {
+          setTimeout(piklist_admin.customizer_widget_setup, 100);        
+        });
+        
+        setTimeout(piklist_admin.customizer_widget_setup, 100);
+        
+        $(document).on('widget-synced', function(event, widget, form)
+        {
+          if (widget.parent().attr('id').indexOf('customize-control-widget' + piklist.prefix + 'piklist-universal-widget') > -1)
+          {
+            var widget_container = widget.find('.widget-content:first'),
+              widget_inside = widget.find('.widget-inside:first');
+
+            widget_inside.css('top', 0);
+            
+            widget_container
+              .css({
+                'visibility': 'hidden',
+                'max-height': '100%'
+              })
+              .html(form)
+          
+            widget_container
+              .removeData('wptabs')
+              .removeData('piklistgroups')
+              .removeData('piklistcolumns')
+              .removeData('piklistmediaupload')
+              .removeData('piklistaddmore')
+              .removeData('piklistfields');
+            
+            setTimeout(function()
+            {
+              widget_container
+                .find('.piklist-universal-widget-form-container')
+                .wptabs()
+                .piklistgroups()
+                .piklistcolumns()
+                .piklistmediaupload()
+                .piklistaddmore({
+                  sortable: true
+                })
+                .piklistfields();
+          
+                widget_container.css({
+                  'visibility': 'visible',
+                  'overflow': 'visible'
+                });
+            }, 50);
+          }
+        });
+      }
+    },
+    
+    customizer_widget_setup: function()
+    {
+      $('.piklist-universal-widget-select').each(function()
+      {
+        $(this).parents('.widget-content:eq(0)').off('change input propertychange');
+      });
     },
     
     widgets: function()
@@ -595,9 +813,7 @@
               
       piklist_admin.widget_title();
       
-      var current_widget = null;
-      
-      $(document).on('change', '.piklist-universal-widget-select', function()
+      $(document).on('change', '.piklist-universal-widget-select', function(event)
       {
         var widget = $(this).val(),
           addon = $(this).attr('data-piklist-addon'),
@@ -609,8 +825,6 @@
           widget_title = $(this).parents('.widget').find('.widget-title h4'),
           widget_description = widget_container.find('.piklist-universal-widget-select-container p'),
           wptab_active = widget_container.attr('data-piklist-wptab-active');
-        
-        current_widget = widget_container.parents('.widget-inside:eq(0)');
           
         if (widget)
         {
@@ -628,8 +842,8 @@
               widget: widget,
               number: widget_number
             }
-            ,success: function(response) 
-            {           
+            ,success: function(response)
+            {
               if (response.tiny_mce != '' && response.quicktags != '')
               {
                 tinyMCEPreInit.mceInit = $.extend(tinyMCEPreInit.mceInit, response.tiny_mce);
@@ -639,7 +853,7 @@
               widget_title
                 .find('.in-widget-title')
                 .text(':  ' + response.widget.data.title)
-              
+
               widget_description.text(response.widget.data.description);
 
               widget_form
@@ -659,16 +873,17 @@
                 .piklistaddmore({
                   sortable: true
                 })
-                .piklistfields();
-            
+                
+              widget_form.piklistfields();
+
               widget_container
                 .find('.wp-tab-bar > li')
                 .removeClass('wp-tab-active');
-            
+
               widget_container
                 .find('.wp-tab-bar > li:first')
                 .addClass('wp-tab-active');
-                
+
               if (widget_container.find('.wp-tab-bar').length > 0 && typeof wptab_active != 'undefined')
               {
                 widget_container
@@ -677,7 +892,7 @@
                   .get(2)
                   .addClass('wp-tab-active');
               }
-            
+
               piklist_admin.widget_dimensions(widget_container, response.widget.data.height, response.widget.data.width);
             }
           });
@@ -867,4 +1082,3 @@
   $.fn.wptabs.Constructor = WPTabs;
   
 })(jQuery, window, document);
-  

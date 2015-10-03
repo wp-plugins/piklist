@@ -4,14 +4,13 @@ Title: Advanced
 Class: custom-class-1 custom-class-2
 Width: 720
 */
-?>
 
-<?php echo $before_widget; ?>
+	echo $before_widget;
 
-  <?php echo $before_title; ?>
-  
-  <?php echo $after_title; ?>
+	 echo $before_title;
 
-  <?php piklist::pre($settings); ?>
-    
-<?php echo $after_widget; ?>
+	 echo $after_title;
+
+	 piklist::pre($settings);
+
+	echo $after_widget;

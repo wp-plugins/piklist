@@ -1,3 +1,6 @@
+/* --------------------------------------------------------------------------------
+  Piklist Libraries
+--------------------------------------------------------------------------------- */
 
 ;(function($, window, document, undefined) 
 {
@@ -13,60 +16,9 @@
       })
       .piklistmediaupload()
       .piklistfields();
-
-    // NOTE: WordPress Updates to allow meta boxes and widgets to have tinymce
-    $('.meta-box-sortables, div.widgets-sortables')
-      .on('sortstart', function(event, ui)
-      {
-        if ($(this).is('.meta-box-sortables, div.widgets-sortables'))
-        {
-          $(this).find('.wp-editor-area').each(function()
-          {
-            if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
-            {
-              var id = $(this).attr('id'),
-                command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
-
-              switchEditors.go(id, 'tmce');
-
-              tinyMCE.execCommand(command, false, id);
-            }
-          });
-        }
-      })
-      .on('sortstop sortreceive', function(event, ui)
-      {
-        if ($(this).is('.meta-box-sortables, div.widgets-sortables'))
-        {
-          $(this).find('.wp-editor-area').each(function()
-          {
-            if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
-            {
-              var id = $(this).attr('id'),
-                command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
-
-              tinyMCE.execCommand(command, false, id);
-            }
-          });
-        }
-      });
-
-    // NOTE: Allow dynamically added editors to work properly with added buttons
-    $(document).on('click', '.insert-media.add_media', function(event)
-    {
-      tinyMCE.get($(this).attr('data-editor')).focus();
-    });
   });
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   
   /* --------------------------------------------------------------------------------
     Piklist Fields - Sets up Field rules and handles dynamic fields
@@ -76,15 +28,15 @@
   {
     this.$element = $(element);
 
-    var _fields_ids = this.$element.find('[name="' + piklist.prefix + '[fields_id]"]'),
-      fields_ids = _fields_ids.length > 0 ? _fields_ids : this.$element.parents('form:first').find('[name="' + piklist.prefix + '[fields_id]"]');
+    var _fields_ids = this.$element.find('[name="' + piklist.prefix + '[fields]"]'),
+      fields_ids = _fields_ids.length > 0 ? _fields_ids : this.$element.parents('form:first').find('[name="' + piklist.prefix + '[fields]"]');
     
     this.ids = fields_ids.map(function()
-                { 
-                  return $(this).val(); 
-                })
-                .get();
-  
+               { 
+                 return $(this).val(); 
+               })
+               .get();
+                
     this._init();
   };
   
@@ -95,39 +47,38 @@
     processed_conditions: [],
     
     events: [],
+    
+    templates: [],
 
     _init: function()
     {
-      if (typeof piklist_fields != 'undefined')
-      {
-        this.fields();
-      }
-    },
-  
-    fields: function()
-    {  
+      var fields;
+      
       for (var i in this.ids)
       {
-        if (typeof piklist_fields[this.ids[i]] != 'undefined')
+        fields = $(':input[name="' + piklist.prefix + '[fields]"][value="' + this.ids[i] + '"]').data('piklist-fields');
+        
+        if (typeof fields != 'undefined')
         {
-          this.process_fields(this.ids[i]);        
+          this.process_fields(this.ids[i], fields);
         }
       }
-
+      
       this.process_events();
     },
     
-    process_fields: function(id)
+    process_fields: function(id, fields)
     {
-      var fields = this.to_array(piklist_fields[id]);
-
       for (var i in fields)
       {
         for (var j in fields[i])
         {
           if (!fields[i][j].display)
           {
-            this.process_field(fields[i][j], id);
+            if (fields[i][j].index == null || fields[i][j].index == 0)
+            {
+              this.process_field(fields[i][j], id);
+            }
           }
         }
       }
@@ -135,11 +86,16 @@
     
     process_events: function()
     {
-      if (this.events.length > 0)
+      for (var selector in this.processed_conditions)
       {
-        this.$element.find(this.events.join(',')).trigger('change');
+        $(document).off('change', selector, this.conditions_handler);
 
-        this.events = [];
+        $(document).on('change', selector, {
+          piklistfields: this,
+          list: this.processed_conditions[selector]
+        }, this.conditions_handler);
+
+        $(selector).trigger('change');
       }
     },
     
@@ -161,75 +117,66 @@
         }
       }
 
-      if (field.multiple)
+      if (field.multiple && field.name)
       {
-        $(':input[name="' + field.name + '"]:not(:hidden)')
-          .on('click', this.mutiple_handler)
-          .each(this.mutiple_handler);
-      }
+        if (field.name.match(/\[[0-9]\]/))
+        {
+          var i = 0,
+            fields = $(':input[name^="' + field.name.replace(/\[[0-9]\]/, '[' + i + ']') + '"]:not(:hidden)');
 
+          while (fields.length > 0)
+          {
+            fields
+              .on('click', this.multiple_handler)
+              .each(this.multiple_handler);
+
+            fields = $(':input[name^="' + field.name.replace(/\[[0-9]\]/, '[' + i++ + ']') + '"]:not(:hidden)')
+          }
+        }
+        else
+        {
+          $(':input[name="' + field.name + '"]:not(:hidden)')
+            .on('click', this.multiple_handler)
+            .each(this.multiple_handler);
+        }
+      }
+      
       if (field.conditions)
       {
         var field_id,
-          type,
-          key,
-          relation,
-          to_trigger = '';
+          field_selector,
+          field_event;
                     
         for (var i in field.conditions)
         {
           if (i != 'relation' && typeof field.name != 'undefined' && !field.display)
           {
-            type = field.conditions[i].type;
-          
-            if (!this.processed_conditions[type])
-            {
-              this.processed_conditions[type] = [];
-            }
-          
-            switch (type)
+            switch (field.conditions[i].type)
             {
               case 'update':
           
-                var _field = field,
-                  field_selector = '[name="' + field.conditions[i].name + '"]',
-                  key = field.name;
-                
-                if ($.inArray(key, this.processed_conditions[type]) == -1)
-                {
-                  $(document).on('change', ':input[name="' + field.name + '"]', {
-                    selector: field_selector,
-                    conditions: field.conditions
-                  }, this.conditions_handler);
+                field_selector = '[name="' + field.conditions[i].name + '"]';
+                field_event = ':input[name="' + field.name + '"]';
 
-                  this.processed_conditions[type].push(field.name);
-                }
-                          
               break;
         
               default:
 
                 field_selector = '[name="' + field.name + '"]';
-                key = field_selector + ':' + field.conditions[i].id; 
-
-                if ($.inArray(key, this.processed_conditions[type]) == -1 || $(':input[type="hidden"][name="widget_number"]').length > 0)
-                {
-                  $(document).on('change', '.' + field.conditions[i].id, {
-                    selector: field_selector,
-                    conditions: field.conditions
-                  }, this.conditions_handler);
-                                  
-                  this.processed_conditions[type].push(key);
-
-                  if ($.inArray('*:not(:radio)[class~="' + field.conditions[i].id + '"]', this.events) == -1)
-                  {
-                    this.events.push('*:not(:radio)[class~="' + field.conditions[i].id + '"]');
-                    this.events.push(':radio:checked[class~="' + field.conditions[i].id + '"]');
-                  }
-                }
+                field_event = '.' + field.conditions[i].id;
           
               break;
             }
+            
+            if (typeof this.processed_conditions[field_event] === 'undefined')
+            { 
+              this.processed_conditions[field_event] = [];
+            }
+            
+            this.processed_conditions[field_event].push({
+              selector: field_selector,
+              conditions: field.conditions
+            });
           }
         }
       }
@@ -255,132 +202,101 @@
       {
         case 'editor':
           
-          $('textarea')
-            .filter(function() 
+          if (typeof this.templates['piklist-editor-proxy'] == 'undefined')
+          {
+            this.templates['piklist-editor-proxy'] = $('#wp-piklist-editor-proxy-wrap').html().trim();
+
+            $('#wp-piklist-editor-proxy-wrap').remove();
+          }
+
+          var $this = this,
+            editor_ids = [];
+          
+          $('textarea[name*="' + field.name.split(/(?!^)\[[\d]\]/g).join('"][name*="') + '"]').each(function()
+          {
+            var element = $(this),
+              wrapper = element.parents('.wp-editor-wrap:eq(0)'),
+              id = element.attr('id'),
+              original_id = id.replace(/\d+$/, 0),
+              index = id.match(/\d+$/)[0],
+              template;
+
+            if (index == 0 && typeof $this.templates[id] == 'undefined')
             {
-              return this.name.match(field.name.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&").replace(/[0-9]/g, '[0-9]'));
-            })
-            .each(function()
+              $this.templates[id] = wrapper.prop('outerHTML');
+            }
+            
+            if (element.parents('#wp-' + id + '-editor-container').length == 0)
             {
-              var id = $(this).attr('id'),
-                command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
-                
-              if (typeof id == 'undefined')
+              if (typeof $this.templates[original_id] == 'undefined')
               {
-                var original_id = $(this).attr('data-piklist-original-id'),
-                  name = $(this).attr('name'),
-                  $editor_wrap = $(this).parents('.wp-editor-wrap:first'),
-                  fields_id = $(this).parents('form:first').find('[name="' + piklist.prefix + '[fields_id]"]').val();
-
-                id = Math.random().toString(36).substr(2, 9) + 'piklisteditor' + name.replace(/[^A-Z0-9]/g, '');
-
-                $editor_wrap
-                  .css('height', $editor_wrap.height() + 'px')
-                  .empty();
-
-                $.ajax({
-                  type : 'POST',
-                  url : ajaxurl,
-                  async: false,
-                  dataType: 'json',
-                  data: {
-                    action: 'piklist_form',
-                    method: 'field',
-                    fields_id: fields_id,
-                    field: {
-                      type: field.type,
-                      field: field.field,
-                      attributes: field.attributes,
-                      scope: field.scope,
-                      options: field.options,
-                      required: field.required,
-                      prefix: field.prefix,
-                      template: 'field',
-                      embed: true,
-                      value: false,
-                      id: id
-                    }
-                  }
-                  ,success: function(response)
-                  {
-                    if (response.tiny_mce != '')
-                    {
-                      tinyMCEPreInit.mceInit = $.extend(tinyMCEPreInit.mceInit, response.tiny_mce);
-                    }
-
-                    if (response.quicktags != '')
-                    {
-                      tinyMCEPreInit.qtInit = $.extend(tinyMCEPreInit.qtInit, response.quicktags);
-                    }
-
-                    $(response.field).insertAfter($editor_wrap);
-
-                    $editor_wrap.remove();
-
-                    quicktags(tinyMCEPreInit.qtInit[id]);
-
-                    QTags._buttonsInit();
-
-                    tinyMCE.init(tinyMCEPreInit.mceInit[id]);
-                  }
-                });
+                original_id = element.attr('name').replace(/\[[0-9]\]/, '[0]').replace(/\]/g, '').replace(/\[/g, '_');
+                original_id += (original_id.indexOf('_', original_id.length - 1) !== -1 ? null : '_') + 0;
               }
-              else if (typeof tinyMCEPreInit.qtInit[id] == 'undefined')
+
+              template = $($this.templates[original_id].replace(new RegExp(original_id, 'g'), id));
+              
+              template
+                .find('textarea')
+                .val(element.val());
+
+              $(template).insertAfter(wrapper);
+            
+              wrapper.remove();
+              
+              if (typeof tinyMCEPreInit.qtInit[id] == 'undefined')
               {
-                for (original_id in tinyMCEPreInit.qtInit)
-                {
-                  if (original_id.substr(original_id.indexOf('piklisteditor') + ('piklisteditor').length) == id.substr(id.indexOf('piklisteditor') + ('piklisteditor').length))
-                  {
-                    tinyMCEPreInit.mceInit[id] = tinyMCEPreInit.mceInit[original_id];
-                    tinyMCEPreInit.mceInit[id].elements = id;
-
-                    tinyMCEPreInit.qtInit[id] = tinyMCEPreInit.qtInit[original_id];
-                    tinyMCEPreInit.qtInit[id].id = id;
-
-                    break;
-                  }
-                }
-
-                quicktags(tinyMCEPreInit.qtInit[id]);
-
-                QTags._buttonsInit();
-
-                tinyMCE.execCommand(command, false, id);
+                tinyMCEPreInit.qtInit[id] = JSON.parse(JSON.stringify(tinyMCEPreInit.qtInit[original_id]));
+                tinyMCEPreInit.qtInit[id].id = id;
               }
-              else if ($(this).siblings('.mce-tinymce, .quicktags-toolbar').length == 0)
+
+              if (typeof tinyMCEPreInit.mceInit[id] == 'undefined')
               {
-                quicktags(tinyMCEPreInit.qtInit[id]);
-
-                QTags._buttonsInit();
-
-                tinyMCE.execCommand(command, false, id);
+                tinyMCEPreInit.mceInit[id] = JSON.parse(JSON.stringify(tinyMCEPreInit.mceInit[original_id]));
+                tinyMCEPreInit.mceInit[id].elements = id;
+                tinyMCEPreInit.mceInit[id].selector = '#' + id;
+                tinyMCEPreInit.mceInit[id].body_class = tinyMCEPreInit.mceInit[id].body_class.replace(original_id, id);
               }
-            });
+              else
+              {
+                tinyMCE.execCommand(tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor', true, id);                
+              }
 
+              editor_ids.push(id);
+            }
+          });
+          
+          for (var i = 0; i < editor_ids.length; i++)
+          {
+            quicktags(tinyMCEPreInit.qtInit[editor_ids[i]]);
+
+            QTags._buttonsInit();
+            
+            tinyMCE.init(editor_ids[i]);
+          
+            if (typeof switchEditors != 'undefined')
+            {
+              switchEditors.go(editor_ids[i], 'html');
+              switchEditors.go(editor_ids[i], 'tmce');
+            }
+          }
+          
         break;
 
         case 'datepicker':
           
-          $(':input[name="' + field.name + '"]').each(function()
+          $(':input[name*="' + field.name.split(/(?!^)\[[\d]\]/g).join('"][name*="') + '"]:not(.hasDatepicker)').each(function()
           {
-            if (!$(this).hasClass('hasDatepicker'))
-            {
-              $(this)
-                .attr('autocomplete', 'off')
-                .datepicker(options);
-            }
+            $(this)
+              .attr('autocomplete', 'off')
+              .datepicker(options);
           });
 
         break;
 
         case 'colorpicker':
 
-          $(':input[name="' + field.name + '"]').each(function()
-          {
-            $(this)
-              .addClass('has-wp-color-picker')
-              .wpColorPicker(options);
-          });
+          $(':input[name*="' + field.name.split(/(?!^)\[[\d]\]/g).join('"][name*="') + '"]').wpColorPicker(options);
 
         break;
         
@@ -402,7 +318,7 @@
       $(document).trigger('piklist:field:render', [field]);
     },
     
-    mutiple_handler: function(event)
+    multiple_handler: function(event)
     {
       var value = $(':input[name="' + $(this).attr('name') + '"]:not(:hidden)' + ($(this).is(':checkbox') || $(this).is(':radio') ? ':checked' : null)).val(),
         hidden = $(':input[name="' + $(this).attr('name') + '"][type="hidden"]');
@@ -427,19 +343,27 @@
         })];
       });
     },
-        
+    
     conditions_handler: function(event) 
     { 
-      var field, element, parent, context, i, widget_id,
-        selector = event.data.selector,
+      var $this = event.data.piklistfields;
+
+      for (var i in event.data.list)
+      {
+        $this.conditions($(this), event.data.list[i].selector, event.data.list[i].conditions);
+      }
+    },
+    
+    conditions: function(condition_field, selector, list) 
+    { 
+      var field, element, parent, context, i, widget, widget_id, widget_id_base,
         conditions = [],
-        condition_field = typeof event.field != 'undefined' ? $(event.field) : $(this),
         condition_value,
         condition_selector,
-        add_more = $(this).parents('div[data-piklist-field-addmore]:eq(0)').length > 0 ? $(this).parents('div[data-piklist-field-addmore]:eq(0)') : null,
+        add_more = condition_field.parents('div[data-piklist-field-addmore]:eq(0)').length > 0 ? condition_field.parents('div[data-piklist-field-addmore]:eq(0)') : null,
         relation = 'and',
         form = condition_field.parents('form:first'),
-        index = condition_field.index(':input[name="' + condition_field.attr('name') + '"]:not(:input[type="hidden"])'),
+        index = condition_field.index('*[name="' + condition_field.attr('name') + '"]:not(:input[type="hidden"])'),
         reset_selector = selector.replace(/\[[0-9]+(?!.*[0-9])\]/, '[' + index + ']'),
         update,
         result,
@@ -459,53 +383,25 @@
           'opacity': 0
         };
 
-      // Get the field
-      if (selector.substr(0, 7) == '[name="')
-      {
-        field = $('*' + selector, add_more);
-
-        if (field.length == 0)
-        {
-          selector = selector.replace('[name="', '').replace('"]', '');
-          field = $('*[name^="' + selector.substr(0, selector.length - 2) + '"]', add_more);
-        }
-      }
-      else if (selector == reset_selector)
-      {
-        field = $(selector + ':eq(' + index + ')', add_more);
-      
-        if (field.length == 0)
-        {
-          field = $(selector, add_more);
-        }
-      }
-      else
-      {
-        field = $(reset_selector, add_more);
-      }
-      
-      if (field.length == 0)
-      {
-        field = $(':input', add_more)
-          .filter(function() 
-          {
-            return this.name.match(selector.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&").replace(/[0-9]/g, '[0-9]'));
-          });  
-      }
+      // Get the field in question
+      field = $('*[name*="' + (selector == reset_selector ? selector : reset_selector).replace('[name="', '').replace('"]', '').split(/(?!^)\[[\d]\]/g).join('"][name*="') + '"]', add_more);
       
       // Determine the conditions and relation
-      for (i in event.data.conditions)
+      for (i in list)
       {
         if (i == 'relation')
         {
-          relation = event.data.conditions[i];
+          relation = list[i];
         }
         else
         {
-          conditions.push(event.data.conditions[i]);
+          conditions.push(list[i]);
         }
       }
       
+      context = add_more ? add_more : form;
+      widget = $(':input[type="hidden"][name="widget_number"]', form);
+
       // Check the conditions and their outcomes
       for (i in conditions)
       {
@@ -514,48 +410,63 @@
           result = false;
           values = $.isArray(conditions[i].value) ? conditions[i].value : [conditions[i].value];
 
-          if ($(':input[type="hidden"][name="widget_number"]').length > 0)
+          if (widget.length > 0)
           {
-            widget_id = form.find(':input[type="hidden"][name="multi_number"]').val();
-            widget_id = !widget_id ? form.find(':input[type="hidden"][name="widget_number"]').val() : widget_id;
-  
-            element = 'widget-' + form.find(':input[type="hidden"][name="id_base"]').val() + '[' + widget_id + ']' + '[' + conditions[i].field + ']';
+            widget_id = $(':input[type="hidden"][name="multi_number"]', form).val();
+            widget_id = !widget_id ? widget.val() : widget_id;
+            widget_id_base = $(':input[type="hidden"][name="id_base"]', form).val();
+
+            element = '[name^="widget-' + widget_id_base + '[' + widget_id + ']' + '[' + conditions[i].field + ']"]';
           }
           else
           {
-            element = conditions[i].name.substr(0, conditions[i].name.length - 2);
+            element = '';
+            $(conditions[i].field.split(':')).each(function(index, part)
+            {
+              element += '[name*="[' + part + ']"]';
+            });
           }
-        
-          value = $(':input[name="' + element + '"]:selected', add_more).val();
-        
-          if (typeof value == 'undefined')
+
+          element = $(':input' + element, context); // + ':eq(' + index + ')'
+
+          if (element.is('select'))
+          {
+            value = element.children('option:selected').val();
+          }
+          else if (element.is(':radio, :checkbox'))
           {
             var _values = [];
-            $(':input[name^="' + element + '"]:checked', add_more).each(function()
+
+            element.each(function()
             {
-              _values.push($(this).val());
+              if ($(this).is(':checked'))
+              {
+                _values.push($(this).val());
+              }
             });
-          
-            value = _values.length > 0 ? _values : value;           
+            
+            value = _values.length > 0 ? _values : value;
           }
-        
-          value = typeof value == 'undefined' ? $(':input[name^="' + element + '"]:not(:radio, :checkbox)', add_more).val() : value;
-        
+          else
+          {
+            value = element.val();
+          }
+          
           if ($.isArray(value))
           {
-            value = $.map(value, function(v, i) 
-            { 
-              return isNaN(v) ? v : parseFloat(v); 
+            value = $.map(value, function(v, i)
+            {
+              return isNaN(v) ? v : parseFloat(v);
             });
-          
+
             result = $.intersect(value, values).length > 0;
           }
           else
           {
             result = $.inArray(value, values) != -1;
           }
-        
-          if (typeof conditions[i].compare != 'undefined' || conditions[i].compare == '!=') 
+
+          if (typeof conditions[i].compare != 'undefined' || conditions[i].compare == '!=')
           {
             result = !result;
           }
@@ -582,14 +493,14 @@
           }
         }
       }
-      
+
       if (relation == 'or' && overall_outcome && outcomes.length > 0)
       {
         overall_outcome = false;
     
-        for (i = 1; i < outcomes.length; i++)
+        for (i = 0; i < outcomes.length; i++)
         {
-          if (outcomes[i].result !== outcomes[0].result)
+          if (outcomes[i].result)
           {  
             overall_outcome = true;
     
@@ -597,15 +508,15 @@
           }
         }
       }
-      
+
       // Find context
-      if (!field.hasClass('piklist-field-condition') && field.parents('table.form-table').length > 0)
+      if (field.parents('table.form-table').length > 0)
       {
         context = field.parents('tr:eq(0)');
       }
-      else if (!field.hasClass('piklist-field-condition') && field.parents('.piklist-field-condition').length > 0) 
+      else if (field.parents('.piklist-field-condition-toggle').length > 0) 
       {
-        context = field.parents('.piklist-field-condition');
+        context = field.parents('.piklist-field-condition-toggle');
       }
       else if (field.parents('div[data-piklist-field-group="' + field.attr('data-piklist-field-group') + '"]').length)
       {
@@ -638,7 +549,7 @@
 
           break;
         }
-          
+
         $(condition_selector, context).each(function()
         {
           field = $(this);
@@ -719,7 +630,7 @@
                     .css(show)
                     .animate({
                       'opacity': 1
-                    });     
+                    });
                 }
                 else if (!overall_outcome)
                 {
@@ -728,13 +639,13 @@
                     if (field.is(':radio') || field.is(':checkbox'))
                     {
                       field = $(selector == reset_selector ? selector : reset_selector);
-            
+
                       if (field.is(':checked'))
                       {
                         field
                           .attr('checked', false)
-                          .trigger('change'); 
-                      } 
+                          .trigger('change');
+                      }
                     }
                     else
                     {
@@ -745,7 +656,7 @@
                           field
                             .children('option')
                             .removeAttr('selected');
-                
+
                           field.trigger('change');
                         }
                       }
@@ -755,12 +666,12 @@
                         {
                           field
                             .val('')
-                            .trigger('change'); 
+                            .trigger('change');
                         }
                       }
                     }
                   }
-        
+
                   context.css(hide);
                 }
               }
@@ -803,14 +714,6 @@
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
   /* --------------------------------------------------------------------------------
     Piklist Groups - Creates Group containers for Grouped Fields
   -------------------------------------------------------------------------------- */
@@ -833,9 +736,9 @@
         .each(function()
         {
           var $element = $(this),
-            group = $element.data('piklist-field-group'),
-            sub_group = $element.data('piklist-field-sub-group');
-
+            group = $element.attr('data-piklist-field-group'),
+            sub_group = $element.attr('data-piklist-field-sub-group');
+            
           if ($element.is('textarea') && $element.hasClass('wp-editor-area'))
           {
             $element = $(this).parents('.wp-editor-wrap:first');
@@ -843,17 +746,17 @@
             
           if ($element.parents('.piklist-field-part').length > 0)
           {
-            $element = $element.parents('.piklist-field-part');
+            $element = $element.parents('.piklist-field-part:eq(0)');
           }
-        
-          if ($element.prev().hasClass('piklist-label-position-before') || $element.next().length == 0) 
+          
+          if ($element.prev().hasClass('piklist-label-position-before'))
           {
             $element = $element
               .prevUntil('.piklist-label-position-before', '.piklist-field-part:not(div)')
               .addBack()
               .prev('.piklist-label-position-before');
           }
-          else if ($element.next().hasClass('piklist-label-position-after').length > 0)
+          else if ($element.next().hasClass('piklist-label-position-after'))
           {            
             $element = $element
               .nextUntil('.piklist-label-position-after', '.piklist-field-part:not(div)')
@@ -865,7 +768,7 @@
           {
             $element = $element.addBack();
           }
-          
+                    
           $element.wrapAll('<div data-piklist-field-group="' + group + '" ' + (sub_group ? 'data-piklist-field-sub-group="' + sub_group + '"' : '') + ' />');
         });
 
@@ -875,8 +778,8 @@
        .each(function()
        {
          var $element = $(this),
-           group = $element.data('piklist-field-group'),
-           sub_group = $element.data('piklist-field-sub-group'),
+           group = $element.attr('data-piklist-field-group'),
+           sub_group = $element.attr('data-piklist-field-sub-group'),
            list = $element.parents('.piklist-field-list').length > 0,
            parent_selector = list ? '.piklist-field-list' : '.piklist-field-list-item',
            parent = $element.parents('div[data-piklist-field-group]:eq(0)'),
@@ -886,7 +789,7 @@
          {
            parent_selector = '.piklist-field-part';
          }
-         
+
          var index = $($element.parents(parent_selector)).index();
 
          if (parent.length > 0)
@@ -911,23 +814,29 @@
            else
            {
              $element = $element.parents(parent_selector);
-               
-             if ($element.prev().hasClass('piklist-label-position-before') || $element.next().length == 0) 
+
+             if ($element.prev().hasClass('piklist-label-position-before') || $element.next().length == 0)
              {
                $element = $element
                  .prev('.piklist-label-position-before')
                  .addBack()
                  .nextUntil('.piklist-field-part', parent_selector);
              }
-             else
+             else if ($element.next().hasClass('piklist-label-position-after') || $element.prev().length == 0)
              {
                $element = $element
                  .next('.piklist-label-position-after')
                  .addBack()
                  .prevUntil('.piklist-field-part', parent_selector);
              }
+             else
+             {
+               $element = $element
+                 .nextUntil(':not(.piklist-field-list-item)', parent_selector)
+                 .addBack();
+             }
            }
-           
+
            $element
              .addBack()
              .wrapAll(wrap);
@@ -962,17 +871,9 @@
   $.fn.piklistgroups.defaults = {};
   
   $.fn.piklistgroups.Constructor = PiklistGroups;
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
   /* --------------------------------------------------------------------------------
     Piklist Add More - Creates Add More fields for Piklist
   -------------------------------------------------------------------------------- */
@@ -999,6 +900,9 @@
     {
       var $this = this;
       
+      // NOTE: This fixes most layouts that will break jQuery UI Sortables.
+      $('html, body').css('overflow-x', 'initial');
+
       $(document).on('click', '[data-piklist-field-addmore-action]', { piklistaddmore: $this }, $this.action_handler);
       
       this.$element
@@ -1008,8 +912,8 @@
           var $element = $(this),
             group = $element.attr('data-piklist-field-group'),
             set = $element.attr('name'),
-            addmore = $element.attr('data-piklist-field-addmore') == 'true' ? true : false,
-            addmore_actions = $element.attr('data-piklist-field-addmore-actions') == 'false' ? false : true,
+            addmore = $element.attr('data-piklist-field-addmore'),
+            addmore_actions = $element.attr('data-piklist-field-addmore-actions'),
             $wrapper = $('<div />')
                          .attr('data-piklist-field-addmore', set)
                          .addClass('piklist-field-addmore-wrapper'),
@@ -1017,7 +921,7 @@
                                  .addClass('piklist-field-addmore-wrapper-actions')
                                  .css('display', 'inline');
                  
-          $this.sortable = $element.attr('data-piklist-field-sortable') == 'true' ? true : false;
+          $this.sortable = $element.attr('data-piklist-field-sortable');
           
           if ($element.parents('div[data-piklist-field-addmore="' + $element.attr('name') + '"]').length == 0)
           {
@@ -1120,6 +1024,11 @@
             {
               $container.addClass('piklist-field-sortable');
             }
+            
+            if ($this.sortable)
+            {
+              $container.addClass('piklist-field-sortable-active');
+            }
 
             $parent
               .sortable({
@@ -1131,43 +1040,12 @@
                 {
                   ui.placeholder.height(ui.item.innerHeight());
                   ui.placeholder.width(ui.item.outerWidth());
-                
-                  $(this).find('.wp-editor-area').each(function()
-                  {
-                    if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
-                    {
-                      var id = $(this).attr('id'),
-                        command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
-
-                      switchEditors.go(id, 'tmce');
-                    
-                      tinyMCE.execCommand(command, false, id);
-                    }
-                  });
-                },
-                stop: function(event, ui) 
-                {
-                  $(this).find('.wp-editor-area').each(function()
-                  {
-                    if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
-                    {
-                      var id = $(this).attr('id'),
-                        command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
-
-                      tinyMCE.execCommand(command, false, id);
-                    }
-                  });
                 },
                 update: function(event, ui) 
                 {
                   $this.re_index($(this), true);
                 }
               });
-              
-            $parent.on('sortupdate', function(event, ui) 
-            {
-              $this.re_index($(this), true);
-            });
 
             if ($element.siblings('.piklist-field-addmore-wrapper-actions').length == 0)
             {
@@ -1186,80 +1064,83 @@
             $html = $element.parents('div[data-piklist-field-addmore]:first'),
             name = $html.attr('data-piklist-field-addmore'),
             names = [],
-            excludes = '[data-piklist-field-addmore], .piklist-field-addmore-wrapper-actions, .piklist-field-addmore-wrapper, .piklist-field-column';
+            excludes = '[data-piklist-field-addmore], [data-piklist-field-group], .piklist-field-addmore-wrapper-actions, .piklist-field-addmore-wrapper, .piklist-field-column';
           
           if (typeof name != 'undefined')
           {
-            $html = $('<div/>').append($html.parent().html());
-            
-            $html.find('div[data-piklist-field-addmore]').each(function()
+            var template_name = name.replace(/(?!^)\[[\d]\]/g, '[0]');
+
+            if (typeof $this.templates[template_name] == 'undefined')
             {
-              var data = $(this).attr('data-piklist-field-addmore').replace(/\[[0-9]\]/g, '[0]');
+              $html = $('<div/>').append($html.parent().html());
 
-              if ($.inArray(data, names) == -1)
+              $html.find('div[data-piklist-field-addmore]').each(function()
               {
-                $(this).find(':input').each(function()
+                var data = $(this).attr('data-piklist-field-addmore').replace(/(?!^)\[[\d]\]/g, '[0]');
+
+                if ($.inArray(data, names) == -1)
                 {
-                  $(this)
-                    .attr('data-piklist-original-id', $(this).attr('id'))
-                    .removeAttr('id')
-                    .off()
-                    .find('option')
-                    .removeAttr('selected');
-
-                  if ($(this).is(':checkbox'))
+                  $(this).find(':input:not([data-piklist-field-addmore-clear="0"])').each(function()
                   {
-                    $(this).removeAttr('checked');
-                  }
+                    $(this)
+                      .attr('data-piklist-original-id', $(this).attr('id'))
+                      .removeAttr('id')
+                      .off()
+                      .find('option')
+                      .removeAttr('selected');
 
-                  if (!$(this).is(':checkbox, :radio'))
-                  {
-                    $(this).removeAttr('value');
-                  }
+                    if ($(this).is(':checkbox'))
+                    {
+                      $(this).removeAttr('checked');
+                    }
+
+                    if (!$(this).is(':checkbox, :radio'))
+                    {
+                      $(this).removeAttr('value');
+                    }
                   
-                  if ($(this).is('textarea'))
+                    if ($(this).is('textarea'))
+                    {
+                      $(this).empty();
+                    }
+                  });
+                
+                  if (!$(this).prev().is(excludes))
                   {
-                    $(this).empty();
+                    $(this).prev().remove();
                   }
-                });
-                
-                
-                if (!$(this).prev().is(excludes))
-                {
-                  $(this).prev().remove();
+
+                  if (!$(this).next().is(excludes))
+                  {
+                    $(this).next().remove();
+                  }
+
+                  $(this)
+                    .find('.piklist-field-preview *:not(ul.attachments, div.piklist-field-addmore-wrapper-actions, div.piklist-field-addmore-wrapper-actions *, :input[type="hidden"])')
+                    .remove();
+
+                  names.push(data);
                 }
-
-                if (!$(this).next().is(excludes))
+                else
                 {
-                  $(this).next().remove();
+                  $(this).remove();
                 }
+              });
 
-                $(this)
-                  .find('.piklist-field-preview *:not(ul.attachments, div.piklist-field-addmore-wrapper-actions, div.piklist-field-addmore-wrapper-actions *, :input[type="hidden"])')
-                  .remove();
-
-                names.push(data);
-              }
-              else
+              $html.children().each(function()
               {
-                $(this).remove();
-              }
-            });
-            
-            
-            $html.children().each(function()
-            {
-              if (!$(this).is('.piklist-field-addmore-wrapper-actions, [data-piklist-field-addmore="' + name + '"]'))
-              {
-                $(this).remove();
-              }
-            });
+                if (!$(this).is('.piklist-field-addmore-wrapper-actions, [data-piklist-field-addmore="' + name + '"]'))
+                {
+                  $(this).remove();
+                }
+              });
 
-            $this.templates[name] = $html.html().trim();
+              $this.templates[template_name] = $html.html().trim();
+            }
           }
         });
 
-      $('.wp-editor-wrap').parents('.piklist-field-addmore-wrapper').addClass('piklist-field-addmore-wrapper-full');
+      $('.wp-editor-area, .wp-editor-area-proxy').parents('.piklist-field-addmore-wrapper').addClass('piklist-field-addmore-wrapper-full');
     },
     
     get_groups: function(set, group)
@@ -1312,13 +1193,15 @@
         }
       }
 
+      $wrapper.parent('.ui-sortable').css('height', 'auto');
+      
       switch ($element.attr('data-piklist-field-addmore-action'))
       {
         case 'add':
-          
-          var name = $('body').hasClass('widgets-php') || $('body').hasClass('wp-customizer') ? $wrapper.attr('data-piklist-field-addmore') : $wrapper.attr('data-piklist-field-addmore').replace(/\[[0-9]\]/g, '[0]'),
+
+          var name = $wrapper.attr('data-piklist-field-addmore').replace(/(?!^)\[[\d]\]/g, '[0]'),
             template = $this.templates[name],
-            sub_group = $(template).find('div[data-piklist-field-addmore="' + name + '"]:first');
+            sub_group = $(template).find('div[data-piklist-field-addmore="' + name + '"]:first');          
           
           if (sub_group.length > 0)
           {
@@ -1347,56 +1230,25 @@
                   items: '> div[data-piklist-field-addmore]:not([name])',
                   cursor: 'move',
                   placeholder: 'piklist-addmore-placeholder',
-                  disabled: $wrapper.hasClass('ui-sortable'),
                   start: function(event, ui)
                   {
                     ui.placeholder.height(ui.item.innerHeight());
                     ui.placeholder.width(ui.item.outerWidth());
-
-                    $(this).find('.wp-editor-area').each(function()
-                    {
-                      if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
-                      {
-                        var id = $(this).attr('id'),
-                          command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
-
-                        switchEditors.go(id, 'tmce');
-
-                        tinyMCE.execCommand(command, false, id);
-                      }
-                    });
-                  },
-                  stop: function(event, ui)
-                  {
-                    $(this).find('.wp-editor-area').each(function()
-                    {
-                      if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
-                      {
-                        var id = $(this).attr('id'),
-                          command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
-
-                        tinyMCE.execCommand(command, false, id);
-                      }
-                    });
                   },
                   update: function(event, ui) 
                   {
                     $this.re_index($(this), true);
                   }
                 });
-                
-              $(this).on('sortupdate', function(event, ui) 
-              {
-                $this.re_index($(this), true);
-              });
-            })
+            });
             
           $wrapper = $wrapper.next();
           
           $wrapper
+            .piklistmediaupload()
             .piklistfields()
             .trigger('piklistaddmore', [$wrapper, 'add']);
-          
+
           if ($wrapper.find('.wp-editor-wrap').length > 0)
           {
             $wrapper.addClass('piklist-field-addmore-wrapper-full');
@@ -1411,11 +1263,11 @@
             var $containers = $wrapper
                             .parent()
                             .children('div.piklist-field-addmore-wrapper');
-                            
+
             $wrapper
               .trigger('piklistaddmore', [$wrapper, 'remove'])
               .remove();
-                                          
+
             $containers.each(function()
             {
               $this.re_index($(this), true);
@@ -1446,14 +1298,16 @@
 
       element.find(':input').each(function()
       {
-        var name = $(this).attr('name'),
-          widgets = $('body').hasClass('widgets-php') || $('body').hasClass('wp-customizer');
-        
+        var id,
+          name = $(this).attr('name'),
+          is_widget = $('body').hasClass('widgets-php') || $('body').hasClass('wp-customizer');
+
         if (name)
         {
           var level = 0,
+            index,
             _indexes = [],
-            indexes = name.replace(/\]/g, '').split('[').filter(function(a){ return a; }),
+            indexes = name.replace(/\]/g, '').split('['),
             levels = $(this).parents('div[data-piklist-field-addmore]').length - 1,
             scope = indexes[0],
             parent = $(this).parents('div[data-piklist-field-addmore]:eq(0)'),
@@ -1463,14 +1317,17 @@
           {
             _indexes.push($(parent.parents('.ui-sortable:eq(' + i + ')').children('div[data-piklist-field-addmore]')).index(i == 0 ? parent : parent.parents('.ui-sortable:eq(' + (i - 1) + ')')));
           }
-
+          
           for (var j = 0; j < indexes.length; j++)
           { 
             if ($.isNumeric(indexes[j]))
             {
-              if (!widgets || (widgets && level > 0))
+              if (!is_widget || (is_widget && level > 0))
               {
-                indexes[j] = _indexes.pop();
+                if ($.isNumeric(_indexes[_indexes.length - (is_widget ? level : level + 1)]))
+                {
+                  indexes[j] = _indexes[_indexes.length - (is_widget ? level : level + 1)];
+                }
               }
         
               level = level + 1;
@@ -1479,9 +1336,13 @@
             indexes[j] = indexes[j] + (scope !== indexes[j] ? ']' : '');
           }
           
-          var name = indexes.join('['),
-            id = indexes.join('_').replace(/]/g, '') + _indexes.slice(-1).pop();
-          
+          index = _indexes.slice(-1).pop();
+
+          name = indexes.join('[');
+
+          id = (is_widget ? indexes.splice(0, indexes.length - 2).join('-').replace(/]/g, '') + '-' + indexes.splice(-2).join('_').replace(/]/g, '') : indexes.join('_').replace(/]/g, ''));
+          id += (id.indexOf('_', id.length - 1) !== -1 ? null : '_') + index;
+        
           $(this)
             .attr('name', name)
             .attr('id', id);
@@ -1510,7 +1371,7 @@
         {
           $(this)
             .attr('checked', 'checked')
-            .removeAttr('data-piklist-field-checked');          
+            .removeData('data-piklist-field-checked');          
         }
       });
       
@@ -1548,23 +1409,15 @@
   };
   
   $.fn.piklistaddmore.defaults = {
-    add: '<a href="#" class="button button-primary piklist-addmore-add">+</a>',
-    remove: '<a href="#" class="button button-secondary piklist-addmore-remove">&ndash;</a>',
+    add: '<a href="#" class="' + ($('body').hasClass('wp-admin') ? 'button-secondary' : null) + ' piklist-addmore-button piklist-addmore-add"><span>&#43;</span></a>',
+    remove: '<a href="#" class="' + ($('body').hasClass('wp-admin') ? 'button-secondary' : null) + ' piklist-addmore-button piklist-addmore-remove"><span>&ndash;</span></a>',
     sortable: true
   };
   
   $.fn.piklistaddmore.Constructor = PiklistAddMore;
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
   /* --------------------------------------------------------------------------------
     Piklist Columns - Creates fluid column based layout
   -------------------------------------------------------------------------------- */
@@ -1603,7 +1456,7 @@
         .each(function()
         {
           var $element = $(this),
-            columns = $element.data('piklist-field-columns');
+            columns = $element.attr('data-piklist-field-columns');
           
           if ($element.is('textarea') && $element.hasClass('wp-editor-area'))
           {
@@ -1640,14 +1493,23 @@
 
       this.$element
         .find('[data-piklist-field-columns]')
-        .filter(':radio, :checkbox')
+        .filter(':radio, :checkbox, :input[type="hidden"]')
         .each(function()
         {
           var $element = $(this),
-            columns = $element.data('piklist-field-columns'),
-            group = $element.data('piklist-field-group'),
-            sub_group = $element.data('piklist-field-sub-group'),
+            columns = $element.attr('data-piklist-field-columns'),
+            group = $element.attr('data-piklist-field-group'),
+            sub_group = $element.attr('data-piklist-field-sub-group'),
+            parent_selector;
+            
+          if ($element.is(':radio, :checkbox'))
+          {
             parent_selector = $element.parents('.piklist-field-list').length > 0 ? '.piklist-field-list' : '.piklist-field-list-item';
+          }
+          else
+          {
+            parent_selector = '.piklist-field-part';
+          }
             
           $element
             .parents(parent_selector)
@@ -1687,8 +1549,8 @@
           .each(function(i)
           {
             var $element = $(this),
-              columns = $element.data('piklist-field-columns'),
-              group = $element.data('piklist-field-group');
+              columns = $element.attr('data-piklist-field-columns'),
+              group = $element.attr('data-piklist-field-group');
 
             $element.addClass('piklist-field-column');
             
@@ -1790,7 +1652,7 @@
           placeholder: 'piklist-addmore-placeholder attachment',
           start: function(event, ui)
           {
-            ui.placeholder.height(ui.item.height());
+            ui.placeholder.height(ui.item.height() - 2);
             ui.placeholder.width(ui.item.width());
           },
           update: function(event, ui) 
@@ -1835,18 +1697,18 @@
       {
         event.preventDefault();
         
-        var index = $(this).index($(this).parents('attachments:first')),
+        var index = $($(this).parents('.attachments:eq(0)').children()).index($(this).parents('.attachment:eq(0)')),
           save = $(this).data('attachment-save'),
           name = $(this).data('attachments'),
           value = $(this).data('attachment-' + save);
         
         if ($(':input[name="' + name + '"]').length > 1)
         {
-          $(':input[name="' + name + '"][value="' + value + '"][type="hidden"]:eq(' + index + ')').remove();
+          $(':input[name="' + name + '"][type="hidden"]:eq(' + index + ')').remove();
         }
         else
         {
-          $(':input[name="' + name + '"][value="' + value + '"][type="hidden"]:eq(' + index + ')').val('')
+          $(':input[name="' + name + '"][type="hidden"]:eq(' + index + ')').val('')
         }
         
         $(this)
@@ -1907,12 +1769,14 @@
               preview.append(
                 $('<li class="attachment selected">\
                       <div class="attachment-preview ' + (display.width > display.height ? 'landscape' : 'portrait') + '">\
-                        <div class="centered">\
-                          <a href="#">\
-                           <img src="' + display.url + '" />\
-                         </a>\
+                        <div class="thumbnail">\
+                          <div class="centered">\
+                            <a href="#">\
+                              <img src="' + display.url + '" />\
+                            </a>\
+                          </div>\
                         </div>\
-                        <a class="check" href="#" title="Deselect" data-attachment-id="' + attachment.id + '" data-attachment-url="' + attachment.url + '" data-attachments="' + input.attr('name') + '"><div class="media-modal-icon"></div></a>\
+                        <button type="button" class="button-link check" data-attachment-id="' + attachment.id + '" data-attachment-url="' + attachment.url + '" data-attachments="' + input.attr('name') + '"><span class="media-modal-icon"></span><span class="screen-reader-text">Deselect</span></button>\
                       </div>\
                    </li>\
                  ')
@@ -1925,15 +1789,15 @@
               preview.append(
                 $('<li class="attachment selected">\
                       <div class="attachment-preview attachment-preview-document type-' + display.type + ' subtype-' + display.subtype + ' landscape">\
-                 		    <div class="thumbnail">\
-                 			    <div class="centered">\
+                         <div class="thumbnail">\
+                           <div class="centered">\
                             <img src="' + display.icon + '" class="icon" />\
                           </div>\
                           <div class="filename">\
                              <div>' + display.filename + '</div>\
                           </div>\
                         </div>\
-                        <a class="check" href="#" title="Deselect" data-attachment-id="' + attachment.id + '" data-attachments="' + input.attr('name') + '"><div class="media-modal-icon"></div></a>\
+                        <button type="button" class="button-link check" data-attachment-id="' + attachment.id + '" data-attachments="' + input.attr('name') + '"><span class="media-modal-icon"></span><span class="screen-reader-text">Deselect</span></button>\
                       </div>\
                    </li>\
                  ')
@@ -1996,6 +1860,55 @@
   
   $.fn.piklistmediaupload.Constructor = PiklistMediaUpload;
   
+  
+  
+  /* --------------------------------------------------------------------------------
+    WordPress Updates
+  -------------------------------------------------------------------------------- */
+  
+  // NOTE: Allow dynamically added editors to work properly with added buttons
+  $(document).on('click', '.insert-media.add_media', function(event)
+  {
+    tinyMCE.get($(this).data('editor')).focus();
+  });
+  
+
+  // NOTE: WordPress Updates to allow meta boxes and widgets to have tinymce
+  $(document)
+    .on('sortstart', '.ui-sortable', function(event, ui)
+    {
+      if ($(this).is('.ui-sortable') && (ui.item.hasClass('postbox') || ui.item.hasClass('piklist-field-addmore-wrapper')))
+      {
+        $(this).find('.wp-editor-area').each(function()
+        {
+          if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
+          {
+            var id = $(this).attr('id'),
+              command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
+            
+            switchEditors.go(id, 'tmce');
+            
+            tinyMCE.execCommand(command, false, id);
+          }
+        });
+      }
+    })
+    .on('sortstop sortreceive', '.ui-sortable', function(event, ui)
+    {
+      if ($(this).is('.ui-sortable') && (ui.item.hasClass('postbox') || ui.item.hasClass('piklist-field-addmore-wrapper')))
+      {
+        $(this).find('.wp-editor-area').each(function()
+        {
+          if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
+          {
+            var id = $(this).attr('id'),
+              command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
+
+            tinyMCE.execCommand(command, false, id);
+          }
+        });
+      }
+    });
   
   
   

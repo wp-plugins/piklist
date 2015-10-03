@@ -1,10 +1,18 @@
 <?php
 /*
-Title: Colorpicker
+Title: ColorPicker Fields
+Order: 60
+Tab: Basic
 Setting: piklist_demo_fields
-Tab: Advanced
-Order: 30
+Flow: Demo Workflow
 */
+?>
+
+<p class="piklist-demo-highlight">
+  <?php _e('WordPress ColorPicker fields are super simple to create. Piklist handles all the Javascript.', 'piklist-demo');?>
+</p>
+
+<?php
     
   piklist('field', array(
     'type' => 'colorpicker'
@@ -23,5 +31,3 @@ Order: 30
     'location' => __FILE__
     ,'type' => 'Settings Section'
   ));
-  
-?>

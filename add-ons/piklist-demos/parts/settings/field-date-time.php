@@ -1,10 +1,18 @@
 <?php
 /*
-Title: Date / Time Fields
+Title: DatePicker Fields
+Order: 50
+Tab: Basic
 Setting: piklist_demo_fields
-Tab: Advanced
-Order: 30
+Flow: Demo Workflow
 */
+?>
+
+<p class="piklist-demo-highlight">
+  <?php _e('DatePicker fields are easy to create and format.', 'piklist-demo');?>
+</p>
+
+<?php
   
   piklist('field', array(
     'type' => 'datepicker'

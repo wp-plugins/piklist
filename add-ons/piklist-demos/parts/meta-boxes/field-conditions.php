@@ -6,7 +6,7 @@ Order: 90
 Collapse: false
 Tab: Conditions
 Sub Tab: Basic
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(

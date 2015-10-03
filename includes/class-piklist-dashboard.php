@@ -2,8 +2,6 @@
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-if (!is_admin()) return;
-
 /**
  * Piklist_Dashboard
  * Controls admin dashboard widgets and features.
@@ -32,9 +30,12 @@ class Piklist_Dashboard
    */
   public static function _construct()
   {
-    if (is_admin())
+    global $pagenow;
+    
+    if (is_admin() && $pagenow == 'index.php')
     {
-      add_filter('piklist_part_process-dashboard', array('piklist_meta', 'part_process'), 10, 2);
+      add_filter('piklist_part_process-dashboard', array('piklist_dashboard', 'part_process'), 5);
+      add_filter('piklist_part_process-dashboard', array('piklist_meta', 'part_process'), 10);
       
       add_action('wp_dashboard_setup', array('piklist_dashboard', 'register_dashboard_widgets'));
       add_action('wp_network_dashboard_setup', array('piklist_dashboard', 'register_dashboard_widgets'));
@@ -126,5 +127,25 @@ class Piklist_Dashboard
     }
     
     do_action('piklist_post_render_dashboard_widget', $null, $widget);
+  }
+
+  /**
+   * part_process
+   * Dashboard specific processing
+   *
+   * @param  array $part being validated
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function part_process($part)
+  {
+    if ($part['id'] == 'dashboard_right_now')
+    {
+      return piklist::get_settings('piklist_core', 'dashboard_at_a_glance') ? $part : null;
+    }
+
+    return $part;
   }
 }

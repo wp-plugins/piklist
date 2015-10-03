@@ -89,12 +89,9 @@ class Piklist_CPT
     add_action('pre_get_posts', array('piklist_cpt', 'pre_get_posts'), 100);
     add_action('edit_page_form', array('piklist_cpt', 'edit_form'));
     add_action('edit_form_advanced', array('piklist_cpt', 'edit_form'));
-    add_action('piklist_activate', array('piklist_cpt', 'activate'));
     add_action('restrict_manage_posts', array('piklist_cpt', 'taxonomy_filters_list_table'));
     add_action('admin_footer', array('piklist_cpt', 'quick_edit_post_statuses'));
 
-    add_filter('posts_join', array('piklist_cpt', 'posts_join'), 10, 2);
-    add_filter('posts_where', array('piklist_cpt', 'posts_where'), 10, 2);
     add_filter('post_row_actions', array('piklist_cpt', 'post_row_actions'), 10, 2);
     add_filter('page_row_actions', array('piklist_cpt', 'post_row_actions'), 10, 2);
     add_filter('wp_insert_post_data', array('piklist_cpt', 'wp_insert_post_data'), 100, 2);
@@ -114,110 +111,8 @@ class Piklist_CPT
    */
   public static function init()
   {
-    self::register_tables();
     self::register_taxonomies();
     self::register_post_types();
-  }
-
-  /**
-   * register_tables
-   * Registers custom tables
-   *
-   * @access public
-   * @static
-   * @since 1.0
-   */
-  public static function register_tables()
-  {
-    global $wpdb;
-
-    array_push($wpdb->tables, 'post_relationships');
-
-    $wpdb->post_relationships = $wpdb->prefix . 'post_relationships';
-  }
-
-  /**
-   * activate
-   * Creates custom tables
-   *
-   *
-   * @return
-   *
-   * @access
-   * @static
-   * @since 1.0
-   */
-  public static function activate()
-  {
-    piklist::create_table(
-      'post_relationships'
-      ,'relate_id bigint(20) unsigned NOT NULL auto_increment
-        ,post_id bigint(20) unsigned NOT NULL
-        ,has_post_id bigint(20) unsigned NOT NULL
-        ,PRIMARY KEY (relate_id)
-        ,KEY post_id (post_id)
-        ,KEY has_post_id (has_post_id)'
-    );
-  }
-
-  /**
-   * posts_join
-   * Insert description here
-   *
-   * @param $join
-   * @param $query
-   *
-   * @return
-   *
-   * @access
-   * @static
-   * @since 1.0
-   */
-  public static function posts_join($join, $query)
-  {
-    global $wpdb;
-
-    if (isset($query->query_vars['post_belongs']) && $post_id = $query->query_vars['post_belongs'])
-    {
-      $join .= " LEFT JOIN {$wpdb->prefix}post_relationships ON $wpdb->posts.ID = {$wpdb->prefix}post_relationships.has_post_id";
-    }
-
-    if (isset($query->query_vars['post_has']) && $post_id = $query->query_vars['post_has'])
-    {
-      $join .= " LEFT JOIN {$wpdb->prefix}post_relationships ON $wpdb->posts.ID = {$wpdb->prefix}post_relationships.post_id";
-    }
-
-    return $join;
-  }
-
-  /**
-   * posts_where
-   * Insert description here
-   *
-   * @param $where
-   * @param $query
-   *
-   * @return
-   *
-   * @access
-   * @static
-   * @since 1.0
-   */
-  public static function posts_where($where, $query)
-  {
-    global $wpdb;
-    
-    if (isset($query->query_vars['post_belongs']) && $post_id = $query->query_vars['post_belongs'])
-    {
-      $where .= " AND {$wpdb->prefix}post_relationships.post_id = $post_id";
-    }
-
-    if (isset($query->query_vars['post_has']) && $post_id = $query->query_vars['post_has'])
-    {
-      $where .= " AND {$wpdb->prefix}post_relationships.has_post_id = $post_id";
-    }
-
-    return $where;
   }
 
   /**
@@ -234,8 +129,7 @@ class Piklist_CPT
   public static function edit_form()
   {
     $fields = array(
-      'relate'
-      ,'post_id'
+      'post_id'
       ,'admin_hide_ui'
     );
 
@@ -326,6 +220,8 @@ class Piklist_CPT
             ,'_builtin' => false
           ));
 
+          $status_data = (object) $status_data;
+          
           if ($status != 'draft')
           {
             register_post_status($status, $status_data);
@@ -472,8 +368,8 @@ class Piklist_CPT
         {
           piklist_cpt::$taxonomy = $taxonomy;
 
-          add_filter('manage_users_columns', array('piklist_cpt','user_column_header'), 10);
-          add_action('manage_users_custom_column', array('piklist_cpt','user_column_data'), 10, 3);
+          add_filter('manage_users_columns', array('piklist_cpt', 'user_column_header'), 10);
+          add_action('manage_users_custom_column', array('piklist_cpt', 'user_column_data'), 10, 3);
         } 
       }
 
@@ -653,7 +549,7 @@ class Piklist_CPT
   {
     global $post, $wp_post_statuses;
 
-    if (empty($post_type))
+    if (empty($post_type) && $post)
     {
       $post_type = $post->post_type;
     }
@@ -670,11 +566,11 @@ class Piklist_CPT
 
     $statuses = $post && isset(self::$post_types[$post_type]['status']) ? self::$post_types[$post_type]['status'] : $default_statuses;
 
-    if($all == false)
+    if ($all == false)
     {
       foreach ($statuses as $key => $value)
       {
-        $statuses[$key] = $value['label'];
+        $statuses[$key] = $value->label;
       }
     }
 
@@ -802,10 +698,10 @@ class Piklist_CPT
     if (!empty(self::$post_types[$current_screen->post_type]['admin_body_class']))
     {
       $admin_body_class = is_array(self::$post_types[$current_screen->post_type]['admin_body_class']) ? self::$post_types[$current_screen->post_type]['admin_body_class'] : array(self::$post_types[$current_screen->post_type]['admin_body_class']);
+
       foreach ($admin_body_class as $class)
       {
-        $classes .= ' ';
-        $classes .= $class;
+        $classes .= ' ' . $class;
       }
     }
     
@@ -1060,7 +956,7 @@ class Piklist_CPT
    */
   public static function pre_get_posts(&$query)
   {
-    if ($query->is_main_query() && isset($_REQUEST) && (isset($_REQUEST[piklist::$prefix]['filter']) && strtolower($_REQUEST[piklist::$prefix]['filter']) == 'true') && isset($_REQUEST[piklist::$prefix]['fields_id']))
+    if ($query->is_main_query() && isset($_REQUEST) && (isset($_REQUEST[piklist::$prefix]['filter']) && strtolower($_REQUEST[piklist::$prefix]['filter']) == 'true') && isset($_REQUEST[piklist::$prefix]['fields']))
     {
       $args = array(
         'meta_query' => array()
@@ -1070,7 +966,7 @@ class Piklist_CPT
         ,'taxonomy_relation' => false
       );
 
-      $fields = get_transient(piklist::$prefix . $_REQUEST[piklist::$prefix]['fields_id']);
+      $fields = get_transient(piklist::$prefix . $_REQUEST[piklist::$prefix]['fields']);
 
       self::$search_data = $_REQUEST;
       
@@ -1382,7 +1278,7 @@ class Piklist_CPT
    */
   public static function detect_post_type($post_id = null)
   {
-    global $typenow, $post;
+    global $typenow, $pagenow, $post;
     
     $post_type = false;
     
@@ -1411,6 +1307,10 @@ class Piklist_CPT
         elseif (isset($_REQUEST['post_type']))
         {
           $post_type = esc_attr($_REQUEST['post_type']);
+        }
+        elseif ($pagenow == 'post-new.php')
+        {
+          $post_type = 'post';
         }
       }      
     }

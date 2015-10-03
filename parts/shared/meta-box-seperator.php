@@ -1,7 +1,7 @@
 
 <?php echo piklist_form::template_tag_fetch('field_wrapper', $wrapper, 'end'); ?>
 
-<h3><?php echo $meta_box['data']['title']; ?></h3>
+<h3 id="<?php echo $meta_box['id']; ?>" class="piklist-meta-box-title"><?php echo $meta_box['data']['title']; ?></h3>
   
 <?php if (!empty($meta_box['data']['description'])): ?>
   

@@ -5,8 +5,8 @@ Method: post
 Message: Shortcode Updated.
 */
 
-  $shortcode = isset($_REQUEST[piklist::$prefix . 'shortcode']) ? current(piklist($_REQUEST[piklist::$prefix . 'shortcode'])) : null;
-  $shortcode_data = isset($_REQUEST[piklist::$prefix . 'shortcode_data']) ? current(piklist($_REQUEST[piklist::$prefix . 'shortcode_data'])) : null;
+  $shortcode = isset($_REQUEST[piklist::$prefix . 'shortcode']) ? $_REQUEST[piklist::$prefix . 'shortcode'] : null;
+  $shortcode_data = isset($_REQUEST[piklist::$prefix . 'shortcode_data']) ? $_REQUEST[piklist::$prefix . 'shortcode_data'] : null;
   $shortcodes = piklist_shortcode::$shortcodes;
   
   ksort($shortcodes);
@@ -17,11 +17,15 @@ Message: Shortcode Updated.
   if (in_array($action, array('insert', 'update'))):
     
     $forms = array();
-    foreach ($shortcodes[$name]['render'] as $render):
-      if (strstr($render, '-form.php')):
-        array_push($forms, $render);
-      endif;
-    endforeach;
+    if (isset($shortcodes[$name])):
+
+      foreach ($shortcodes[$name]['render'] as $render):
+        if (strstr($render, '-form.php')):
+          array_push($forms, $render);
+        endif;
+      endforeach;
+
+    endif;
 
     if (!empty($forms)):
       
@@ -29,7 +33,7 @@ Message: Shortcode Updated.
         piklist::render($form);
       endforeach;
       
-    else:
+    elseif ($shortcode):
         
       foreach ($shortcode as $attribute => $value):
         piklist('field', array(
@@ -89,6 +93,12 @@ Message: Shortcode Updated.
         )
       ));
     ?>
+
+    <?php if ($action == 'insert'): ?>
+      
+      <a href="javascript:history.back(1);" class="button">&larr; <?php _e('Back'); ?></a>
+    
+    <?php endif; ?>
     
   </div>
 

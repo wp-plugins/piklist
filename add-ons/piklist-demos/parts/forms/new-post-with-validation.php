@@ -4,9 +4,7 @@ Title: Post Submit
 Method: post
 Message: Data saved in Piklist Demos, under the Validation tab.
 Logged in: true
-Redirect: /
 */
-
 
 /**
  * Piklist forms automatically generate a shortcode:
@@ -94,6 +92,7 @@ Redirect: /
       array(
         'type' => 'text'
         ,'field' => 'name'
+        ,'label' => 'Name'
         ,'columns' => 7
         ,'attributes' => array(
           'placeholder' => 'Name'
@@ -102,6 +101,7 @@ Redirect: /
       ,array(
         'type' => 'checkbox'
         ,'field' => 'hierarchical'
+        ,'label' => 'Type'
         ,'required' => true
         ,'columns' => 5
         ,'choices' => array(

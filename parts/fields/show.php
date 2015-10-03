@@ -1,7 +1,7 @@
 
 <?php if ($field || (!$field && $type == 'group')): ?>
   
-  <div id="<?php echo piklist_form::get_field_id($field, $scope, $index, $prefix); ?>"  class="piklist-field-display">
+  <div id="<?php echo piklist_form::get_field_id($arguments); ?>"  class="piklist-field-display">
 
     <?php
       if ((!$field && $type == 'group')):
@@ -73,12 +73,14 @@
     <?php endif; ?>
 
     <?php 
+      $arguments['scope'] = false;
+      
       piklist('field', array(
         'type' => 'hidden'
         ,'scope' => piklist::$prefix
         ,'field' => 'ignore' . ($scope ? '_' . $scope: '')
         ,'index' => rand()
-        ,'value' => piklist_form::get_field_name($field, false, $index, $prefix)
+        ,'value' => piklist_form::get_field_name($arguments)
       ));
     ?>
 

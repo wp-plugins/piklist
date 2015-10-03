@@ -31,27 +31,39 @@ global $wp_registered_sidebars;
 
       <?php $custom_status = array('attachment' => 'inherit'); ?>
 
-      <?php foreach ($post_types  as $post_type) : ?>
+      <?php foreach ($post_types as $post_type) : ?>
 
-            <?php $status = 'publish'; ?>
+        <?php $status_count = 0; ?>
 
-            <li class="<?php echo mb_strtolower($post_type->name) . __('_right_now', 'piklist');?>">
+        <?php $num_pages = wp_count_posts($post_type->name); ?>
 
-              <?php $num_pages = wp_count_posts($post_type->name); ?>
+        <?php $statuses = piklist_cpt::get_post_statuses_for_type($post_type->name); ?>
 
-              <?php if (array_key_exists($post_type->name, $custom_status)) : ?>
+        <?php foreach($statuses as $status => $value) : ?>
 
-                <?php $status = implode($custom_status); ?>
+          <?php if($value->public == 1) : ?>
 
-              <?php endif; ?>
+            <?php $status_count = $status_count + $num_pages->$status; ?>
 
-              <a href="<?php echo $post_type->name == 'attachment' ? 'upload.php' : 'edit.php?post_type=' . $post_type->name;?>">
-                
-                <?php echo number_format_i18n( $num_pages->$status ) . '&nbsp;' . $post_type->label; ?>
-              
-              </a>
+          <?php endif; ?>
 
-            </li>
+        <?php endforeach; ?>
+
+        <li class="<?php echo mb_strtolower($post_type->name) . __('_right_now', 'piklist');?>">
+
+          <?php if (array_key_exists($post_type->name, $custom_status)) : ?>
+
+            <?php $status = implode($custom_status); ?>
+
+          <?php endif; ?>
+
+          <a href="<?php echo $post_type->name == 'attachment' ? 'upload.php' : 'edit.php?post_type=' . $post_type->name;?>">
+
+            <?php echo $status_count . '&nbsp;' . ($status_count > 1 ? piklist::pluralize($post_type->label) : $post_type->label); ?>
+          
+          </a>
+
+        </li>
 
       <?php endforeach; ?>
 

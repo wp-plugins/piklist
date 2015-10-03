@@ -96,5 +96,3 @@ endif;
     'location' => __FILE__
     ,'type' => 'Dashboard Widget'
   ));
-
-?>

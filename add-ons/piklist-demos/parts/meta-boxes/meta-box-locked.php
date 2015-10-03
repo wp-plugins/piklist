@@ -7,7 +7,7 @@ Lock: true
 Collapse: false
 Tab: Layout
 Sub Tab: Meta Boxes
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(

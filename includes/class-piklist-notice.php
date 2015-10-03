@@ -2,11 +2,9 @@
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-if (!is_admin()) return;
-
 /**
  * Piklist_Notice
- * Manages the admin notices.
+ * Manages notices.
  *
  * @package     Piklist
  * @subpackage  Notice
@@ -17,6 +15,8 @@ if (!is_admin()) return;
 class Piklist_Notice
 {
   private static $notices = array();
+  
+  private static $notice_meta_key = '_dismissed_piklist_notices';
 
   /**
    * _construct
@@ -31,7 +31,7 @@ class Piklist_Notice
     if (is_admin())
     {
       add_action('current_screen', array('piklist_notice', 'register_notice'));
-      add_action('admin_notices', array('piklist_notice', 'admin_notice'));
+      add_action('admin_notices', array('piklist_notice', 'notice'));
       add_action('wp_ajax_piklist_notice', array('piklist_notice', 'ajax'));
       add_action('wp_ajax_nopriv_piklist_notice', array('piklist_notice', 'ajax'));
     }
@@ -39,7 +39,7 @@ class Piklist_Notice
    
   /**
    * register_notice
-   * Register any admin notices available.
+   * Register any notices available.
    *
    *
    * @return
@@ -79,9 +79,9 @@ class Piklist_Notice
     extract($arguments);
     
     $content = '';
-    $dismissed = get_user_meta(get_current_user_id(), piklist::$prefix . 'dismissed_notices', true);
+    $dismissed = get_user_meta(get_current_user_id(), self::$notice_meta_key, true);
     
-    if (!empty($dismissed[0]) && in_array($data['notice_id'], $dismissed))
+    if (is_array($dismissed) && in_array($id, $dismissed))
     {
       return false;
     }
@@ -99,7 +99,7 @@ class Piklist_Notice
   }
   
   /**
-   * admin_notice
+   * notice
    * Render the admin notice.
    *
    *
@@ -109,15 +109,14 @@ class Piklist_Notice
    * @static
    * @since 1.0
    */
-  public static function admin_notice()
+  public static function notice()
   {
-
     foreach (self::$notices as $notices => $notice)
     {
-      piklist::render('shared/admin-notice', array(
+      piklist::render('shared/notice', array(
         'type' => $notice['data']['notice_type']
         ,'content' => $notice['content']
-        ,'notice_id' => $notice['data']['notice_id']
+        ,'id' => $notice['id']
         ,'notice_type' => $notice['data']['notice_type']
         ,'dismiss' => $notice['data']['dismiss']
       ));
@@ -142,13 +141,20 @@ class Piklist_Notice
     if (isset($_REQUEST['id']))
     {
       $user_id = get_current_user_id();
+
+      $dismiss = esc_attr($_REQUEST['id']);
       
-      $dismissed = get_user_meta($user_id, piklist::$prefix . 'dismissed_notices', true);
+      $dismissed = get_user_meta($user_id, self::$notice_meta_key, true);
       $dismissed = !$dismissed ? array() : $dismissed;
       
-      array_push($dismissed, esc_attr($_REQUEST['id']));
-      
-      update_user_meta($user_id, piklist::$prefix . 'dismissed_notices', $dismissed);
+      if (!in_array($dismiss, $dismissed))
+      {
+        array_push($dismissed, $dismiss);
+
+        update_user_meta($user_id, self::$notice_meta_key, $dismissed);
+      }
     }
+    
+    wp_die();
   }
 }

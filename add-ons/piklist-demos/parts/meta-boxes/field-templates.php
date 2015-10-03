@@ -5,7 +5,7 @@ Post Type: piklist_demo
 Order: 10
 Tab: Layout
 Sub Tab: Field Templates
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(

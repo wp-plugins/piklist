@@ -29,8 +29,8 @@
     
       <input 
         type="checkbox"
-        id="<?php echo piklist_form::get_field_id($field, $scope, $index, $prefix); ?>" 
-        name="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix); ?>"
+        id="<?php echo piklist_form::get_field_id($arguments); ?>" 
+        name="<?php echo piklist_form::get_field_name($arguments); ?>"
         value="<?php echo esc_attr($values[$index]); ?>"
         <?php echo $active ? 'checked="checked"' : ''; ?>
         <?php echo piklist_form::attributes_to_string($attributes); ?>
@@ -51,29 +51,3 @@
     </div>
 
 <?php endfor; ?>
-
-<script type="text/javascript">
-
-  (function($)
-  {
-    $(document).ready(function()
-    {
-      $('.piklist-field-add-on-button').click(function(event)
-      {
-        event.preventDefault();
-        
-        if ($(this).hasClass('button-primary'))
-        {
-          $(this).removeClass('button-primary').addClass('button').text('Disable').prev(':checkbox').attr('checked', true);
-          $(this).next('a').show();
-        }
-        else
-        {
-          $(this).removeClass('button').addClass('button-primary').text('Activate').prev(':checkbox').attr('checked', false);
-          $(this).next('a').hide();
-        }
-      });
-    });
-  })(jQuery);
-
-</script>

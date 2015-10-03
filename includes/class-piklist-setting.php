@@ -39,7 +39,7 @@ class Piklist_Setting
     {
       add_action('admin_init', array('piklist_setting', 'register_settings'));
       add_action('admin_enqueue_scripts', array('piklist_setting', 'admin_enqueue_scripts'));
-      add_action('piklist_parts_processed', array('piklist_setting', 'parts_processed'));
+      add_action('piklist_parts_processed-settings', array('piklist_setting', 'parts_processed'));
 
       add_filter('piklist_admin_pages', array('piklist_setting', 'admin_pages'));
       add_filter('piklist_part_add-workflows', array('piklist_setting', 'part_add'), 10, 2);
@@ -67,8 +67,8 @@ class Piklist_Setting
       ,'capability' => defined('PIKLIST_SETTINGS_CAP') ? PIKLIST_SETTINGS_CAP : 'manage_options'
       ,'menu_slug' => 'piklist'
       ,'single_line' => false
-      ,'menu_icon' => plugins_url('piklist/parts/img/piklist-menu-icon.svg')
-      ,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
+      ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-menu-icon.svg'
+      ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
     );
     
     $pages[] = array(
@@ -78,8 +78,8 @@ class Piklist_Setting
       ,'sub_menu' => 'piklist'
       ,'menu_slug' => 'piklist-core-settings'
       ,'setting' => 'piklist_core'
-      ,'menu_icon' => plugins_url('piklist/parts/img/piklist-menu-icon.svg')
-      ,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
+      ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-menu-icon.svg'
+      ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
       ,'single_line' => true
     );
 
@@ -90,8 +90,8 @@ class Piklist_Setting
       ,'sub_menu' => 'piklist'
       ,'menu_slug' => 'piklist-core-addons'
       ,'setting' => 'piklist_core_addons'
-      ,'menu_icon' => plugins_url('piklist/parts/img/piklist-menu-icon.svg')
-      ,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
+      ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-menu-icon.svg'
+      ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
       ,'single_line' => true
     );
 
@@ -150,8 +150,10 @@ class Piklist_Setting
    */
   public static function register_setting($field)
   {
+    $field = piklist_form::setup_field($field);
+    
     add_settings_field(
-      isset($field['field']) ? $field['field'] : null
+      isset($field['field']) ? $field['field'] : piklist::unique_id()
       ,isset($field['label']) ? piklist_form::field_label($field) : null
       ,array('piklist_setting', 'render_setting')
       ,self::$active_section['data']['setting']
@@ -298,16 +300,10 @@ class Piklist_Setting
           {
             unset($_old[$field]);
           }
-        
-          if (((isset($data['add_more']) && !$data['add_more']) || !isset($data['add_more'])) && (isset($new[$field]) && isset($new[$field][0]) && count($new[$field]) == 1))
+          
+          if (isset($new[$field]) && is_array($new[$field]) && $data['multiple'] && is_array($data['choices']) && count($data['choices']) == 1)
           {
-            $new[$field] = is_array($new[$field][0]) && count($new[$field][0]) == 1 && !in_array($data['type'], piklist_form::$field_list_types['multiple_fields']) ? $new[$field][0][0] : $new[$field][0];
-          }
-        
-          if (isset($new[$field]) && is_array($new[$field]) && count($new[$field]) > 1 && empty($new[$field][0]) && isset($new[$field][0]))
-          {
-            unset($new[$field][0]);
-            $new[$field] = array_values($new[$field]);
+            $new[$field] = current($new[$field]);
           }
           
           if (isset($data['field']))
@@ -329,7 +325,7 @@ class Piklist_Setting
               piklist::array_path_set($new[$parent_field], $path, $data['request_value']);
             }
           }
-        }        
+        }
       }
       
       $settings = wp_parse_args($new, $_old);
@@ -391,7 +387,7 @@ class Piklist_Setting
       ,$setting['field']
     ));
   }
-  
+
   /**
    * part_add
    * Render a setting.
@@ -406,7 +402,7 @@ class Piklist_Setting
   public static function part_add($parts)
   {
     $page = isset($_REQUEST['page']) ? esc_attr($_REQUEST['page']) : false;
-    
+
     if ($page)
     {
       $workflow = array();
@@ -417,21 +413,24 @@ class Piklist_Setting
       {
         foreach ($process_parts['parts'] as $part)
         {
-          if ($part['data']['setting'] == $page)
+          if ($part['data']['setting'] == $page && is_array($part['data']['flow']) && in_array($part['data']['setting'], $part['data']['flow']))
           {
             if ($part['data']['tab'])
             {
               $tab = current($part['data']['tab']);
-          
-              if (isset($workflow[$tab]) && !$workflow[$tab]['data']['order'] && $part['data']['order'])
+              $part['data']['flow'] = $part['data']['setting'];
+              
+              if (isset($workflow[$tab]))
               {
-                $workflow[$tab]['data']['order'] = $part['data']['order'];
+                if (!empty($part['data']['tab_order']))
+                {
+                  $workflow[$tab]['data']['order'] = $part['data']['tab_order'];
+                }
               }
               else
               {
                 $workflow[$tab] = array(
-                  'id' => $part['id']
-                  ,'folder' => 'workflows'
+                  'folder' => 'workflows'
                   ,'render' => array()
                   ,'add_on' => $part['add_on']
                   ,'prefix' => $part['prefix']
@@ -455,6 +454,16 @@ class Piklist_Setting
             }
             elseif (empty($default_tab))
             {
+              $admin_pages = piklist_admin::get('admin_pages');
+
+              foreach ($admin_pages as $admin_page)
+              {
+                if ($_REQUEST['page'] == $admin_page['menu_slug'])
+                {
+                  break;
+                }
+              }
+
               $default_tab = array(
                 'id' => $part['id']
                 ,'folder' => 'workflows'
@@ -467,7 +476,7 @@ class Piklist_Setting
                   'flow' => array($part['data']['setting'])
                   ,'page' => array($part['data']['setting'])
                   ,'order' => $part['data']['tab_order']
-                  ,'title' => __('General') // TODO: Pull from default_tab on admin page registration
+                  ,'title' => __(isset($admin_page['default_tab']) && $admin_page['default_tab'] ? piklist::slug($admin_page['default_tab']) : 'General')
                   ,'position' => 'title'
                   ,'tab' => null
                   ,'post_type' => null
@@ -481,16 +490,16 @@ class Piklist_Setting
           }
         }
         
-        if (!empty($workflow))
+        if (!empty($workflow) && count($workflow) > 1)
         {      
+          if (!empty($default_tab))
+          {
+            array_push($workflow, $default_tab);
+          }
+          
           foreach ($workflow as $tab)
           {
             array_push($parts, $tab);
-          }
-          
-          if (!empty($default_tab))
-          {
-            array_push($parts, $default_tab);
           }
         }
       }
@@ -501,48 +510,48 @@ class Piklist_Setting
   
   public static function parts_processed($folder)
   {
-    if ($folder == 'settings')
+    foreach (self::$settings as $setting => $sections)
     {
-      foreach (self::$settings as $setting => $sections)
+      if ((isset($_REQUEST['page']) && $_REQUEST['page'] == $setting) || (isset($_REQUEST['option_page']) && $_REQUEST['option_page'] == $setting))
       {
         add_filter('pre_update_option_' . $setting, array('piklist_setting', 'pre_update_option'), 10, 2);
-  
-        register_setting($setting, $setting);
-  
-        uasort($sections, array('piklist', 'sort_by_data_order'));
-  
-        $active = isset($_REQUEST['page']) && $setting == $_REQUEST['page'];
-  
-        foreach ($sections as $section) 
+      }
+      
+      register_setting($setting, $setting);
+
+      uasort($sections, array('piklist', 'sort_by_data_order'));
+
+      $active = isset($_REQUEST['page']) && $setting == $_REQUEST['page'];
+
+      foreach ($sections as $section) 
+      {
+        self::$setting_section_callback_args[$section['id']] = $section;
+
+        $textdomain = isset(piklist_add_on::$available_add_ons[$section['add_on']]['TextDomain']) ? piklist_add_on::$available_add_ons[$section['add_on']]['TextDomain'] : null;
+        $title = !empty($section['data']['title']) ? $section['data']['title'] : (!empty($id) ? $id : __('Settings', 'piklist'));
+        $title = !empty($textdomain) ? __($title, $textdomain) : $title;
+          
+        if ($active && piklist_admin::$admin_page_layout == 'container')
         {
-          self::$setting_section_callback_args[$section['id']] = $section;
+          $context = empty($section['data']['context']) ? 'normal' : $section['data']['context'];
+          $priority = empty($section['data']['priority']) ? 'low' : $section['data']['priority'];
 
-          $textdomain = isset(piklist_add_on::$available_add_ons[$section['add_on']]['TextDomain']) ? piklist_add_on::$available_add_ons[$section['add_on']]['TextDomain'] : null;
-          $title = !empty($section['data']['title']) ? $section['data']['title'] : $id;
-          $title = !empty($textdomain) ? __($title, $textdomain) : $title;
-            
-          if ($active && piklist_admin::$admin_page_layout == 'container')
-          {
-            $context = empty($section['data']['context']) ? 'normal' : $section['data']['context'];
-            $priority = empty($section['data']['priority']) ? 'low' : $section['data']['priority'];
-
-            add_meta_box(
-              $section['id']
-              ,$title
-              ,array('piklist_setting', 'add_meta_box_callback')
-              ,$current_screen
-              ,$context
-              ,$priority
-              ,array(
-                'id' => $section['id']
-                ,'title' => __($section['data']['title'])
-              )
-            );
-          }
-          else
-          {
-            add_settings_section($section['id'], $title, array('piklist_setting', 'register_settings_section_callback'), $setting);
-          }
+          add_meta_box(
+            $section['id']
+            ,$title
+            ,array('piklist_setting', 'add_meta_box_callback')
+            ,$current_screen
+            ,$context
+            ,$priority
+            ,array(
+              'id' => $section['id']
+              ,'title' => __($section['data']['title'])
+            )
+          );
+        }
+        else
+        {
+          add_settings_section($section['id'], $title, array('piklist_setting', 'register_settings_section_callback'), $setting);
         }
       }
     }
@@ -551,17 +560,27 @@ class Piklist_Setting
   public static function part_process($part)
   {
     $page = isset($_REQUEST['page']) ? esc_attr($_REQUEST['page']) : false;
-  
-    if ($page)
+
+    if ($page && empty($part['data']['flow']))
     {
       $part['data']['flow'] = array($part['data']['setting']);
 
       if (!$part['data']['tab'])
       {
-        $part['data']['tab'] = array('general');
+        $admin_pages = piklist_admin::get('admin_pages');
+        
+        foreach ($admin_pages as $admin_page)
+        {
+          if ($_REQUEST['page'] == $admin_page['menu_slug'])
+          {
+            break;
+          }
+        }
+        
+        $part['data']['tab'] = array(isset($admin_page['default_tab']) ? piklist::slug($admin_page['default_tab']) : 'general');
       }
     }
-
+    
     return $part;
   }
   

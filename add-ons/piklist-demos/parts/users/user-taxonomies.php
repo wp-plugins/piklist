@@ -4,6 +4,7 @@ Title: Taxonomies
 Capability: manage_options
 Order: 30
 Tab: Default
+Flow: Demo Workflow
 */
 
 
@@ -26,7 +27,5 @@ Tab: Default
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'Meta Box'
+    ,'type' => 'User Section'
   ));
-
-?>

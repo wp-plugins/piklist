@@ -21,6 +21,8 @@
           endif;
         endforeach;
       endif;
+      $_arguments = $arguments;
+      $_arguments['index'] = $_index;
   ?>
 
     <?php echo $list ? '<li>' : ''; ?>
@@ -29,8 +31,8 @@
         
         <input 
           type="checkbox"
-          id="<?php echo piklist_form::get_field_id($field, $scope, $_index, $prefix); ?>" 
-          name="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"
+          id="<?php echo piklist_form::get_field_id($_arguments); ?>" 
+          name="<?php echo piklist_form::get_field_name($arguments); ?>"
           value="<?php echo esc_attr($values[$_index]); ?>"
           <?php echo $checked; ?>
           <?php echo piklist_form::attributes_to_string($attributes); ?>
@@ -40,8 +42,8 @@
         
           <input 
             type="hidden"
-            id="<?php echo piklist_form::get_field_id($field, $scope, $_index, $prefix); ?>" 
-            name="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"
+            id="<?php echo piklist_form::get_field_id($_arguments); ?>" 
+            name="<?php echo piklist_form::get_field_name($arguments); ?>"
             value=""
           />
       

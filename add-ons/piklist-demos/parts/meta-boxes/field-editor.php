@@ -1,9 +1,10 @@
 <?php
 /*
+Title: Editor Examples
 Post Type: piklist_demo
 Order: 100
 Lock: true
-Flow: Edit Demo
+Flow: Demo Workflow
 Tab: Common
 Sub Tab: Editor
 */

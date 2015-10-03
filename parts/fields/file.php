@@ -9,114 +9,147 @@
                 ,'save' => 'id'
               )
               ,isset($options) && is_array($options) ? $options : array()
-            );  
+            );
 ?>
 
 <div class="piklist-field-part">
-  
+
   <?php if ($options['basic'] || !is_admin()): ?>
 
-    <input 
+    <input
       type="file"
-      id="<?php echo piklist_form::get_field_id($field, $scope, $index, $prefix); ?>" 
-      name="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"
+      id="<?php echo piklist_form::get_field_id($arguments); ?>"
+      name="<?php echo piklist_form::get_field_name($arguments); ?>"
       <?php echo piklist_form::attributes_to_string($attributes); ?>
     />
-  
+
   <?php else: ?>
 
-    <a 
-      href="#" 
+    <a
+      href="#"
       class="button piklist-upload-file-button piklist-field-part"
       title="<?php _e($options['modal_title']); ?>"
     >
       <?php _e($options['button']); ?>
     </a>
-  
+
   <?php endif; ?>
 
   <div class="piklist-upload-file-preview piklist-field-preview <?php echo $errors ? 'piklist-error' : null; ?>">
-  
+
+  <?php
+    $value = is_array($value) ? $value : array($value);
+    $attachments = array();
+    foreach($value as $attachment)
+    {
+      if ($attachment)
+      {
+        if (is_numeric($attachment))
+        {
+          $attachment_id = (int) $attachment;
+
+          array_push($attachments, array(
+            'id' => $attachment_id
+            ,'type' => get_post_mime_type($attachment_id)
+            ,'data' => wp_get_attachment_image_src($attachment_id, $options['preview_size'], false)
+          ));
+        }
+        else
+        {
+          $attachment_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid = %s", $attachment));
+
+          if (is_readable($attachment))
+          {
+            $image_data = getimagesize($attachment);
+          }
+          else
+          {
+            $image_sizes = piklist_media::get_image_sizes($options['preview_size']);
+            $image_data[0] = $image_sizes['width'];
+            $image_data[1] = $image_sizes['height'];
+
+            $mime = wp_check_filetype($attachment);
+            $image_data['mime'] = $mime['type'];
+          }
+
+          array_push($attachments, array(
+            'id' => $attachment_id
+            ,'type' => $image_data['mime']
+            ,'data' => array(
+              $attachment
+              ,$image_data[0]
+              ,$image_data[1]
+              ,false
+            )
+          ));
+        }
+      }
+    }
+
+  ?>
+
     <?php
-      if (empty($value)):
+      if (empty($attachments)):
     ?>
 
-        <input 
-          type="hidden" 
-          id="<?php echo piklist_form::get_field_id($field, $scope, $index, $prefix); ?>" 
-          name="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"
+        <input
+          type="hidden"
+          id="<?php echo piklist_form::get_field_id($arguments); ?>"
+          name="<?php echo piklist_form::get_field_name($arguments); ?>"
           <?php echo piklist_form::attributes_to_string($attributes); ?>
         />
 
     <?php
       else:
-        $value = is_array($value) ? $value : array($value);
-        for ($_index = 0; $_index < count($value); $_index++):
+        for ($count = count($attachments), $_index = 0; $_index < $count; $_index++):
     ?>
 
-          <input 
-            type="hidden" 
-            id="<?php echo piklist_form::get_field_id($field, $scope, $_index, $prefix); ?>" 
-            name="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"
-            value="<?php echo esc_attr($value[$_index]); ?>" 
+          <input
+            type="hidden"
+            id="<?php echo piklist_form::get_field_id($arguments); ?>"
+            name="<?php echo piklist_form::get_field_name($arguments); ?>"
+            value="<?php echo esc_attr($attachments[$_index]['id']); ?>"
             <?php echo piklist_form::attributes_to_string($attributes); ?>
           />
 
-    <?php 
+    <?php
         endfor;
       endif;
     ?>
-  
+
     <ul class="attachments">
 
-      <?php 
-        $value = is_array($value) ? $value : array($value);
-        if (!empty($value)):
-          foreach ($value as $attachment): 
-            $mime_type = null;
-            if ($attachment):
-              if ((string) (int) $attachment == $attachment):
-                $attachment_id = (int) $attachment;
-                $mime_type = get_post_mime_type($attachment_id);
-                $image_data = wp_get_attachment_image_src($attachment_id);
-              else:
-                $attachment_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid = %s", $attachment)); 
-                $image_data = getimagesize($attachment);
-                $mime_type = $image_data['mime'];
-                $image_data = array(
-                  $attachment
-                  ,$image_data[0]
-                  ,$image_data[1]
-                  ,false
-                );
-              endif;
-            endif;
-            
-            if ($mime_type):
-              if (in_array($mime_type, array('image/jpeg', 'image/png', 'image/gif'))):
-                $image = !is_int($attachment) ? $image_data : wp_get_attachment_image_src($attachment_id, $options['preview_size'], false, true);
+      <?php
+        if (!empty($attachments)):
+          foreach ($attachments as $attachment):
+
+            if ($attachment['type']):
+              if (in_array($attachment['type'], array('image/jpeg', 'image/png', 'image/gif'))):
+                $image = !is_int($attachment['id']) ? $attachment['data'] : wp_get_attachment_image_src($attachment['id'], $options['preview_size'], false);
       ?>
 
-                <li class="attachment selected">
+                <li class="attachment selected" <?php echo $image[1] ? 'style="width: ' . $image[1] . 'px;"' : null; ?>>
                    <div class="attachment-preview <?php echo (int) $image[1] > (int) $image[2] ? 'landscape' : 'portrait'; ?>">
-                     <div class="centered">
-                       <a href="#">
-                        <img src="<?php echo esc_attr($image[0]); ?>" />
-                      </a>
+                     <div class="thumbnail">
+                       <div class="centered">
+                         <a href="#">
+                           <img src="<?php echo esc_attr($image[0]); ?>" width="<?php echo esc_attr($attachment['data'][1]);?>" />
+                         </a>
+                       </div>
                      </div>
-                     <a class="check" href="#" title="Deselect" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment_id; ?>" data-attachment-url="<?php echo esc_attr($image[0]); ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
+                     <button type="button" class="button-link check" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment_id; ?>" data-attachment-url="<?php echo esc_attr($image[0]); ?>" data-attachments="<?php echo piklist_form::get_field_name($arguments); ?>"><span class="media-modal-icon"></span><span class="screen-reader-text"><?php _e('Deselect'); ?></span></button>
                    </div>
                  </li>
 
       <?php
               else:
-                $attachment_path = get_attached_file($attachment_id);
+                $attachment_path = get_attached_file($attachment['id']);
                 $file_type = wp_check_filetype($attachment_path, wp_get_mime_types());
 
                 $icon = includes_url() . 'images/media/' . substr($file_type['type'], 0, strpos($file_type['type'], '/')) . '.png';
                 $icon = file_exists($icon) ? $icon : includes_url() . 'images/media/document.png';
       ?>
-    
+
                 <li class="attachment selected">
                    <div class="attachment-preview attachment-preview-document landscape type-<?php echo substr($file_type['type'], 0, strpos($file_type['type'], '/')); ?> subtype-<?php echo substr($file_type['type'], strpos($file_type['type'], '/') + 1); ?>">
                      <div class="thumbnail">
@@ -127,10 +160,10 @@
                          <div><?php echo basename($attachment_path); ?></div>
                        </div>
                      </div>
-                     <a class="check" href="#" title="Deselect" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment_id; ?>" data-attachments="<?php echo piklist_form::get_field_name($field, $scope, $index, $prefix, $multiple); ?>"><div class="media-modal-icon"></div><span><?php _e('Remove'); ?></span></a>
+                     <button type="button" class="button-link check" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment['id']; ?>" data-attachments="<?php echo piklist_form::get_field_name($arguments); ?>"><span class="media-modal-icon"></span><span class="screen-reader-text"><?php _e('Deselect'); ?></span></button>
                    </div>
                  </li>
-    
+
       <?php
               endif;
             endif;
@@ -141,5 +174,5 @@
     </ul>
 
   </div>
-  
+
 </div>

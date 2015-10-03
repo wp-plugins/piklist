@@ -4,14 +4,66 @@
     init: function(editor, url) 
     {
       // NOTE: This allows nested shortcodes with UI to be handled properly.
-      editor.on('BeforeSetContent', function( event )
-      {
-        if (!event.content)
-        {
-          return;
-        }
+      // editor.on('BeforeSetContent', function(event)
+      // {
+      //   if (!event.content)
+      //   {
+      //     return;
+      //   }
+      //
+      //   event.content = wp.mce.views.setMarkers(event.content);
+      // });
 
-        event.content = typeof wp.mce.views.toViews != 'undefined' ? wp.mce.views.toViews(event.content) : wp.mce.views.setMarkers(event.content);
+      editor.on('PostProcess', function(event)
+      {
+        if (event.content)
+        {
+          event.content = event.content.replace(/<span [^>]*?data-wpview-text="([^"]+)"[^>]*>[\s\S]*?<\/span>/g, reset_views_callback);
+        }
+      });
+
+      editor.on('BeforeAddUndo', function(event)
+      {
+        if (event.level.content)
+        {
+          event.level.content = reset_views(event.level.content);
+        }
+      });
+
+      editor.on('PreProcess', function(event)
+      {
+        empty_view_nodes(event.node);
+      }, true);
+
+      editor.on('hide', function()
+      {
+        wp.mce.views.unbind();
+
+        empty_view_nodes();
+      });
+      
+      $.each(piklist.shortcodes, function(index, shortcode) 
+      {
+        if (shortcode.editor)
+        {
+          editor.addButton('shortcode-' + shortcode.shortcode, {
+            title: shortcode.name,
+            icon: 'dashicon dashicons ' + shortcode.icon + ' piklist-shortcode-button',
+            role: shortcode.shortcode,
+            onclick: function(event) 
+            {
+              var button = $(event.target).parents('.mce-btn:eq(0)');
+
+              if (!button.hasClass('piklist-shortcode-button'))
+              {
+                button
+                  .addClass('piklist-shortcode-button')
+                  .find('.piklist-shortcode-button:eq(0)')
+                  .removeClass('piklist-shortcode-button');
+              }
+            }
+          });
+        }
       });
     },
     
@@ -28,6 +80,26 @@
   });
  
   tinymce.PluginManager.add('piklist_shortcode', tinymce.plugins.PiklistShortcodePlugin);
+  
+  function reset_views_callback(match, view) 
+  {
+    var shortcode = $(match).data('wpview-type');
+  
+    return piklist.shortcodes[shortcode].inline === true ? window.decodeURIComponent(view) : '<p>' + window.decodeURIComponent(view) + '<\/p>';
+  }
+  
+  function reset_views(content) 
+  {
+    return content.replace(/<span[^>]+data-wpview-text="([^"]+)"[^>]*>(?:[\s\S]+?wpview-selection-after[^>]+>[^<>]*<\/p>\s*|\.)<\/span>/g, reset_views_callback);
+  }
+  
+  function empty_view_nodes(rootNode) 
+  {
+    $('span[data-wpview-text]', rootNode).each(function(i, node) 
+    {
+      node.innerHTML = '.';
+    });
+  }
   
   if (typeof wp.shortcode != 'undefined')
   {
@@ -75,7 +147,7 @@
       {
         return wp.shortcode.next(tag, text, re.lastIndex);
       }
-
+      
       result = {
         index: match.index,
         content: match[0],
@@ -94,7 +166,7 @@
       {
         result.content = result.content.slice(0, -1);
       }
-
+      
       return result;
     };
   }

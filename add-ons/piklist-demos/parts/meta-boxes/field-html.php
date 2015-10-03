@@ -6,7 +6,7 @@ Order: 20
 Collapse: false
 Tab: Common
 Sub Tab: Basic
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 ?>
 
@@ -35,5 +35,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-?>

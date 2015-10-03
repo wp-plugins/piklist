@@ -16,7 +16,7 @@
       endforeach;
     ?>
 
-    <h2 class="nav-tab-wrapper">
+    <h2 class="nav-tab-wrapper piklist-nav-tab-wrapper">
 
       <?php 
 
@@ -65,10 +65,12 @@
       if (isset($active_tab)):
         do_action('piklist_pre_render_workflow', $active_tab);
         
-        piklist::render($active_tab['part'], array(
-          'data' => $active_tab
-        ));
-
+        if ($active_tab['part']):
+          piklist::render($active_tab['part'], array(
+            'data' => $active_tab
+          ));
+        endif;
+        
         do_action('piklist_post_render_workflow', $active_tab);
       endif;
     ?>

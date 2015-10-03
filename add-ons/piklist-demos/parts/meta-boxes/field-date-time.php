@@ -5,7 +5,7 @@ Post Type: piklist_demo
 Order: 50
 Collapse: false
 Tab: Basic
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 ?>
 
@@ -54,5 +54,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-?>

@@ -45,8 +45,8 @@ class Piklist_Validate
   {
     add_action('init', array('piklist_validate', 'init'));
     add_action('admin_head', array('piklist_validate', 'admin_head'));
-    add_action('admin_notices', array('piklist_validate', 'admin_notices'));
-    add_action('piklist_notices', array('piklist_validate', 'admin_notices'));
+    add_action('admin_notices', array('piklist_validate', 'notices'));
+    add_action('piklist_notices', array('piklist_validate', 'notices'));
 
     add_filter('wp_redirect', array('piklist_validate', 'wp_redirect'), 10, 2);
     add_filter('piklist_validation_rules', array('piklist_validate', 'validation_rules'));
@@ -142,12 +142,12 @@ class Piklist_Validate
   {
     if (!empty(self::$submission['errors']))
     {
-      piklist::render('shared/admin-notice-updated-hide');
+      piklist::render('shared/notice-updated-hide');
     }
   }
   
   /**
-   * admin_notices
+   * notices
    * Render notices for each individual field that has errors.
    *
    * @param $form_id
@@ -158,13 +158,13 @@ class Piklist_Validate
    * @static
    * @since 1.0
    */
-  public static function admin_notices($form_id = null)
+  public static function notices($form_id = null)
   {
     $submitted_form_id = piklist_form::get('form_id');
 
     if ((($submitted_form_id && $form_id == $submitted_form_id) || !$submitted_form_id) && !empty(self::$submission['errors']))
     {
-      $content = '<ol>';
+      $content = '<ul>';
       foreach (self::$submission['errors'] as $type => $fields)
       {
         foreach ($fields as $field => $errors)
@@ -172,13 +172,11 @@ class Piklist_Validate
           $content .= '<li>' . current($errors) . '</li>';
         }
       }
-      $content .= '</ol>';
+      $content .= '</ul>';
       
-      piklist::render('shared/admin-notice', array(
+      piklist::render('shared/notice', array(
         'id' => 'piklist_validation_error'
-        ,'data' => array(
-          'notice_type' => 'error'
-        )
+        ,'notice_type' => 'error'
         ,'content' => $content
       ));
     }
@@ -198,13 +196,13 @@ class Piklist_Validate
    */
   public static function check(&$stored_data = null)
   {
-    if (!isset($_REQUEST[piklist::$prefix]['fields_id']) || !$fields_data = get_transient(piklist::$prefix . $_REQUEST[piklist::$prefix]['fields_id'])) 
+    $fields_id = isset($_REQUEST[piklist::$prefix]['fields']) ? esc_attr($_REQUEST[piklist::$prefix]['fields']) : null;
+
+    if (!$fields_id || !$fields_data = get_transient(piklist::$prefix . $fields_id)) 
     {
       return false;
     }
-    
-    $fields_id = $_REQUEST[piklist::$prefix]['fields_id'];
-    
+
     foreach ($fields_data as $type => &$fields)
     {
       foreach ($fields as &$field)
@@ -220,7 +218,7 @@ class Piklist_Validate
             $widget_index = !empty($_REQUEST['multi_number']) ? $_REQUEST['multi_number'] : $_REQUEST['widget_number'];
             $request_data = &$_REQUEST[piklist::$prefix . $field['scope']][$widget_index];
           }
-          elseif (isset($field['scope']) && !empty($field['scope']))
+          elseif ($field['scope'])
           {
             $request_data = &$_REQUEST[piklist::$prefix . $field['scope']];
           }
@@ -230,201 +228,197 @@ class Piklist_Validate
           }
         }
         
-        if (isset($request_data) && isset($field['field']))
+        if ($request_data && $field['field'] && $field['type'] != 'html')
         {
-          $field['request_value'] = !strstr($field['field'], ':') ? (isset($request_data[$field['field']]) ? $request_data[$field['field']] : null) : piklist::array_path_get($request_data, explode(':', $field['field']));
-          $field['valid'] = true;
-          
-          if (stristr($field['field'], ':0:'))
+          if (isset($request_data[$field['field']]))
           {
-            $_field = $field['field'];
-            $value = array();
-            $index = 0;
-            
-            do 
-            {
-              $_value = piklist::array_path_get($request_data, explode(':', $_field));
-              if (isset($_value[$index]) && count($_value[$index]) > 1 && in_array($field['type'], piklist_form::$field_list_types['multiple_value']) && $field['add_more'])
-              {
-                $_value[$index] = array_values(array_filter($_value[$index]));
-              }
-              
-              if (isset($_value[$index]))
-              {
-                array_push($value, $_value);
-                
-                piklist::array_path_set($request_data, explode(':', $_field), $_value);
-                
-                $_field = strrev(implode(strrev(':' . ($index + 1) . ':'), explode(':' . $index . ':', strrev($_field), 2)));
-              }
-              else
-              {
-                break;
-              }
-              
-              $index++;
-            } 
-            while (isset($_value[$index]));
-            
-            $field['request_value'] = $_value;
+            $field['request_value'] = $request_data[$field['field']];
           }
-          elseif ($field['type'] == 'group' && empty($field['field']))
+          elseif (is_array($field['value']))
           {
-            $field['request_value'] = array();
-            
-            foreach ($field['fields'] as $_field)
+            $field['request_value'] = piklist::pluck($request_data, $field['field']);
+          }
+          elseif (strstr($field['field'], ':'))
+          {
+            $field['request_value'] = piklist::array_path_get($request_data, explode(':', $field['field']));
+          }
+          
+          // Sanitization
+          foreach ($field['sanitize'] as $sanitize)
+          {
+            if (isset(self::$sanitization_rules[$sanitize['type']]))
             {
-              $field['request_value'][$_field['field']] = !strstr($_field['field'], ':') ? (isset($request_data[$_field['field']]) ? $request_data[$_field['field']] : null) : piklist::array_path_get($request_data, explode(':', $_field['field']));              
+              $sanitization = array_merge(self::$sanitization_rules[$sanitize['type']], $sanitize);
+
+              if (isset($sanitization['callback']) && $field['request_value'])
+              {
+                self::sanitize_value_callback($field, $sanitization);
+              }
+            }
+            else
+            {
+              $trigger_error = sprintf(__('Sanitization type "%s" is not valid.', 'piklist'), $sanitize['type']);
+              
+              trigger_error($trigger_error, E_USER_NOTICE);
             }
           }
-          else if ($field['type'] != 'html')
-          {
-            $index = 0;
-            
-            do 
-            {
-              if (isset($field['request_value'][$index]) && count($field['request_value'][$index]) > 1 && $field['type'] == 'checkbox')
-              {
-                $field['request_value'][$index] = array_values(array_filter($field['request_value'][$index]));
-              }
-              
-              $index++;
-            } 
-            while (isset($field['request_value'][$index]));
           
-            piklist::array_path_set($request_data, explode(':', $field['field']), $field['request_value']);
+          if ($field['request_value'])
+          {
+            self::add_request_value($field);
+          }
+        
+          // Required
+          if ($field['required'] && $field['required'])
+          {
+            self::required_value($field);
           }
 
-          if (isset($field['sanitize']))
-          {
-            foreach ($field['sanitize'] as $sanitize)
-            {
-              if (isset(self::$sanitization_rules[$sanitize['type']]))
-              {
-                $sanitization = array_merge(self::$sanitization_rules[$sanitize['type']], $sanitize);
-                
-                if (isset($sanitization['callback']) && isset($field['request_value']))
-                {
-                  foreach ($field['request_value'] as $index => $request_value)
-                  {
-                    $request_value = call_user_func_array($sanitization['callback'], array($request_value, $field, isset($sanitize['options']) ? $sanitize['options'] : array()));
-
-                    $_request_value = piklist::array_path_get($request_data, explode(':', $field['field']));
-                    $_request_value[$index] = $request_value;
-                    
-                    $field['request_value'][$index] = $request_value;
-                    
-                    piklist::array_path_set($request_data, explode(':', $field['field']), $_request_value);
-                  }
-                }
-              }
-              else
-              {
-                $trigger_error = sprintf(__('Sanitization type "%s" is not valid.', 'piklist'), $sanitize['type']);
-                
-                trigger_error($trigger_error, E_USER_NOTICE);
-              }
-            }
-          }
-          
-          self::add_request_value($field);
-        }
-      }
-    }
-      
-    foreach ($fields_data as $type => &$fields)
-    {
-      foreach ($fields as &$field)
-      { 
-        if (isset($field['required']) && $field['required'] && isset($field['request_value']))
-        {
-          for ($index = 0; $index < count($field['request_value']); $index++)
-          {
-            $request_value = is_array($field['request_value'][$index]) ? array_filter($field['request_value'][$index]) : $field['request_value'][$index];
-            
-            if (empty($request_value))
-            {
-              self::add_error($field, $index, __('is a required field.', 'piklist'));
-            }
-          }
-        }
-                  
-        if (isset($field['validate']))
-        {
+          // Validation
           foreach ($field['validate'] as $validate)
           {
             if (isset(self::$validation_rules[$validate['type']]))
             {
               $validation = array_merge(self::$validation_rules[$validate['type']], $validate);
-              $request_values = isset($field['request_value']) ? $field['request_value'] : array();
-              
-              if ($field['type'] == 'group')
-              {
-                $_request_values = array();
-                
-                if (!empty($request_values))
-                {
-                  foreach ($request_values as $key => $values)
-                  {
-                    if (!empty($values))
-                    {
-                      foreach ($values as $index => $value)
-                      {
-                        if (!isset($_request_values[$index]))
-                        {
-                          $_request_values[$index] = array();
-                        }
-                    
-                        $_request_values[$index][$key] = $value;
-                      }
-                    }
-                  }
-                }
-                
-                $request_values = array($_request_values);
-              }
-              
+
               if (isset($validation['rule']))
               {
-                for ($index = 0; $index < count($request_values); $index++)
-                {
-                  if (!empty($request_values[$index]) && !preg_match($validation['rule'], $request_values[$index]))
-                  {
-                    self::add_error($field, $index, $validation['message']);
-                  }
-                }
+                self::validate_value_rule($field, $validation);
               }
 
               if (isset($validation['callback']))
               {
-                for ($index = 0; $index < count($request_values); $index++)
-                {
-                  if (!empty($request_values[$index]) || ($field['type'] != 'group' && $field['add_more']))
-                  {
-                    $validation_result = call_user_func_array($validation['callback'], array($index, $request_values[$index], isset($validate['options']) ? $validate['options'] : array(), $field, $fields_data));
-      
-                    if ($validation_result !== true)
-                    {
-                      self::add_error($field, $index, !empty($validation['message']) ? $validation['message'] : (is_string($validation_result) ? $validation_result : __('is not valid input', 'piklist')));
-                    }
-                  }
-                }
+                self::validate_value_callback($field, $validation, $fields_data);
               }
             }
             else
             {
               $trigger_error = sprintf(__('Validation type "%s" is not valid.', 'piklist'), $validate['type']);
-              
+            
               trigger_error($trigger_error, E_USER_NOTICE);
             }
           }
         }
       }
     }
-
+    
     self::set_data($fields_id);
     
     return !empty(self::$submission['errors']) ? false : $fields_data;
+  }
+  
+  /**
+   * required_value
+   *
+   *
+   * @access private
+   * @static
+   * @since 1.0
+   */
+  private static function required_value($field)
+  {
+    if (is_array($field['request_value']))
+    {
+      foreach ($field['request_value'] as $index => $request_value)
+      {
+        $required = is_array($request_value) ? array_filter($request_value) : $request_value;
+      
+        if (empty($required))
+        {
+          self::add_error($field, $index, __('is a required field.', 'piklist'));
+        }
+      }
+    }
+    elseif (!$field['request_value'])
+    {
+      self::add_error($field, 0, __('is a required field.', 'piklist'));
+    }
+  }
+  
+  /**
+   * sanitize_value_callback
+   *
+   *
+   * @access private
+   * @static
+   * @since 1.0
+   */
+  private static function sanitize_value_callback(&$field, $sanitization)
+  {
+    $options = isset($sanitization['options']) ? $sanitization['options'] : array();
+    
+    if (is_array($field['request_value']))
+    {
+      foreach ($field['request_value'] as $index => $request_value)
+      {
+        $field['request_value'][$index] = call_user_func_array($sanitization['callback'], array($request_value, $field, $options));
+      }
+    }
+    else
+    {
+      $field['request_value'] = call_user_func_array($sanitization['callback'], array($field['request_value'], $field, $options));
+    }
+  }
+  
+  /**
+   * validate_value_callback
+   *
+   *
+   * @access private
+   * @static
+   * @since 1.0
+   */
+  private static function validate_value_callback($field, $validation, $fields_data)
+  {
+    $options = isset($validation['options']) ? $validation['options'] : array();
+ 
+    if (is_array($field['request_value']) && !$field['multiple'] && !$field['add_more'])
+    {
+      foreach ($field['request_value'] as $index => $request_value)
+      {
+        $validation_result = call_user_func_array($validation['callback'], array($index, $request_value, $options, $field, $fields_data));
+        
+        if ($validation_result !== true)
+        {
+          self::add_error($field, $index, !empty($validation['message']) ? $validation['message'] : (is_string($validation_result) ? $validation_result : __('is not valid input', 'piklist')));
+        }
+      }
+    }
+    elseif ($field['request_value'])
+    {
+      $validation_result = call_user_func_array($validation['callback'], array(0, $field['request_value'], $options, $field, $fields_data));
+
+      if ($validation_result !== true)
+      {
+        self::add_error($field, 0, !empty($validation['message']) ? $validation['message'] : (is_string($validation_result) ? $validation_result : __('is not valid input', 'piklist')));
+      }
+    }
+  }
+  
+  /**
+   * validate_value_rule
+   *
+   *
+   * @access private
+   * @static
+   * @since 1.0
+   */
+  private static function validate_value_rule($field, $validation)
+  {
+    if (is_array($field['request_value']))
+    {
+      foreach ($field['request_value'] as $index => $request_value)
+      {
+        if (!empty($request_value) && !preg_match($validation['rule'], $request_value))
+        {
+          self::add_error($field, $index, $validation['message']);
+        }
+      }
+    }
+    elseif (!empty($field['request_value']) && !preg_match($validation['rule'], $field['request_value']))
+    {
+      self::add_error($field, $index, $validation['message']);
+    }
   }
   
   /**
@@ -485,7 +479,7 @@ class Piklist_Validate
   {
     $field['valid'] = false;
     
-    $name = isset($field['label']) && !empty($field['label']) ? $field['label'] : (isset($field['attributes']['placeholder']) ? $field['attributes']['placeholder'] : __(ucwords($field['type'])));
+    $name = $field['label'] ? $field['label'] : (isset($field['attributes']['placeholder']) ? $field['attributes']['placeholder'] : __(ucwords($field['type'])));
     
     if (!isset(self::$submission['errors'][$field['scope']][$field['field']]))
     {
@@ -735,12 +729,12 @@ class Piklist_Validate
 
     foreach ($field_value as $value)
     {
-      if($field['type'] == 'file' && is_numeric($value))
+      if ($field['type'] == 'file' && is_numeric($value))
       {
         $value = wp_get_attachment_url($value);
       }
 
-      if(!@file_get_contents($value))
+      if (!@file_get_contents($value))
       {
         return __('contains a file that does not exist.', 'piklist');
       }
@@ -765,7 +759,7 @@ class Piklist_Validate
   {
     $hex = self::sanitize_hex_color($value);
 
-    if($hex === $value)
+    if ($hex === $value)
     {
       return true;
     }
@@ -792,13 +786,12 @@ class Piklist_Validate
 
     foreach ($field_value as $value)
     {
-      if($field['type'] == 'file' && is_numeric($value))
+      if ($field['type'] == 'file' && is_numeric($value))
       {
         $value = wp_get_attachment_url($value);
       }
 
-
-      if(!@exif_imagetype($value))
+      if (!@exif_imagetype($value))
       {
         return __('contains a file that is not an image.', 'piklist');
       }
@@ -1292,7 +1285,7 @@ class Piklist_Validate
     }
 
     // 3 or 6 hex digits, or the empty string.
-    if(preg_match('|^#([A-Fa-f0-9]{3}){1,2}$|', $color))
+    if (preg_match('|^#([A-Fa-f0-9]{3}){1,2}$|', $color))
     {
       return $color;
     }

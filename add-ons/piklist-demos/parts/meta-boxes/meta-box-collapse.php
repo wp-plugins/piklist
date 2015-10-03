@@ -6,7 +6,7 @@ Order: 10
 Collapse: true
 Tab: Layout
 Sub Tab: Meta Boxes
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(

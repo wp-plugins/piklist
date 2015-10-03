@@ -19,7 +19,13 @@ class Piklist_Admin
    * @access public
    */
   public static $piklist_dependent = false;
-  
+
+  /**
+   * @var bool Whether Piklist is network activated.
+   * @access public
+   */
+  public static $network_wide = false;
+
   /**
    * @var bool|array Piklist page icon configuration.
    * @access public
@@ -37,27 +43,27 @@ class Piklist_Admin
    * @access private
    */
   private static $admin_page_sections = array();
-  
+
   /**
    * @var string Admin page layout to use if set.
    * @access private
    */
   public static $admin_page_layout = null;
-  
+
   /**
    * @var array Whether or not to check capabilities on save.
    * @access private
    */
   private static $capability_save = array();
-  
+
   /**
    * @var array Allowed Piklist variables to pass through a redirect of a post.
    * @access private
    */
   private static $redirect_post_location_allowed = array(
     'admin_hide_ui'
-  );  
-  
+  );
+
   /**
    * _construct
    * Class constructor.
@@ -68,35 +74,37 @@ class Piklist_Admin
    */
   public static function _construct()
   {
-    add_action('admin_init', array('piklist_admin', 'admin_init'));
+    if (is_admin())
+    {
+      add_action('init', array('piklist_admin', 'init'));
+    }
+    
     add_action('admin_head', array('piklist_admin', 'admin_head'));
     add_action('wp_head', array('piklist_admin', 'admin_head'));
     add_action('admin_menu', array('piklist_admin', 'register_admin_pages'), -1);
     add_action('redirect_post_location', array('piklist_admin', 'redirect_post_location'), 10, 2);
-    
+
     add_filter('admin_footer_text', array('piklist_admin', 'admin_footer_text'));
     add_filter('admin_body_class', array('piklist_admin', 'admin_body_class'));
     add_filter('screen_options_show_screen', array('piklist_admin', 'screen_options_show_screen'), 10, 2);
 
     add_filter('plugin_action_links_piklist/piklist.php', array('piklist_admin', 'plugin_action_links'));
     add_filter('plugin_row_meta', array('piklist_admin', 'plugin_row_meta'), 10, 2);
-    
+
     add_filter('piklist_assets', array('piklist_admin', 'assets'), 100);
   }
 
   /**
-   * admin_init
-   * Initialize the admin for Piklist.
+   * init
+   * Checks for updates.
    *
    * @access public
    * @static
    * @since 1.0
    */
-  public static function admin_init()
+  public static function init()
   {
-    $path = piklist::$paths['piklist'] . '/piklist.php';
-    
-    $data = piklist::get_file_data($path, array(
+    $data = piklist::get_file_data(piklist::$addons['piklist']['path'] . '/piklist.php', array(
               'version' => 'Version'
             ));
 
@@ -104,6 +112,8 @@ class Piklist_Admin
     {
       self::check_update('piklist/piklist.php', $data['version']);
     }
+    
+    self::check_persistant_update();
 
     add_action('in_plugin_update_message-piklist/piklist.php', array('piklist_admin', 'update_available'), null, 2);
   }
@@ -119,15 +129,15 @@ class Piklist_Admin
   public static function admin_head()
   {
     global $menu, $submenu;
-    
+
     if (self::hide_ui())
     {
       piklist::render('shared/admin-hide-ui');
-      
+
       $menu = $submenu = null;
     }
   }
-  
+
   /**
    * assets
    * Add assets needed in the admin for Piklist.
@@ -145,12 +155,12 @@ class Piklist_Admin
     $scripts = array(
       '/parts/js/admin.js' => piklist::$version
     );
-    
+
     foreach ($scripts as $path => $version)
     {
       array_push($assets['scripts'], array(
         'handle' => str_replace(array('.js', '/'), '', substr($path, strrpos($path, '/')))
-        ,'src' => piklist::$urls['piklist'] . $path
+        ,'src' => piklist::$addons['piklist']['url'] . $path
         ,'ver' => $version
         ,'deps' => 'jquery'
         ,'enqueue' => true
@@ -158,17 +168,17 @@ class Piklist_Admin
         ,'admin' => true
       ));
     }
-    
+
     $styles = array(
       '/parts/css/admin.css' => piklist::$version
       ,'/parts/fonts/dashicons.css' => '20140105'
     );
-    
+
     foreach ($styles as $path => $version)
     {
       array_push($assets['styles'], array(
         'handle' => str_replace(array('.css', '/'), '', substr($path, strrpos($path, '/')))
-        ,'src' => piklist::$urls['piklist'] . $path
+        ,'src' => piklist::$addons['piklist']['url'] . $path
         ,'ver' => $version
         ,'enqueue' => true
         ,'in_footer' => false
@@ -209,20 +219,20 @@ class Piklist_Admin
 
     // Find where plugin version starts
     $pos = stripos($changes, '<h4>' . $plugin_data['Version'] . '</h4>');
-    
+
     if ($pos !== false)
     {
       $changes = trim(substr($changes, 0, $pos));
 
       piklist::render('shared/update-available');
-      
+
       $changes = preg_replace('/<h4>(.*)<\/h4>.*/iU', '', $changes);
       $changes = strip_tags($changes, '<li>');
 
       echo '<ul class="update-available">' . $changes . '</ul>';
     }
   }
-  
+
   /**
    * admin_footer_text
    * Just a little branding touch added to the admin.
@@ -239,7 +249,7 @@ class Piklist_Admin
   {
     return str_replace('</a>.', sprintf(__('%1$s and %2$sPiklist%1$s.', 'piklist'), '</a>', '<a href="http://piklist.com">'), $footer_text);
   }
-  
+
   /**
    * hide_ui
    * Determine if the admin ui should be hidden.
@@ -254,7 +264,7 @@ class Piklist_Admin
   {
     return isset($_REQUEST[piklist::$prefix]['admin_hide_ui']) && $_REQUEST[piklist::$prefix]['admin_hide_ui'] == 'true';
   }
-  
+
   /**
    * redirect_post_location
    * A helper to redirect the post location and keep it friendly to piklist.
@@ -275,7 +285,7 @@ class Piklist_Admin
       $variables = array(
         piklist::$prefix => array()
       );
-        
+
       /**
        * piklist_redirect_post_location_allowed
        *
@@ -294,16 +304,16 @@ class Piklist_Admin
           $variables[piklist::$prefix][$key] = $value;
         }
       }
-      
+
       if (!empty($variables[piklist::$prefix]))
       {
         $location .= (substr($location, -1) != '&' ? '&' : null) . http_build_query($variables);
       }
     }
-    
+
     return $location;
   }
-  
+
   /**
    * register_admin_pages
    * Register admin pages to be added to the admin.
@@ -312,7 +322,7 @@ class Piklist_Admin
    * @static
    * @since 1.0
    */
-  public static function register_admin_pages() 
+  public static function register_admin_pages()
   {
     /**
      * piklist_admin_pages
@@ -320,18 +330,18 @@ class Piklist_Admin
      *
      * Allows for all custom Piklist parameters when registering an Admin or Settings page.
      *
-     * @param array $post_types 
+     * @param array $post_types
      *
      * @since 1.0
      */
     self::$admin_pages = apply_filters('piklist_admin_pages', array());
-    
+
     foreach (self::$admin_pages as $page)
     {
       if (isset($page['capability_save']))
       {
         piklist_admin::$capability_save = $page['capability_save'];
-        
+
         add_filter("option_page_capability_{$page['setting']}", array('piklist_admin', 'option_page_capability'));
       }
 
@@ -347,13 +357,13 @@ class Piklist_Admin
         add_submenu_page($page['menu_slug'], $page['page_title'], $page['page_title'], $page['capability'], $page['menu_slug'], array('piklist_admin', 'admin_page'));
       }
     }
-    
+
     foreach (self::$admin_pages as $page)
     {
       if (isset($page['layout']) && isset($_REQUEST['page']) && $page['menu_slug'] == (string) $_REQUEST['page'])
       {
         self::$admin_page_layout = $page['layout'];
-        
+
         if (self::$admin_page_layout == 'container')
         {
           add_meta_box(
@@ -366,21 +376,21 @@ class Piklist_Admin
             ,$page
           );
         }
-        
+
         break;
       }
     }
-    
+
     $data = array(
               'title' => 'Title'
               ,'page' => 'Page'
               ,'order' => 'Order'
               ,'position' => 'Position'
             );
-            
+
     piklist::process_parts('admin-pages', $data, array('piklist_admin', 'register_admin_pages_callback'));
   }
-  
+
   /**
    * register_admin_pages_callback
    * Handle admin page registration.
@@ -403,19 +413,19 @@ class Piklist_Admin
         {
           self::$admin_page_sections[$page] = array();
         }
-        
+
         if (!$arguments['data']['position'])
         {
           $arguments['data']['position'] = 'before';
         }
-        
+
         array_push(self::$admin_page_sections[$page], $arguments);
 
         uasort(self::$admin_page_sections[$page], array('piklist', 'sort_by_order'));
       }
     }
   }
-  
+
   /**
    * admin_page
    * Render the admin page.
@@ -424,7 +434,7 @@ class Piklist_Admin
    * @static
    * @since 1.0
    */
-  public static function admin_page() 
+  public static function admin_page()
   {
     $page = false;
 
@@ -433,11 +443,11 @@ class Piklist_Admin
       if ($_REQUEST['page'] === $admin_page['menu_slug'])
       {
         $page = $admin_page;
-    
+
         break;
       }
     }
-    
+
     if ($page)
     {
       piklist::render('shared/admin-page', array(
@@ -455,7 +465,7 @@ class Piklist_Admin
       ));
     }
   }
-  
+
   /**
    * add_meta_box_callback
    * Insert description here
@@ -471,7 +481,7 @@ class Piklist_Admin
   {
     piklist::render('shared/meta-box-submitdiv', $arguments['args']);
   }
-  
+
   /**
    * screen_options_show_screen
    * Show screen options tab.
@@ -490,13 +500,13 @@ class Piklist_Admin
     if (self::$admin_page_layout == 'container')
     {
       add_screen_option('layout_columns', array('max' => 2, 'default' => 2));
-      
+
       return true;
     }
-    
+
     return $show_screen;
   }
-  
+
   /**
    * admin_body_class
    * Add custom classes to the admin body tag.
@@ -509,36 +519,27 @@ class Piklist_Admin
    * @static
    * @since 1.0
    */
-  public static function admin_body_class($classes = '')
+  public static function admin_body_class($classes)
   {
     global $typenow;
 
-    $classes .= $classes;
-
     $screen = get_current_screen();
 
-    if (piklist_admin::$piklist_dependent == true)
+    if (piklist_admin::$piklist_dependent == true && $screen->base == 'plugins')
     {
-      if($screen->base == 'plugins')
-      {
-        $classes = 'piklist-dependent' . ' ';
-      }
-      else
-      {
-        $classes = $classes;
-      }
+      $classes .= ' piklist-dependent';
     }
 
     if (isset($_REQUEST['taxonomy']))
     {
-      $classes .= 'taxonomy-' . esc_attr($_REQUEST['taxonomy']) . ' '; 
+      $classes .= ' taxonomy-' . esc_attr($_REQUEST['taxonomy']);
     }
 
     if ($typenow)
-    { 
-      $classes .= 'post_type-' . $typenow;
+    {
+      $classes .= ' post_type-' . $typenow;
     }
-
+    
     return $classes;
   }
 
@@ -556,7 +557,7 @@ class Piklist_Admin
   {
     return piklist_admin::$capability_save;
   }
-  
+
   /**
    * get
    * A simple getter function.
@@ -590,7 +591,7 @@ class Piklist_Admin
     }
 
     add_filter('plugin_action_links_piklist/piklist.php', array('piklist_admin', 'replace_deactivation_link'));
-    add_filter('network_admin_plugin_action_links_piklist/piklist.php', array('piklist_admin', 'replace_deactivation_link'));    
+    add_filter('network_admin_plugin_action_links_piklist/piklist.php', array('piklist_admin', 'replace_deactivation_link'));
     add_filter('admin_body_class', array('piklist_admin', 'admin_body_class'));
   }
 
@@ -609,8 +610,8 @@ class Piklist_Admin
   public static function replace_deactivation_link($actions)
   {
     unset($actions['deactivate']);
-    
-    array_unshift($actions, sprintf(__('%1$sDependent plugins or theme are active.%2$s', 'piklist'),'<div style="color:#a00">', piklist_admin::replace_deactivation_link_help() .'</div>') . (is_network_admin() ? __('Network Deactivate', 'piklist') :  __('Deactivate', 'piklist'))); 
+
+    array_unshift($actions, sprintf(__('%1$sDependent plugins or theme are active.%2$s', 'piklist'),'<div style="color:#a00">', piklist_admin::replace_deactivation_link_help() .'</div>') . (is_network_admin() ? __('Network Deactivate', 'piklist') :  __('Deactivate', 'piklist')));
 
     return $actions;
   }
@@ -644,7 +645,7 @@ class Piklist_Admin
   {
     $links[] = '<a href="' . get_admin_url(null, 'admin.php?page=piklist-core-settings') . '">' . __('Settings', 'piklist') . '</a>';
     $links[] = '<a href="' . get_admin_url(null, 'admin.php?page=piklist-core-addons') . '">' . __('Demo', 'piklist') . '</a>';
-   
+
     return $links;
   }
 
@@ -664,7 +665,7 @@ class Piklist_Admin
   public static function plugin_row_meta($links, $file)
   {
     if ($file == 'piklist/piklist.php')
-    {      
+    {
       $links[] = '<a href="https://piklist.com/user-guide/" target="_blank">' . __('User Guide', 'piklist') . '</a>';
       $links[] = '<a href="https://piklist.com/support/" target="_blank">' . __('Support', 'piklist') . '</a>';
       $links[] = '<a href="' . get_admin_url(null, 'admin.php?page=piklist-core-addons') . '">' . __('Add-ons', 'piklist') . '</a>';
@@ -688,54 +689,97 @@ class Piklist_Admin
   {
     global $pagenow;
 
-    if (!in_array($pagenow, array('plugins.php', 'update-core.php', 'update.php', 'index.php')) || !is_admin() || !current_user_can('manage_options'))
+    // TODO: Remove
+    // $_active = get_option('piklist_active_plugin_versions');
+    // $_active['piklist/piklist.php'] = array('0.9.0');
+    //
+    // update_option('piklist_active_plugin_versions', $_active);
+
+    // // piklist::pre($_active);
+    // // die;
+  
+    if (!is_admin() || !current_user_can('manage_options'))
     {
       return;
     }
-     
+
     $plugin = plugin_basename($file);
 
     if (is_plugin_active_for_network($plugin))
     {
+      piklist_admin::$network_wide = true;
       $versions = get_site_option('piklist_active_plugin_versions', array());
-      $network_wide = true;
     }
     elseif (is_plugin_active($plugin))
     {
+      piklist_admin::$network_wide = false;
       $versions = get_option('piklist_active_plugin_versions', array());
-      $network_wide = false;
     }
     else
     {
       return;
     }
 
-    if (!isset($versions[$plugin]))
+    if (empty($versions[$plugin]))
     {
-      $versions[$plugin] = array('0');
+      $versions[$plugin][] = $version;
     }
-    
-    if (!is_array($versions[$plugin]))
+    else
     {
-      $versions[$plugin] = array($versions[$plugin]);
-    }
-    
-    $current_version = is_array($versions[$plugin]) ? current($versions[$plugin]) : $versions[$plugin];
+      if (!is_array($versions[$plugin]))
+      {
+        $versions[$plugin] = array($versions[$plugin]);
+      }
 
-    if (version_compare($version, $current_version, '>'))
-    {
-      self::get_update($file, $version, $current_version);
+      $current_version = is_array($versions[$plugin]) ? current($versions[$plugin]) : $versions[$plugin];
       
-      array_unshift($versions[$plugin], $version);
-    }
+      if (version_compare($version, $current_version, '>'))
+      {
+        self::get_update($file, $version, $current_version);
 
-    if ($network_wide)
-    { 
+        array_unshift($versions[$plugin], $version);
+      }
+    }
+    
+    if (piklist_admin::$network_wide)
+    {
       update_site_option('piklist_active_plugin_versions', $versions);
     }
     else
-    { 
+    {
       update_option('piklist_active_plugin_versions', $versions);
+    }
+  }
+  
+  /**
+   * check_persistant_update
+   * Check if a piklist plugin needs to continue with an update
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function check_persistant_update()
+  {
+    $persistant_updates = piklist_admin::$network_wide ? get_site_option('piklist_updates') : get_option('piklist_updates');
+
+    if ($persistant_updates === false)
+    {
+      return;
+    }
+    
+    $valid_persistant_updates = array();
+    foreach ($persistant_updates as $plugin => $versions)
+    {
+      foreach ($versions as $version)
+      {
+        $valid_persistant_updates[$version] = WP_PLUGIN_DIR . '/' . $plugin . '/parts/updates/' . $version . '.php';
+      }
+    }
+    
+    if (!empty($valid_persistant_updates))
+    {
+      piklist::check_network_propagate(array('piklist_admin', 'run_update'), $valid_persistant_updates);
     }
   }
 
@@ -773,10 +817,7 @@ class Piklist_Admin
 
       if (version_compare($version, $update_version_number, $operator))
       {
-        $update_code = file_get_contents($updates_url . $update);      
-        $stripped_update_code = str_ireplace(array('<?php', '<?', '?>'), '', $update_code);
-        $update_function = create_function('', $stripped_update_code);
-        $valid_updates[$update] = $update_function;
+        $valid_updates[$update_version_number] = $updates_url . $update;
       }
     }
 
@@ -790,19 +831,20 @@ class Piklist_Admin
    * run_update
    * Run the updates for a piklist plugin.
    *
-   * @param array $valid_updates An array of methods to execute for the update.
+   * @param array $updates An array of methods to execute for the update.
    *
    * @access public
    * @static
    * @since 1.0
    */
-  public static function run_update($valid_updates)
+  public static function run_update($updates)
   {
-    piklist::performance();
-    
-    foreach ($valid_updates as $valid_update)
+    foreach ($updates as $version => $update)
     {
-      $valid_update();
+      include_once $update;
+      
+      $class = 'Piklist_Update_' . str_replace('.', '_', $version);
+      $execute = new $class();
     }
   }
 
@@ -827,8 +869,8 @@ class Piklist_Admin
       return false;
     }
   }
-  
-  
+
+
   /**
    * is_widget
    * Checks if the current page supports widgets in the admin.
@@ -843,16 +885,17 @@ class Piklist_Admin
   public static function is_widget()
   {
     global $pagenow;
-
-    return ($pagenow == 'widgets.php' 
-            || $pagenow == 'customize.php' 
+    
+    return ($pagenow == 'widgets.php'
+            || $pagenow == 'customize.php'
             || ($pagenow == 'admin-ajax.php' && (
                 in_array($_REQUEST['action'], array('save-widget', 'update-widget'))
                 || substr($_REQUEST['action'], 0, strlen('piklist_universal_widget')) == 'piklist_universal_widget')
+                || (isset($_REQUEST['action']) && $_REQUEST['action'] == 'piklist_form' && isset($_REQUEST['widget']))
                )
            );
   }
-  
+
   /**
    * is_post
    * Checks if the current page is a post page in the admin.
@@ -866,11 +909,13 @@ class Piklist_Admin
    */
   public static function is_post()
   {
-    global $pagenow;
+    global $pagenow, $post;
     
-    return $pagenow == 'post.php' || $pagenow == 'post-new.php';
+    $id = $post ? $post->ID : true;
+    
+    return in_array($pagenow, array('post.php', 'post-new.php')) ? $id : false;
   }
-  
+
   /**
    * is_term
    * Checks if the current page is a term page in the admin.
@@ -884,16 +929,18 @@ class Piklist_Admin
    */
   public static function is_term()
   {
-    global $pagenow;
-    
+    global $pagenow, $tag_ID;
+
     if ($pagenow == 'edit-tags.php')
     {
-      return isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' ? 'edit' : 'new';
+      $id = $tag_ID ? $tag_ID : true;
+      
+      return isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' ? $id : 'new';
     }
-    
+
     return false;
   }
-  
+
   /**
    * is_user
    * Checks if the current page is a user page in the admin.
@@ -907,11 +954,37 @@ class Piklist_Admin
    */
   public static function is_user()
   {
-    global $pagenow;
+    global $pagenow, $user_id;
     
-    return in_array($pagenow, array('user.php', 'user-new.php', 'user-edit.php', 'profile.php'));
-  }
+    switch ($pagenow)
+    {
+      case 'user-edit.php':
+        
+        $id = $user_id ? $user_id : true;
+        
+        return $id;
+      
+      break;
+      
+      case 'profile.php':
+        
+        $current_user = wp_get_current_user();
+        
+        return is_user_logged_in() ? $current_user->ID : true;
+    
+      break;
   
+      case 'user-new.php':
+      case 'user.php':
+        
+        return true;
+      
+      break;
+    }
+
+    return false;
+  }
+
   /**
    * is_media
    * Checks if the current page is a media page in the admin.
@@ -925,13 +998,35 @@ class Piklist_Admin
    */
   public static function is_media()
   {
-    global $pagenow;
-    
+    global $pagenow, $post;
+
     if (in_array($pagenow, array('async-upload.php', 'media.php', 'media-upload.php', 'media-new.php')))
     {
-      return $pagenow == 'media.php' ? 'edit' : 'upload';
+      $id = $post ? $post->ID : true;
+      
+      return $pagenow == 'media.php' ? $id : 'upload';
     }
-    
+
     return false;
+  }
+  
+  /**
+   * is_comment
+   * Checks if the current page is a comment page in the admin.
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function is_comment()
+  {
+    global $pagenow, $comment;
+
+    $id = $comment ? $comment->ID : true;
+    
+    return $pagenow == 'comment.php' ? $id : false;
   }
 }

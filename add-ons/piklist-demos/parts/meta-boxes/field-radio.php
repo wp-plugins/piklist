@@ -5,7 +5,7 @@ Post Type: piklist_demo
 Order: 20
 Tab: Common
 Sub Tab: Lists
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(
@@ -105,5 +105,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-?>

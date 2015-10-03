@@ -68,6 +68,22 @@ class Piklist_Universal_Widget extends WP_Widget
   }
   
   /**
+   * setup
+   * Insert description here
+   *
+   * @param $widget
+   *
+   * @access public
+   * @since 1.0
+   */
+  public function setup($widget)
+  {
+    $this->register_widgets();
+    
+    piklist_widget::$current_widget = $widget;
+  }
+  
+  /**
    * form
    * Insert description here
    *
@@ -81,27 +97,19 @@ class Piklist_Universal_Widget extends WP_Widget
    */
   public function form($instance) 
   {
-    $this->register_widgets();
-    
+    $this->setup($this->widget_name);
+
     $this->instance = $instance;
 
-    if (isset($this->instance['widget']))
-    {
-      $widget = maybe_unserialize($this->instance['widget']);
-      $widget = is_array($widget) ? current($widget) : null;
-    }
-    
-    piklist_widget::$current_widget = $this->widget_name;
-    
     piklist::render('shared/widget-select', array(
       'instance' => $instance
       ,'widgets' => $this->widgets
       ,'name' => $this->widget_core_name
       ,'widget_name' => $this->widget_name
       ,'class_name' => piklist::dashes($this->widget_core_name)
-      ,'widget' => isset($widget) ? $widget : null 
+      ,'widget' => isset($this->instance['widget']) ? maybe_unserialize($this->instance['widget']) : null
     ));
-    
+
     return $instance;
   }
   
@@ -119,14 +127,12 @@ class Piklist_Universal_Widget extends WP_Widget
   public function ajax()
   {
     global $wp_widget_factory;
-    
+
     $widget = isset($_REQUEST['widget']) ? esc_attr($_REQUEST['widget']) : null;
     
-    if ($widget)
+    if ($widget && current_user_can('edit_theme_options'))
     {
-      $this->register_widgets();
-      
-      piklist_widget::$current_widget = $this->widget_name;
+      $this->setup($this->widget_name);
       
       if (isset($_REQUEST['number']))
       {
@@ -144,7 +150,7 @@ class Piklist_Universal_Widget extends WP_Widget
       {
         ob_start();
         
-        do_action('piklist_widget_notices');
+        do_action('piklist_notices');
       
         foreach ($this->widgets[$widget]['render'] as $render)
         {
@@ -153,23 +159,25 @@ class Piklist_Universal_Widget extends WP_Widget
              piklist::render($render);
           }
         }
-
+        
         piklist_form::save_fields();
 
         $output = ob_get_contents();
   
         ob_end_clean();
         
-        echo json_encode(array(
+        $field_editor_settings = piklist_form::get('field_editor_settings');
+        
+        wp_send_json(array(
           'form' => $output
           ,'widget' => $this->widgets[$widget]
-          ,'tiny_mce' => piklist_form::$field_editor_settings['tiny_mce']
-          ,'quicktags' => piklist_form::$field_editor_settings['quicktags']  
+          ,'tiny_mce' => $field_editor_settings['tiny_mce']
+          ,'quicktags' => $field_editor_settings['quicktags']  
         ));
       }
     }
     
-    die;
+    wp_send_json_error();
   }
 
   /**
@@ -230,29 +238,26 @@ class Piklist_Universal_Widget extends WP_Widget
   {
     extract($arguments);
     
-    $this->register_widgets();
-    
-    $instance = piklist::object_value($instance);
-    
-    if (count($instance) == 1 && isset($instance[0]))
-    {
-      $widget = $instance[0];
-    }
-    elseif (isset($instance['widget']))
+    if (isset($instance['widget']))
     {
       $widget = $instance['widget'];
       
       unset($instance['widget']);
     }
 
-    if (!empty($instance))
+    if (isset($widget) && !empty($instance))
     {
-      $this->widgets[$widget]['instance'] = $instance;
+      $this->setup($this->widget_name);
+
+      foreach ($instance as $field => &$value)
+      {
+        $value = maybe_unserialize($value);
+      }
       
-      piklist_widget::$current_widget = $this->widget_name;
+      $this->widgets[$widget]['instance'] = $instance;
     
       do_action('piklist_pre_render_widget', $this->widgets[$widget]);
-
+      
       foreach ($this->widgets[$widget]['render'] as $render)
       {
         if (!strstr($render, '-form.php'))
@@ -335,7 +340,7 @@ class Piklist_Universal_Widget extends WP_Widget
    * @static
    * @since 1.0
    */
-  public static function part_id($part_id, $add_on, $part, $part_data)
+  public function part_id($part_id, $add_on, $part, $part_data)
   {
     return piklist::slug($add_on . ' ' . str_replace('-form.php', '.php', strtolower($part)));
   }

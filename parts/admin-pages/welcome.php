@@ -23,7 +23,7 @@ Page: piklist
     <span class="dashicons dashicons-twitter"></span>
   </a>
   <a class="google_plus_link" href="https://plus.google.com/u/0/b/108403125978548990804/108403125978548990804/posts">
-    <span class="dashicons dashicons-googleplus"></span>         
+    <span class="dashicons dashicons-googleplus"></span>
   </a>
 </div><!-- .piklist-social-links -->
 
@@ -169,7 +169,7 @@ Page: piklist
   </div>
 
   <div class="feature-section col three-col">
-    
+
     <div class="col-1">
       <h3><?php _e('List Tables','piklist');?></h3>
         <ul>
@@ -305,7 +305,7 @@ Page: piklist
     <span class="dashicons dashicons-twitter"></span>
   </a>
   <a class="google_plus_link" href="https://plus.google.com/u/0/b/108403125978548990804/108403125978548990804/posts">
-    <span class="dashicons dashicons-googleplus"></span>         
+    <span class="dashicons dashicons-googleplus"></span>
   </a>
 </div><!-- .piklist-social-links -->
 
@@ -317,7 +317,7 @@ var addthis_share = {
         shorten: {
              twitter: 'bitly'
         }
-    }, 
+    },
     shorteners : {
         bitly : {}
     }
@@ -332,15 +332,15 @@ var addthis_config = {"data_track_addressbar":false};</script>
     background-color: #fff;
   }
 
-  ul#adminmenu a.wp-has-current-submenu:after, 
+  ul#adminmenu a.wp-has-current-submenu:after,
   ul#adminmenu > li.current > a.current:after {
     border-right-color: #fff;
   }
-  
+
   .about-wrap .feature-section {
     padding-bottom: 0;
   }
-  
+
   .about-wrap .feature-section.two-col > div.alt-feature {
     float: right;
   }
@@ -360,7 +360,7 @@ var addthis_config = {"data_track_addressbar":false};</script>
 
   .piklist-badge {
     color: #DD3726;
-    background: url('<?php echo piklist::$urls['piklist']; ?>/parts/img/piklist-logo.png') no-repeat center 0px #fff !important;
+    background: url('<?php echo piklist::$addons['piklist']['url']; ?>/parts/img/piklist-logo.png') no-repeat center 0px #fff !important;
     margin-top: 0;
     padding-top: 85px;
     display: inline-block;
@@ -396,8 +396,8 @@ var addthis_config = {"data_track_addressbar":false};</script>
   .piklist-social-links a:hover {
     text-decoration: none;
     color: #F0F0F0;
-  } 
-  
+  }
+
   .piklist-social-links a.facebook_link {
     background: #3460A1;
   }

@@ -2,8 +2,6 @@
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-if (!is_admin()) return;
-
 /**
  * Piklist_List_Table
  * A more generic configurable list table.
@@ -68,6 +66,8 @@ if (!class_exists('WP_List_Table'))
  */
 class Piklist_List_Table_Template extends WP_List_Table 
 {
+  var $data;
+
   var $key;
 
   var $name;
@@ -106,7 +106,7 @@ class Piklist_List_Table_Template extends WP_List_Table
     if (isset($data))
     {
       $this->data = is_object($data) || is_array($data) ? piklist::object_to_array($data) : $wpdb->get_results($data, ARRAY_A);
-
+      
       usort($this->data, array($this, 'data_sort'));
       
       $this->current_page = $this->get_pagenum();

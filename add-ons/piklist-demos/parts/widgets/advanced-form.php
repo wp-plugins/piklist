@@ -13,7 +13,6 @@
     ,'label' => __('Color Picker Add More', 'piklist-demo')
   ));
 
-
   piklist('field', array(
     'type' => 'datepicker'
     ,'field' => 'date'
@@ -47,7 +46,154 @@
 
   piklist('field', array(
     'type' => 'group'
-    ,'label' => __('Newsletter Signup (Grouped)', 'piklist-demo')
+    ,'field' => 'work_order_repair'
+    ,'add_more' => true
+    ,'label' => __('REPAIR', 'piklist-demo')
+    ,'description' => __('Enter TYPE of Work, PRICE and DUE DATE', 'piklist-demo')
+    ,'fields' => array(
+      array(
+        'type' => 'text'
+        ,'field' => 'work'
+        ,'columns' => 6
+        ,'attributes' => array(
+          'placeholder' => __('Type of work', 'piklist-demo')
+        )
+      )
+      ,array(
+        'type' => 'number'
+        ,'field' => 'price'
+        ,'columns' => 2
+        ,'attributes' => array(
+          'placeholder' => __('$', 'piklist-demo')
+        )
+      )
+      ,array(
+        'type' => 'datepicker'
+        ,'field' => 'due'
+        ,'columns' => 4
+        ,'options' => array(
+          'dateFormat' => 'M d, yy'
+        )
+        ,'attributes' => array(
+          'placeholder' => __('Due date', 'piklist-demo')
+        )
+      )
+    )
+  ));
+
+
+  piklist('field', array(
+    'type' => 'group'
+    ,'field' => 'demo_add_more_group_todo'
+    ,'label' => __('Todo\'s', 'piklist-demo')
+    ,'add_more' => true
+    ,'fields' => array(
+      array(
+        'type' => 'select'
+        ,'field' => 'user'
+        ,'label' => __('Assigned to', 'piklist-demo')
+        ,'columns' => 4
+        ,'choices' => array (
+          'adam' => __('Adam', 'piklist-demo')
+          ,'bill' => __('Bill', 'piklist-demo')
+          ,'carol' => __('Carol', 'piklist-demo')
+          )
+        )
+        ,array(
+          'type' => 'text'
+          ,'field' => 'task'
+          ,'label' => __('Task', 'piklist-demo')
+          ,'columns' => 8
+        )
+    )
+  ));
+
+  piklist('field', array(
+    'type' => 'group'
+    ,'label' => __('Content Section', 'piklist-demo')
+    ,'description' => __('When an add-more field is nested it should be grouped to maintain the data relationships.', 'piklist-demo')
+    ,'field' => 'demo_content'
+    ,'add_more' => true
+    ,'fields' => array(
+      array(
+        'type' => 'text'
+        ,'field' => 'csg_title'
+        ,'label' => __('Title', 'piklist-demo')
+        ,'columns' => 12
+        ,'attributes' => array(
+          'class' => 'large-text'
+        )
+      )
+      ,array(
+        'type' => 'text'
+        ,'field' => 'csg_section'
+        ,'label' => __('Section', 'piklist-demo')
+        ,'columns' => 12
+        ,'attributes' => array(
+          'class' => 'large-text'
+        )
+      )
+      ,array(
+        'type' => 'group'
+        ,'field' => 'content'
+        ,'add_more' => true
+        ,'fields' => array(
+          array(
+            'type' => 'select'
+            ,'field' => 'post_id'
+            ,'label' => __('Grade', 'piklist-demo')
+            ,'columns' => 12
+            ,'choices' => array (
+              'a' => 'A'
+              ,'b' => 'B'
+              ,'c' => 'C'
+            )
+          )
+        )
+      )
+    )
+  ));
+
+  piklist('field', array(
+    'type' => 'group'
+    ,'field' => 'ingredient_section'
+    ,'label' => __('Ingredients', 'piklist-demo')
+    ,'add_more' => true
+    ,'fields' => array(
+      array(
+        'type' => 'text'
+        ,'field' => 'ingredients_component_title'
+        ,'label' => __('Section Title', 'piklist-demo')
+        ,'columns' => 12
+      )
+      ,array(
+        'type' => 'group'
+        ,'field' => 'ingredient'
+        ,'add_more' => true
+        ,'fields' => array(
+          array(
+            'type' => 'text'
+            ,'field' => 'ingredient_qty'
+            ,'label' => __('Qty', 'piklist-demo')
+            ,'columns' => 2
+          )
+          ,array(
+            'type' => 'textarea'
+            ,'field' => 'ingredient_description'
+            ,'label' => __('Description', 'piklist-demo')
+            ,'columns' => 10
+            ,'attributes' => array(
+              'rows' => 5
+            )
+          )
+        )
+      )
+    )
+  ));
+
+  piklist('field', array(
+    'type' => 'group'
+    ,'label' => __('Newsletter Signup', 'piklist-demo')
     ,'description' => __('Add email addresses with topic selectivity', 'piklist-demo')
     ,'field' => 'newsletter_signup'
     ,'add_more' => true
@@ -117,143 +263,8 @@
 
   piklist('field', array(
     'type' => 'group'
-    ,'field' => 'work_order_repair'
-    ,'add_more' => true
-    ,'label' => __('REPAIR', 'piklist-demo')
-    ,'description' => __('Enter TYPE of Work, PRICE and DUE DATE', 'piklist-demo')
-    ,'fields' => array(
-      array(
-        'type' => 'text'
-        ,'field' => 'work'
-        ,'columns' => 6
-        ,'attributes' => array(
-          'placeholder' => __('Type of work', 'piklist-demo')
-        )
-      )
-      ,array(
-        'type' => 'number'
-        ,'field' => 'price'
-        ,'columns' => 2
-        ,'attributes' => array(
-          'placeholder' => __('$', 'piklist-demo')
-        )
-      )
-      ,array(
-        'type' => 'datepicker'
-        ,'field' => 'due'
-        ,'columns' => 4
-        ,'options' => array(
-          'dateFormat' => 'M d, yy'
-        )
-        ,'attributes' => array(
-          'placeholder' => __('Due date', 'piklist-demo')
-        )
-      )
-    )
-  ));
-
-
-  piklist('field', array(
-    'type' => 'group'
-    ,'field' => 'demo_add_more_group_todo'
-    ,'label' => __('Todo\'s (Grouped)', 'piklist-demo')
-    ,'add_more' => true
-    ,'fields' => array(
-      array(
-        'type' => 'select'
-        ,'field' => 'user'
-        ,'label' => __('Assigned to', 'piklist-demo')
-        ,'columns' => 4
-        ,'choices' => array (
-          'adam' => __('Adam', 'piklist-demo')
-          ,'bill' => __('Bill', 'piklist-demo')
-          ,'carol' => __('Carol', 'piklist-demo')
-          )
-        )
-        ,array(
-          'type' => 'text'
-          ,'field' => 'task'
-          ,'label' => __('Task', 'piklist-demo')
-          ,'columns' => 8
-        )
-    )
-  ));
-
-  piklist('field', array(
-    'type' => 'group'
-    ,'label' => __('Todo\'s (Un-Grouped)', 'piklist-demo')
-    ,'add_more' => true
-    ,'fields' => array(
-      array(
-        'type' => 'select'
-        ,'field' => 'demo_add_more_todo_user'
-        ,'label' => __('Assigned to', 'piklist-demo')
-        ,'columns' => 4
-        ,'choices' => array (
-          'adam' => __('Adam', 'piklist-demo')
-          ,'bill' => __('Bill', 'piklist-demo')
-          ,'carol' => __('Carol', 'piklist-demo')
-          )
-        )
-        ,array(
-          'type' => 'text'
-          ,'field' => 'demo_add_more_todo_task'
-          ,'label' => __('Task', 'piklist-demo')
-          ,'columns' => 8
-        )
-    )
-  ));
-
-  piklist('field', array(
-    'type' => 'group'
-    ,'label' => __('Content Section (Grouped)', 'piklist-demo')
+    ,'label' => __('Content Section with Siblings', 'piklist-demo')
     ,'description' => __('When an add-more field is nested it should be grouped to maintain the data relationships.', 'piklist-demo')
-    ,'field' => 'demo_content'
-    ,'add_more' => true
-    ,'fields' => array(
-      array(
-        'type' => 'text'
-        ,'field' => 'csg_title'
-        ,'label' => __('Title', 'piklist-demo')
-        ,'columns' => 12
-        ,'attributes' => array(
-          'class' => 'large-text'
-        )
-      )
-      ,array(
-        'type' => 'text'
-        ,'field' => 'csg_section'
-        ,'label' => __('Section', 'piklist-demo')
-        ,'columns' => 12
-        ,'attributes' => array(
-          'class' => 'large-text'
-        )
-      )
-      ,array(
-        'type' => 'group'
-        ,'field' => 'content'
-        ,'add_more' => true
-        ,'fields' => array(
-          array(
-            'type' => 'select'
-            ,'field' => 'post_id'
-            ,'label' => __('Grade', 'piklist-demo')
-            ,'columns' => 12
-            ,'choices' => array (
-              'a' => 'A'
-              ,'b' => 'B'
-              ,'c' => 'C'
-            )
-          )
-        )
-      )
-    )
-  ));
-
-  piklist('field', array(
-    'type' => 'group'
-    ,'label' => __('Content Section with Siblings (Grouped)', 'piklist-demo')
-    ,'decription' => __('When an add-more field is nested it should be grouped to maintain the data relationships.', 'piklist-demo')
     ,'field' => 'demo_content_sibling'
     ,'add_more' => true
     ,'fields' => array(

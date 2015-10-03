@@ -2,7 +2,7 @@
 /*
 Title: Post Formats... extended by Piklist
 Post Type: piklist_demo
-Flow: Edit Demo
+Flow: Demo Workflow
 Tab: Extend
 Meta Box: true
 Extend: formatdiv

@@ -24,7 +24,6 @@ Message: User Profile Saved.
 
 ?>
 
-
 <h3><?php _e('Name'); ?></h3>
 
 <?php

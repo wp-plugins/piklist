@@ -3,7 +3,7 @@
 Title: Draggable Editor
 Post Type: piklist_demo,piklist_lite_demo
 Order: 110
-Flow: Edit Demo
+Flow: Demo Workflow
 Tab: Common
 Sub Tab: Editor
 */

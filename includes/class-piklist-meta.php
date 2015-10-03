@@ -55,7 +55,8 @@ class Piklist_Meta
     add_action('init', array('piklist_meta', 'meta_reset'));
     add_action('query', array('piklist_meta', 'meta_sort'));
     add_action('add_meta_boxes', array('piklist_meta', 'register_meta_boxes'), 1000);
-    add_action('do_meta_boxes', array('piklist_meta', 'sort_meta_boxes'), 100, 3);
+    add_action('admin_head', array('piklist_meta', 'sort_meta_boxes'), 1050, 3);
+    add_action('piklist_parts_process-meta-boxes', array('piklist_meta', 'clear_screen'), 50);
 
     add_filter('get_post_metadata', array('piklist_meta', 'get_post_meta'), 100, 4);
     add_filter('get_user_metadata', array('piklist_meta', 'get_user_meta'), 100, 4);
@@ -94,7 +95,7 @@ class Piklist_Meta
     }
     
     $page = $screen->id;
-    
+      
     foreach (array('normal', 'advanced', 'side') as $context)
     {
       foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
@@ -108,6 +109,8 @@ class Piklist_Meta
               if ($action == 'remove')
               {
                 unset($wp_meta_boxes[$page][$context][$priority][$order]);
+                
+                return $order;
               }
               
               $check = true;
@@ -150,9 +153,51 @@ class Piklist_Meta
               ,'id' => 'ID'
               ,'template' => 'Template'
               ,'meta_box' => 'Meta Box'
+              ,'post_format' => 'Post Format'
             );
     
     piklist::process_parts('meta-boxes', $data, array('piklist_meta', 'register_meta_boxes_callback'));
+  }
+  
+  /**
+   * clear_screen
+   * Insert description here
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function clear_screen()
+  {
+    $workflow = piklist_workflow::get('workflow');
+      
+    if ($workflow && $workflow['data']['clear'] == true && piklist_admin::is_post())
+    {
+      global $wp_meta_boxes, $current_screen;
+      
+      remove_post_type_support('post', 'editor');
+      remove_post_type_support('post', 'title');
+      
+      foreach (array('normal', 'advanced', 'side') as $context)
+      {
+        foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
+        {
+          if (isset($wp_meta_boxes[$current_screen->id][$context][$priority]))
+          {
+            foreach ($wp_meta_boxes[$current_screen->id][$context][$priority] as $meta_box)
+            {
+              if ($meta_box['id'] != 'submitdiv')
+              {
+                unset($wp_meta_boxes[$current_screen->id][$context][$priority][$meta_box['id']]);
+              }
+            }
+          }
+        }
+      }
+    }
   }
   
   /**
@@ -184,29 +229,26 @@ class Piklist_Meta
 
       if (!empty($data['extend']) && $data['extend_method'] == 'remove')
       {
-        self::update_meta_box($type, $data['extend'], 'remove');
+        $original_order = self::update_meta_box($type, $data['extend'], 'remove');
       }
       else
       {
-        if (empty($data['extend']) || (!empty($data['extend']) && self::update_meta_box($type, $id)))
-        {
-          self::update_meta_box($type, $id, 'remove');
-      
-          add_meta_box(
-            $id
-            ,$title
-            ,array('piklist_meta', 'meta_box')
-            ,$type
-            ,$context
-            ,$priority
-            ,array(
-              'render' => $render
-              ,'add_on' => $add_on
-              ,'order' => $data['order'] ? $data['order'] : null
-              ,'data' => $data
-            )
-          );
-        }
+        $original_order = self::update_meta_box($type, $id, 'remove');
+        
+        add_meta_box(
+          $id
+          ,$title
+          ,array('piklist_meta', 'meta_box')
+          ,$type
+          ,$context
+          ,$priority
+          ,array(
+            'render' => $render
+            ,'add_on' => $add_on
+            ,'order' => $data['order'] ? $data['order'] : $original_order
+            ,'data' => $data
+          )
+        );
         
         if ($data['meta_box'] === false)
         {
@@ -293,21 +335,26 @@ class Piklist_Meta
         {
           foreach ($wp_meta_boxes[$current_screen->id][$context][$priority] as $meta_box)
           {
-            if ($meta_box['id'] == $part['id'] && $part['id'] != 'submitdiv')
+            if ($meta_box['id'] == $part['id'] && (!isset($part['data']['post_type']) || ($part['data']['post_type'] && in_array($current_screen->id, $part['data']['post_type']))))
             {
               if (!in_array($meta_box, $part['render']))
               {
-                if ($part['data']['extend_method'] == 'before')
+                if ($part['id'] != 'submitdiv')
                 {
-                  array_push($part['render'], $meta_box);
-                }
-                elseif ($part['data']['extend_method'] == 'after')
-                {
-                  array_unshift($part['render'], $meta_box);
-                }
-                else
-                {
+                  if ($part['data']['extend_method'] == 'before')
+                  {
+                    array_push($part['render'], $meta_box);
+                  }
+                  elseif ($part['data']['extend_method'] == 'after')
+                  {
+                    array_unshift($part['render'], $meta_box);
+                  }
+                  
                   unset($wp_meta_boxes[$current_screen->id][$context][$priority][$meta_box['id']]);
+                }
+                else if (empty($part['data']['title']))
+                {
+                  $part['data']['title'] = $meta_box['title'];
                 }
               }
             }
@@ -315,7 +362,7 @@ class Piklist_Meta
         }
       }
     }
-    
+
     if ($part['id'] == 'submitdiv' && empty($part['data']['post_type']))
     {
       $post_types = get_post_types(array(
@@ -343,64 +390,25 @@ class Piklist_Meta
    * @static
    * @since 1.0
    */
-  public static function sort_meta_boxes($post_type, $context, $post)
+  public static function sort_meta_boxes()
   {
-    global $pagenow;
+    global $pagenow, $typenow;
 
     if (in_array($pagenow, array('edit.php', 'post.php', 'post-new.php')) && post_type_exists(get_post_type()))
     {
       global $wp_meta_boxes;
 
-      foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
+      foreach (array('side', 'normal', 'advanced') as $context)
       {
-        if (isset($wp_meta_boxes[$post_type][$context][$priority]))
+        foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
         {
-          uasort($wp_meta_boxes[$post_type][$context][$priority], array('piklist', 'sort_by_args_order'));
-        }
-      }
-
-      add_filter('get_user_option_meta-box-order_' . $post_type, array('piklist_meta', 'user_sort_meta_boxes'), 100, 3);
-    }
-  }
-
-  /**
-   * user_sort_meta_boxes
-   * Insert description here
-   *
-   * @param $result
-   * @param $option
-   * @param $user
-   *
-   * @return
-   *
-   * @access
-   * @static
-   * @since 1.0
-   */
-  public static function user_sort_meta_boxes($result, $option, $user)
-  {
-    global $wp_meta_boxes;
-
-    $post_type = str_replace('meta-box-order_', '', $option);
-
-    $order = array(
-      'side' => ''
-      ,'normal' => ''
-      ,'advanced' => ''
-    );
-
-    foreach (array('side', 'normal', 'advanced') as $context)
-    {
-      foreach (array('high', 'sorted', 'core', 'default', 'low') as $priority)
-      {
-        if (isset($wp_meta_boxes[$post_type][$context][$priority]) && !empty($wp_meta_boxes[$post_type][$context][$priority]))
-        {
-          $order[$context] .= (!empty($order[$context]) ? ',' : '') . implode(',', array_keys($wp_meta_boxes[$post_type][$context][$priority]));
+          if (isset($wp_meta_boxes[$typenow][$context][$priority]))
+          {
+            uasort($wp_meta_boxes[$typenow][$context][$priority], array('piklist', 'sort_by_args_order'));
+          }
         }
       }
     }
-
-    return $order;
   }
 
   /**
@@ -417,7 +425,7 @@ class Piklist_Meta
    */
   public static function lock_meta_boxes($classes)
   {
-    array_push($classes, 'piklist-meta-box-lock hide-all');
+    array_push($classes, 'piklist-meta-box-lock');
     
     return $classes;
   }
@@ -539,12 +547,15 @@ class Piklist_Meta
     {
       if (($meta = self::get_meta_properties($meta_type)) !== false)
       {
-        $group_key = $wpdb->get_var("SELECT DISTINCT meta_key FROM " . $meta['table'] . " WHERE meta_key LIKE '\_\\" . piklist::$prefix . "%'");
-        $key = $wpdb->get_var($wpdb->prepare("SELECT DISTINCT meta_key FROM " . $meta['table'] . " WHERE meta_key = %s", str_replace('_' . piklist::$prefix, '', $group_key)));
-
-        if ($key)
+        $group_keys = $wpdb->get_col("SELECT DISTINCT meta_key FROM " . $meta['table'] . " WHERE meta_key LIKE '\_\\" . piklist::$prefix . "%'");
+        foreach ($group_keys as $group_key)
         {
-          self::$grouped_meta_keys[$meta_type] = $group_key;
+          $key = $wpdb->get_var($wpdb->prepare("SELECT DISTINCT meta_key FROM " . $meta['table'] . " WHERE meta_key = %s", str_replace('_' . piklist::$prefix, '', $group_key)));
+
+          if ($key)
+          {
+            array_push(self::$grouped_meta_keys[$meta_type], $group_key);
+          }
         }
       }
     }

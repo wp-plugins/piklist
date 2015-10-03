@@ -1,16 +1,30 @@
 <?php
 /*
 Title: Radio Fields
+Order: 20
+Tab: Common
+Sub Tab: Lists
 Setting: piklist_demo_fields
-Tab: Lists
-Order: 30
+Flow: Demo Workflow
 */
 
   piklist('field', array(
     'type' => 'radio'
     ,'field' => 'radio'
-    ,'label' => __('Normal', 'piklist-demo')
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Radio', 'piklist-demo')
+    ,'value' => 'third'
+    ,'choices' => array(
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
+    )
+  ));
+  
+  piklist('field', array(
+    'type' => 'radio'
+    ,'field' => 'radio_add_more'
+    ,'label' => __('Radio Add More', 'piklist-demo')
+    ,'add_more' => true
     ,'value' => 'third'
     ,'choices' => array(
       'first' => __('First Choice', 'piklist-demo')
@@ -35,7 +49,6 @@ Order: 30
     'type' => 'group'
     ,'field' => 'radio_list'
     ,'label' => __('Group Lists', 'piklist-demo')
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'radio'
@@ -69,7 +82,6 @@ Order: 30
     'type' => 'radio'
     ,'field' => 'radio_nested'
     ,'label' => __('Nested Field', 'piklist-demo')
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
       'first' => __('First Choice', 'piklist-demo')
@@ -93,5 +105,3 @@ Order: 30
     'location' => __FILE__
     ,'type' => 'Settings Section'
   ));
-  
-?>

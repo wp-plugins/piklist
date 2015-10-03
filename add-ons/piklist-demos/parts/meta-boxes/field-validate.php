@@ -4,7 +4,7 @@ Title: Validation Fields
 Post Type: piklist_demo
 Order: 10
 Tab: Validation
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(
@@ -210,5 +210,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-
-?>

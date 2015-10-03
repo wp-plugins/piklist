@@ -3,7 +3,7 @@
 Name: Piklist Form
 Description: Embed a Piklist form
 Shortcode: piklist_form
-Icon: dashicons-editor-quote
+Icon: dashicons-forms
 */
 
   piklist('field', array(

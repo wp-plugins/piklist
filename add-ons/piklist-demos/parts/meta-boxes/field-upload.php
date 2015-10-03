@@ -5,7 +5,7 @@ Post Type: piklist_demo
 Order: 30
 Tab: Common
 Sub Tab: Basic
-Flow: Edit Demo
+Flow: Demo Workflow
 */
   
   // NOTE: If the post_status of an attachment is anything but inherit or private it will NOT be

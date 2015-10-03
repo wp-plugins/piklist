@@ -7,7 +7,7 @@ Priority: default
 Context: side
 Collapse: true
 Tab: All
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 ?>
 
@@ -38,5 +38,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-?>

@@ -2,8 +2,6 @@
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-if (!is_admin()) return;
-
 /**
  * Piklist_Help
  * Manages the admin help tabs.

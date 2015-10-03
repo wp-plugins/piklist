@@ -2,20 +2,34 @@
 /*
 Title: Checkbox Fields
 Setting: piklist_demo_fields
-Tab: Lists
-Order: 30
+Order: 10
+Tab: Common
+Sub Tab: Lists
+Flow: Demo Workflow
 */
 
   piklist('field', array(
     'type' => 'checkbox'
     ,'field' => 'checkbox'
-    ,'label' => __('Normal', 'piklist-demo')
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    ,'label' => __('Checkbox', 'piklist-demo')
     ,'value' => 'third'
     ,'choices' => array(
-      'first' => __('First Choice', 'piklist-demo')
-      ,'second' => __('Second Choice', 'piklist-demo')
-      ,'third' => __('Third Choice', 'piklist-demo')
+      'first' => 'First Choice'
+      ,'second' => 'Second Choice'
+      ,'third' => 'Third Choice'
+    )
+  ));
+  
+  piklist('field', array(
+    'type' => 'checkbox'
+    ,'field' => 'checkbox_add_more'
+    ,'label' => __('Checkbox Add More', 'piklist-demo')
+    ,'add_more' => true
+    ,'value' => 'third'
+    ,'choices' => array(
+      'first' => 'First Choice'
+      ,'second' => 'Second Choice'
+      ,'third' => 'Third Choice'
     )
   ));
   
@@ -26,8 +40,8 @@ Order: 30
     ,'value' => 'that'
     ,'list' => false
     ,'choices' => array(
-      'this' => __('This', 'piklist-demo')
-      ,'that' => __('That', 'piklist-demo')
+      'this' => 'This'
+      ,'that' => 'That'
     )
   ));
  
@@ -36,7 +50,6 @@ Order: 30
     ,'field' => 'checkbox_list'
     ,'label' => __('Group Lists', 'piklist-demo')
     ,'list' => false
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'fields' => array(
       array(
         'type' => 'checkbox'
@@ -45,8 +58,8 @@ Order: 30
         ,'label_position' => 'before'
         ,'value' => 'third'
         ,'choices' => array(
-          'first' => __('First Choice', 'piklist-demo')
-          ,'third' => __('Third Choice', 'piklist-demo')
+          'first' => 'First Choice'
+          ,'third' => 'Third Choice'
         )
         ,'columns' => 6
       )
@@ -57,9 +70,9 @@ Order: 30
         ,'label_position' => 'before'
         ,'value' => 'second'
         ,'choices' => array(
-          'first' => __('First Choice', 'piklist-demo')
-          ,'second' => __('Second Choice', 'piklist-demo')
-          ,'third' => __('Third Choice', 'piklist-demo')
+          'first' => 'First Choice'
+          ,'second' => 'Second Choice'
+          ,'third' => 'Third Choice'
         )
         ,'columns' => 6
       )
@@ -70,15 +83,14 @@ Order: 30
     'type' => 'checkbox'
     ,'field' => 'checkbox_nested'
     ,'label' => __('Nested Field', 'piklist-demo')
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => array(
       'first'
       ,'third'
     )
     ,'choices' => array(
-      'first' => __('First Choice', 'piklist-demo')
+      'first' => 'First Choice'
       ,'second' => sprintf(__('Second Choices with a nested %s input.', 'piklist-demo'), '[field=checkbox_nested_text]')
-      ,'third' => __('Third Choice', 'piklist-demo')
+      ,'third' => 'Third Choice'
     )
     ,'fields' => array(
       array(
@@ -97,5 +109,3 @@ Order: 30
     'location' => __FILE__
     ,'type' => 'Settings Section'
   ));
-  
-?>

@@ -1,9 +1,11 @@
 <?php
 /*
 Title: Select Fields
-Setting: piklist_demo_fields
-Tab: Lists
 Order: 30
+Tab: Common
+Sub Tab: Lists
+Setting: piklist_demo_fields
+Flow: Demo Workflow
 */
 
   piklist('field', array(
@@ -23,7 +25,6 @@ Order: 30
     ,'field' => 'select_add_more'
     ,'add_more' => true
     ,'label' => __('Add More', 'piklist-demo')
-    ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'value' => 'third'
     ,'choices' => array(
       'first' => __('First Choice', 'piklist-demo')
@@ -36,4 +37,3 @@ Order: 30
     'location' => __FILE__
     ,'type' => 'Settings Section'
   ));
-?>

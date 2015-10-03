@@ -2,8 +2,6 @@
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-if (!is_admin()) return;
-
 /**
  * Piklist_Pointer
  * Manages the admin pointers.
@@ -36,14 +34,12 @@ class Piklist_Pointer
       add_filter('piklist_assets_localize', array('piklist_pointer', 'assets_localize'));
 
       add_action('current_screen', array('piklist_pointer', 'register_pointer'));
-      add_action('admin_enqueue_scripts', array('piklist_pointer', 'admin_enqueue_scripts'));
-      add_action('wp_ajax_piklist_pointer', array('piklist_notice', 'ajax'));
-      add_action('wp_ajax_nopriv_piklist_pointer', array('piklist_notice', 'ajax'));
+      add_action('admin_footer', array('piklist_pointer', 'admin_footer'));
     }
   }
 
   /**
-   * admin_enqueue_scripts
+   * admin_footer
    * Enqueue neccessary scripts and styles.
    *
    *
@@ -53,7 +49,7 @@ class Piklist_Pointer
    * @static
    * @since 1.0
    */
-  public static function admin_enqueue_scripts()
+  public static function admin_footer()
   {
     if (!empty(self::$pointers))
     {

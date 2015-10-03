@@ -19,7 +19,7 @@ class Piklist_Add_On
    * @access public
    */
   public static $available_add_ons = array();
-  
+
   /**
    * _construct
    * Class constructor.
@@ -44,7 +44,7 @@ class Piklist_Add_On
   public static function include_add_ons()
   {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
-    
+
     $site_wide_plugins = get_site_option('active_sitewide_plugins');
     if (!empty($site_wide_plugins))
     {
@@ -58,7 +58,7 @@ class Piklist_Add_On
     foreach ($plugins as $plugin)
     {
       $path = WP_PLUGIN_DIR . '/' . $plugin;
-      
+
       if (file_exists($path))
       {
         $data = piklist::get_file_data($path, array(
@@ -84,9 +84,10 @@ class Piklist_Add_On
         }
       }
     }
-    
+
+    $addon_paths = piklist::paths();
     $paths = array();
-    foreach (piklist::$paths as $from => $path)
+    foreach ($addon_paths as $from => $path)
     {
       if ($from != 'theme')
       {
@@ -142,7 +143,7 @@ class Piklist_Add_On
     {
       $data = get_plugin_data($file);
       $data['plugin'] = $plugin;
-      
+
       self::$available_add_ons[$add_on] = $data;
 
       if (self::is_active($add_on))
@@ -155,12 +156,12 @@ class Piklist_Add_On
         {
           call_user_func(array($class_name, '_construct'));
         }
-  
-        piklist::$paths[$add_on] = $path . (!$plugin ? '/' . $add_on : '');
-        
+
+        piklist::$addons[$add_on]['path'] = $path . (!$plugin ? '/' . $add_on : '');
+
         $path = str_replace(chr(92), '/', $path);
 
-        piklist::$urls[$add_on] = plugins_url() . substr($path, strrpos($path, '/'));
+        piklist::$addons[$add_on]['url'] = plugins_url() . substr($path, strrpos($path, '/'));
       }
     }
   }
@@ -180,14 +181,14 @@ class Piklist_Add_On
   public static function is_active($add_on = '')
   {
     $add_ons = get_option('piklist_core_addons');
-    
+
     if (isset($add_ons['add-ons']))
     {
       $add_ons = is_array($add_ons['add-ons']) ? $add_ons['add-ons'] : array($add_ons['add-ons']);
-      
+
       return !empty($add_ons) && in_array($add_on, $add_ons) && isset(self::$available_add_ons[$add_on]);
     }
-    
+
     return false;
   }
 }

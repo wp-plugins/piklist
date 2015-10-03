@@ -37,6 +37,8 @@ class Piklist_Taxonomy
     add_action('registered_taxonomy',  array('piklist_taxonomy', 'registered_taxonomy'), 10, 3);
     add_action('admin_menu', array('piklist_taxonomy', 'admin_menu'));
     
+    add_filter('terms_clauses', array('piklist_taxonomy', 'terms_clauses'), 10, 3);
+    add_filter('get_terms_args', array('piklist_taxonomy', 'get_terms_args'), 0);
     add_filter('parent_file', array('piklist_taxonomy', 'parent_file'));
     add_filter('sanitize_user', array('piklist_taxonomy', 'restrict_username'));
   }
@@ -81,6 +83,58 @@ class Piklist_Taxonomy
     
       $wpdb->termmeta = $wpdb->prefix . 'termmeta';      
     }
+  }
+  
+  /**
+   * terms_clauses
+   * Insert description here
+   *
+   * @param array $pieces The pieces of the sql query
+   * @param array $taxonomies The taxonomies for the query
+   * @param array $arguments The arguments for the query
+   *
+   * @return array $pieces
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function terms_clauses($pieces = array(), $taxonomies = array(), $arguments = array()) 
+  {
+    if (!empty($arguments['meta_query'])) 
+    {
+      $query = new WP_Meta_Query($arguments['meta_query']);
+      $query->parse_query_vars($arguments);
+
+      if (!empty($query->queries)) 
+      {
+        $clauses = $query->get_sql('term', 'tt', 'term_id', $taxonomies);
+        
+        $pieces['join'] .= $clauses['join'];
+        $pieces['where'] .= $clauses['where'];
+      }
+    }
+    
+    return $pieces;
+  }
+  
+  /**
+   * get_terms_args
+   * Insert description here
+   *
+   * @param array $arguments The arguments for the query
+   *
+   * @return array $arguments
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function get_terms_args($arguments = array()) 
+  {
+    return wp_parse_args($arguments, array(
+      'meta_query' => ''
+    ));
   }
   
   /**
@@ -191,15 +245,13 @@ class Piklist_Taxonomy
   {
     if ($taxonomy)
     {
-      $wrapper = 'term_meta';
-
       foreach (self::$meta_boxes[$taxonomy] as $taxonomy => $meta_box)
       {
-        piklist::render('shared/meta-box-start', array(
+        piklist::render('shared/meta-box-seperator', array(
           'meta_box' => $meta_box
-          ,'wrapper' => $wrapper
+          ,'wrapper' => 'term_meta'
         ), false);
-        
+                
         foreach ($meta_box['render'] as $render)
         {
           piklist::render($render, array(
@@ -207,11 +259,6 @@ class Piklist_Taxonomy
             ,'data' => $meta_box['data']
           ), false);
         }
-
-        piklist::render('shared/meta-box-end', array(
-          'meta_box' => $meta_box
-          ,'wrapper' => $wrapper
-        ), false);
       }
     }
   }

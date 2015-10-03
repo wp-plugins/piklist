@@ -182,7 +182,7 @@
   piklist('field', array(
     'type' => 'html'
     ,'field' => '_message_meal'
-    ,'template' => 'admin_notice_error'
+    ,'template' => 'notice_error'
     ,'value' => __('We only serve steaks rare.', 'piklist-demo')
     ,'conditions' => array(
       'relation' => 'or'
@@ -260,7 +260,7 @@
   piklist('field', array(
     'type' => 'html'
     ,'field' => '_message_guests'
-    ,'template' => 'admin_notice'
+    ,'template' => 'notice'
     ,'value' => __('Sorry, only two guests are allowed.', 'piklist-demo')
     ,'conditions' => array(
       array(

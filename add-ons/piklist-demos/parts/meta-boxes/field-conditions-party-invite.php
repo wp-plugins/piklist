@@ -6,13 +6,13 @@ Order: 100
 Collapse: false
 Tab: Conditions
 Sub Tab: Advanced
-Flow: Edit Demo
+Flow: Demo Workflow
 */
   
   piklist('field', array(
     'type' => 'html'
     ,'field' => '_message_meal'
-    ,'template' => 'admin_notice_error'
+    ,'template' => 'notice_error'
     ,'value' => __('We only serve steaks rare.', 'piklist-demo')
     ,'conditions' => array(
       'relation' => 'or'
@@ -90,7 +90,7 @@ Flow: Edit Demo
   piklist('field', array(
     'type' => 'html'
     ,'field' => '_message_guests'
-    ,'template' => 'admin_notice'
+    ,'template' => 'notice'
     ,'value' => __('Sorry, only two guests are allowed.', 'piklist-demo')
     ,'conditions' => array(
       array(
@@ -109,8 +109,7 @@ Flow: Edit Demo
     ,'attributes' => array(
       'class' => 'small-text'
       ,'step' => 1
-      ,'min' => 1
-      ,'max' => 3
+      ,'min' => 0
     )
     ,'conditions' => array(
       array(
@@ -203,5 +202,3 @@ Flow: Edit Demo
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-  
-?>

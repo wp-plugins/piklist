@@ -5,7 +5,7 @@ Post Type: piklist_demo
 Order: 30
 Tab: Common
 Sub Tab: Lists
-Flow: Edit Demo
+Flow: Demo Workflow
 */
 
   piklist('field', array(
@@ -32,9 +32,27 @@ Flow: Edit Demo
       ,'third' => __('Third Choice', 'piklist-demo')
     )
   ));
+  
+  piklist('field', array(
+    'type' => 'select'
+    ,'field' => 'select_optgroup'
+    ,'label' => __('Select with Option Groups', 'piklist-demo')
+    ,'value' => 'third'
+    ,'choices' => array(
+      'Group 1' => array(
+        'first' => __('First Choice', 'piklist-demo')
+        ,'second' => __('Second Choice', 'piklist-demo')
+        ,'third' => __('Third Choice', 'piklist-demo')
+      )
+      ,'Group 2' => array(
+        'first' => __('First Choice', 'piklist-demo')
+        ,'second' => __('Second Choice', 'piklist-demo')
+        ,'third' => __('Third Choice', 'piklist-demo')
+      )
+    )
+  ));
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
     ,'type' => 'Meta Box'
   ));
-?>

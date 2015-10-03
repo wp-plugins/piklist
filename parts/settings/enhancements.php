@@ -2,7 +2,7 @@
 /*
 Title: Enhancements
 Setting: piklist_core
-Tab Order: 0
+Order: 40
 */
 
   piklist('field', array(

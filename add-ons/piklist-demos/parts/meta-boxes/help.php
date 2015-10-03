@@ -2,7 +2,7 @@
 /*
 Title: Piklist Help
 Post Type: piklist_demo
-Flow: Edit Demo
+Flow: Demo Workflow
 Tab: All
 Order: 0
 Priority: high

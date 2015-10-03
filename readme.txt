@@ -142,7 +142,11 @@ Code-based frameworks also allows you to version control your code, which is ver
 == Changelog ==
 
 = 0.9.9b =
-* ENCHANCED: Easily display post statuses in a select field. Demos updated as well.
+* NEW: "Post Format" parameter for comment blocks.
+* ENHANCED: Data structure updated.
+* ENHANCED: Easily display post statuses in a select field. Demos updated as well.
+* ENHANCED: OPTGROUP support for Selects.
+* FIXED: Sometimes getimagesize can't get the image size.
 
 = 0.9.9a =
 * Tons of fixes and enhancements.
