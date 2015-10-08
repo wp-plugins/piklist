@@ -32,6 +32,8 @@
     .piklist-demo-highlight h3 {
       padding: 0 !important;
       margin: 0 !important;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
     .piklist-demo-highlight p:last-child {
@@ -59,20 +61,28 @@
     .piklist-meta-box-none .piklist-demo-highlight {
       background: #ffffff;
     }
-
-    .piklist-demo-field-value-button:after {
-      content: "\f346";
+  
+    .piklist-demo-field-value-button {
+      font-style: normal;
+      margin-left: 3px;
+      text-decoration: none;
       display: inline-block;
-      position: relative;
-      right: -2px;
-      top: -1px;
-      font: normal 16px/1 'dashicons';
-      vertical-align: middle;
-      -webkit-transition: all 0.2s;
-      transition: all 0.2s;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      font-weight: bold;
     }
+
+      .piklist-demo-field-value-button:before {
+        content: "\f314";
+        display: inline-block;
+        position: relative;
+        left: -2px;
+        top: -1px;
+        font: normal 16px/1 'dashicons';
+        vertical-align: middle;
+        -webkit-transition: all 0.2s;
+        transition: all 0.2s;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
   pre.piklist-demo-pre  {
     padding: 10px 0;

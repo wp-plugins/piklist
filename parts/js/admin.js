@@ -243,7 +243,6 @@
         {
           $('#save-post').val('Save');
           
-          // TODO: Progress post status' these need to be updated to the next status!
           $('#hidden_post_status, #original_publish').val(text);
           $('#publish').val('Update');
         }
@@ -357,7 +356,7 @@
       
       if ($('form#' + piklist.prefix + 'shortcode').length > 0)
       {
-        if ($('div#piklist_notice.notice').length > 0)
+        if (piklist.validate_check)
         {
           var data = $(':input[name^="' + piklist.prefix + 'shortcode_data["]').serializeArray(),
             shortcode = {
@@ -537,7 +536,7 @@
             var preview = [];
             for (var attribute in this.shortcode.attrs.named)
             {
-              preview.push(attribute + ': ' + this.shortcode.attrs.named[attribute]);
+              preview.push(this.shortcode.attrs.named[attribute] + ' (' + attribute + ')');
             }
             
             return this.template({
@@ -625,7 +624,7 @@
         {
           if (typeof string === 'object') 
           {
-            string = decodeURIComponent($(string).attr('data-wpview-text'));
+            string = decodeURIComponent($(string).data('wpview-text'));
           }
 
           var shortcode = {},
@@ -740,7 +739,9 @@
     {
       $('.piklist-universal-widget-select').each(function()
       {
-        $(this).parents('.widget-content:eq(0)').off('change input propertychange');
+        $(this)
+          .parents('.widget-content:eq(0)')
+          .off('change input propertychange');
       });
     },
     
@@ -751,7 +752,7 @@
         var button = $(this),
           widget_container = button.parents('.widget-control-actions:first').siblings('.widget-content:first'),
           widget_title = button.parents('.widget').find('.widget-title h4'),
-          title = button.parents('form').find('.piklist-universal-widget-form-container').attr('data-widget-title');
+          title = button.parents('form').find('.piklist-universal-widget-form-container').data('widget-title');
 
         if (typeof tinyMCE != 'undefined')
         {
@@ -816,7 +817,7 @@
       $(document).on('change', '.piklist-universal-widget-select', function(event)
       {
         var widget = $(this).val(),
-          addon = $(this).attr('data-piklist-addon'),
+          addon = $(this).data('piklist-addon'),
           action = ('piklist-universal-widget-' + addon).replace(/-/g, '_'),
           widget_container = $(this).parents('.widget-content'),
           widget_classes = $(this).attr('class').split(' '),
@@ -824,7 +825,7 @@
           widget_number = $(this).attr('name').split('[')[1].replace(/\]/g, ''),
           widget_title = $(this).parents('.widget').find('.widget-title h4'),
           widget_description = widget_container.find('.piklist-universal-widget-select-container p'),
-          wptab_active = widget_container.attr('data-piklist-wptab-active');
+          wptab_active = widget_container.data('piklist-wptab-active');
           
         if (widget)
         {
@@ -844,12 +845,6 @@
             }
             ,success: function(response)
             {
-              if (response.tiny_mce != '' && response.quicktags != '')
-              {
-                tinyMCEPreInit.mceInit = $.extend(tinyMCEPreInit.mceInit, response.tiny_mce);
-                tinyMCEPreInit.qtInit = $.extend(tinyMCEPreInit.qtInit, response.quicktags);
-              }
-
               widget_title
                 .find('.in-widget-title')
                 .text(':  ' + response.widget.data.title)
@@ -873,8 +868,7 @@
                 .piklistaddmore({
                   sortable: true
                 })
-                
-              widget_form.piklistfields();
+                .piklistfields();
 
               widget_container
                 .find('.wp-tab-bar > li')
@@ -920,9 +914,9 @@
         {
           var widget_container = $(this).parents('.widget-content'),
             widget_title = $(this).parents('.widget').find('.widget-title h4'),
-            title = $(this).attr('data-widget-title'),
-            height = $(this).attr('data-widget-height'),
-            width = $(this).attr('data-widget-width');
+            title = $(this).data('widget-title'),
+            height = $(this).data('widget-height'),
+            width = $(this).data('widget-width');
         
           if (typeof title != 'undefined')
           {
@@ -1001,10 +995,49 @@
 
   
   
+  /* --------------------------------------------------------------------------------
+    WordPress Updates
+  -------------------------------------------------------------------------------- */
+  
+  // NOTE: Allow meta boxes and widgets to have tinymce
+  $(document)
+    .on('sortstart', '.ui-sortable', function(event, ui)
+    {
+      if ($(this).is('.ui-sortable') && (ui.item.hasClass('postbox') || ui.item.hasClass('piklist-field-addmore-wrapper')))
+      {
+        $(this).find('.wp-editor-area').each(function()
+        {
+          if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
+          {
+            var id = $(this).attr('id'),
+              command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
+
+            tinyMCE.execCommand(command, false, id);
+          }
+        });
+      }
+    })
+    .on('sortstop sortreceive', '.ui-sortable', function(event, ui)
+    {
+      if ($(this).is('.ui-sortable') && (ui.item.hasClass('postbox') || ui.item.hasClass('piklist-field-addmore-wrapper')))
+      {
+        $(this).find('.wp-editor-area').each(function()
+        {
+          if (typeof switchEditors != 'undefined' && typeof tinyMCE != 'undefined')
+          {
+            var id = $(this).attr('id'),
+              command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
+
+            tinyMCE.execCommand(command, false, id);
+          }
+        });
+      }
+    });
+    
+    
       
   /* --------------------------------------------------------------------------------
     WP Tabs - Updates or enhancements to existing WordPress Functionality
-        - These should be submitted as patches to the core 
   -------------------------------------------------------------------------------- */
   
   var WPTabs = function(element, options)

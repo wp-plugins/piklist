@@ -1,7 +1,7 @@
 <?php
 /*
 Flow: Demo Workflow
-Page: post.php, post-new.php, post-edit.php, profile.php, user-edit.php, edit-tags.php, piklist_demo_fields
+Page: post.php, post-new.php, post-edit.php, profile.php, user-edit.php, edit-tags.php, edit.php, piklist_demo_fields
 Post Type: piklist_demo, attachment
 Taxonomy: piklist_demo_type
 Header: true

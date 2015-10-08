@@ -12,8 +12,10 @@ Flow: Demo Workflow
   piklist('field', array(
     'type' => 'html'
     ,'field' => '_message_meal'
-    ,'template' => 'notice_error'
     ,'value' => __('We only serve steaks rare.', 'piklist-demo')
+    ,'attributes' => array(
+      'class' => 'piklist-error-text'
+    )
     ,'conditions' => array(
       'relation' => 'or'
       ,array(
@@ -90,8 +92,10 @@ Flow: Demo Workflow
   piklist('field', array(
     'type' => 'html'
     ,'field' => '_message_guests'
-    ,'template' => 'notice'
     ,'value' => __('Sorry, only two guests are allowed.', 'piklist-demo')
+    ,'attributes' => array(
+      'class' => 'piklist-error-text'
+    )
     ,'conditions' => array(
       array(
         'field' => 'guests_number'

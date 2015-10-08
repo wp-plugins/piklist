@@ -22,7 +22,10 @@ Sub Tab: Editor
       ,'editor_class' => ''
       ,'teeny' => false
       ,'dfw' => false
-      ,'tinymce' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
       ,'quicktags' => true
       ,'drag_drop_upload' => true
     )
@@ -40,10 +43,14 @@ Sub Tab: Editor
       ,'teeny' => true
       ,'textarea_rows' => 5
       ,'drag_drop_upload' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
     )
   ));
 
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'User Section'
+    ,'type' => 'Media Section'
   ));

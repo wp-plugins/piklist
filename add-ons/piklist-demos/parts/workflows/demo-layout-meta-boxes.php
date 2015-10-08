@@ -4,6 +4,7 @@ Title: Meta Boxes
 Order: 30
 Tab: Layout
 Flow: Demo Workflow
+Page: post.php, post-new.php
 */
 ?>
 

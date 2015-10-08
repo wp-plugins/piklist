@@ -17,7 +17,7 @@ Flow: Demo Workflow
       array(
         'type' => 'text'
         ,'field' => 'ingredients_component_title'
-        ,'label' => __('Section Title', 'piklist-demo')
+        ,'label' => __('Ingredient Title', 'piklist-demo')
         ,'columns' => 12
       )
       ,array(
@@ -25,6 +25,7 @@ Flow: Demo Workflow
         ,'field' => 'ingredient_type'
         ,'columns' => 12
         ,'list' => false
+        ,'label' => __('Meal Type', 'piklist-demo')
         ,'choices' => array(
           'appetizer' => __('Appetizer', 'piklist-demo')
           ,'entree' => __('Entree', 'piklist-demo')
@@ -144,14 +145,12 @@ Flow: Demo Workflow
         'type' => 'file'
         ,'field' => 'image'
         ,'label'=> __('Image', 'piklist-demo')
-        ,'description' => ''
-        ,'columns' => 4
+        ,'columns' => 12
       )
       ,array(
         'type' => 'textarea'
         ,'field' => 'description'
         ,'label' => __('Information Section', 'piklist-demo')
-        ,'description' => ''
         ,'add_more' => true
         ,'columns' => 12
       )
@@ -212,14 +211,6 @@ Flow: Demo Workflow
     )
   ));
 
-  $choices = array(
-    'title_1' => 'Title 1'
-    ,'title_2' => 'Title 2'
-    ,'title_3' => 'Title 3'
-    ,'title_4' => 'Title 4'
-    ,'title_5' => 'Title 5'
-  );
-
   piklist('field', array(
     'type' => 'group'
     ,'label' => __('Content Section with Siblings (Grouped)', 'piklist-demo')
@@ -255,7 +246,13 @@ Flow: Demo Workflow
             ,'field' => 'post_id_sibling_1'
             ,'label' => __('Content One Title', 'piklist-demo')
             ,'columns' => 12
-            ,'choices' => $choices
+            ,'choices' => array(
+              'title_1' => 'Title 1'
+              ,'title_2' => 'Title 2'
+              ,'title_3' => 'Title 3'
+              ,'title_4' => 'Title 4'
+              ,'title_5' => 'Title 5'
+            )
           )
         )
       )
@@ -269,7 +266,13 @@ Flow: Demo Workflow
             ,'field' => 'post_id_sibling_2'
             ,'label' => __('Content Two Title', 'piklist-demo')
             ,'columns' => 12
-            ,'choices' => $choices
+            ,'choices' => array(
+              'title_1' => 'Title 1'
+              ,'title_2' => 'Title 2'
+              ,'title_3' => 'Title 3'
+              ,'title_4' => 'Title 4'
+              ,'title_5' => 'Title 5'
+            )
           )
         )
       )

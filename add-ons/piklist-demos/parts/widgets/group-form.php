@@ -1,59 +1,5 @@
 <?php
 
-  $states = array(
-    'AL' => 'AL'
-    ,'AK' => 'AK'
-    ,'AZ' => 'AZ'
-    ,'AR' => 'AR'
-    ,'CA' => 'CA'
-    ,'CO' => 'CO'
-    ,'CT' => 'CT'
-    ,'DE' => 'DE'
-    ,'DC' => 'DC'
-    ,'FL' => 'FL'
-    ,'GA' => 'GA'
-    ,'HI' => 'HI'
-    ,'ID' => 'ID'
-    ,'IL' => 'IL'
-    ,'IN' => 'IN'
-    ,'IA' => 'IA'
-    ,'KS' => 'KS'
-    ,'KY' => 'KY'
-    ,'LA' => 'LA'
-    ,'ME' => 'ME'
-    ,'MD' => 'MD'
-    ,'MA' => 'MA'
-    ,'MI' => 'MI'
-    ,'MN' => 'MN'
-    ,'MS' => 'MS'
-    ,'MO' => 'MO'
-    ,'MT' => 'MT'
-    ,'NE' => 'NE'
-    ,'NV' => 'NV'
-    ,'NH' => 'NH'
-    ,'NJ' => 'NJ'
-    ,'NM' => 'NM'
-    ,'NY' => 'NY'
-    ,'NC' => 'NC'
-    ,'ND' => 'ND'
-    ,'OH' => 'OH'
-    ,'OK' => 'OK'
-    ,'OR' => 'OR'
-    ,'PA' => 'PA'
-    ,'RI' => 'RI'
-    ,'SC' => 'SC'
-    ,'SD' => 'SD'
-    ,'TN' => 'TN'
-    ,'TX' => 'TX'
-    ,'UT' => 'UT'
-    ,'VT' => 'VT'
-    ,'VA' => 'VA'
-    ,'WA' => 'WA'
-    ,'WV' => 'WV'
-    ,'WI' => 'WI'
-    ,'WY' => 'WY'
-  );
-  
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'address_group'
@@ -89,7 +35,7 @@
         'type' => 'select'
         ,'field' => 'state'
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -132,7 +78,7 @@
         ,'field' => 'state'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -171,7 +117,7 @@
         ,'field' => 'ungrouped_state'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -211,7 +157,7 @@
         ,'field' => 'ungrouped_state_addmore'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -247,16 +193,18 @@
         ,'columns' => 12
         ,'label' => __('Post Content', 'piklist-demo')
         ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-        ,'options' => array (
-          'wpautop' => true
-          ,'media_buttons' => true
-          ,'tabindex' => ''
-          ,'editor_css' => ''
-          ,'editor_class' => ''
-          ,'teeny' => false
-          ,'dfw' => false
-          ,'tinymce' => true
-          ,'quicktags' => true
+        ,'options' => array(
+          'drag_drop_upload' => true
+          ,'editor_height' => 100
+          ,'media_buttons' => false
+          ,'teeny' => true
+          ,'quicktags' => false
+          ,'tinymce' => array(
+            'autoresize_min_height' => 100
+            ,'toolbar1' => 'bold,italic,bullist,numlist,blockquote,link,unlink,undo,redo'
+            ,'resize' => false
+            ,'wp_autoresize_on' => true
+          )
         )
       )
     )
@@ -276,16 +224,18 @@
         ,'label' => __('Post Content', 'piklist-demo')
         ,'description' => __('This is the standard post box, now placed in a Piklist WorkFlow.', 'piklist-demo')
         ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-        ,'options' => array (
-          'wpautop' => true
-          ,'media_buttons' => true
-          ,'tabindex' => ''
-          ,'editor_css' => ''
-          ,'editor_class' => ''
-          ,'teeny' => false
-          ,'dfw' => false
-          ,'tinymce' => true
-          ,'quicktags' => true
+        ,'options' => array(
+          'drag_drop_upload' => true
+          ,'editor_height' => 100
+          ,'media_buttons' => false
+          ,'teeny' => true
+          ,'quicktags' => false
+          ,'tinymce' => array(
+            'autoresize_min_height' => 100
+            ,'toolbar1' => 'bold,italic,bullist,numlist,blockquote,link,unlink,undo,redo'
+            ,'resize' => false
+            ,'wp_autoresize_on' => true
+          )
         )
       )
       ,array(

@@ -3,6 +3,8 @@
 Title: Extend
 Order: 90
 Flow: Demo Workflow
+Page: post.php, post-new.php
+Post Type: piklist_demo
 */
 ?>
 

@@ -14,50 +14,59 @@
       
         endif;
       endforeach;
+      
+      $tabs_to_render = 0;
+      foreach ($workflows as $workflow):
+        $tabs_to_render = !$workflow['data']['header'] ? $tabs_to_render + 1 : $tabs_to_render;
+      endforeach;
+      
+      if ($tabs_to_render > 1 || ($tabs_to_render == 1 && isset($active_tab['parts']) && count($active_tab['parts']) > 1)):
     ?>
 
-    <h2 class="nav-tab-wrapper piklist-nav-tab-wrapper">
+      <h2 class="nav-tab-wrapper piklist-nav-tab-wrapper">
 
-      <?php 
-
-        foreach ($workflows as $tab):
-          if (!$tab['data']['header']):
-            
-            ?><a class="nav-tab <?php echo $tab['data']['active'] ? 'nav-tab-active' : null; ?>" <?php echo $tab['url'] ? 'href="' . esc_url($tab['url']) . '"' : null; ?>><?php _e($tab['data']['title']); ?></a><?php
-        
-            if (isset($tab['data']['active']) && $tab['data']['active']):
-              $active_tab = $tab;
-            endif;
-            
-          endif;
-        endforeach;
-      ?>
-  
-      <?php do_action('piklist_workflow_flow_append', $tab['data']['flow_slug']); ?>
-  
-    </h2>
-    
-    <?php if (isset($active_tab['parts'])): ?>
-
-      <ul class="subsubsub">
-        
         <?php 
-           $parts = $active_tab['parts']; 
 
-           foreach ($parts as $order => $part):
+          foreach ($workflows as $tab):
+            if (!$tab['data']['header']):
             
-            if ($part['data']['active']):
-              $active_tab = $part;
+              ?><a class="nav-tab <?php echo $tab['data']['active'] ? 'nav-tab-active' : null; ?>" <?php echo $tab['url'] ? 'href="' . esc_url($tab['url']) . '"' : null; ?>><?php _e($tab['data']['title']); ?></a><?php
+        
+              if (isset($tab['data']['active']) && $tab['data']['active']):
+                $active_tab = $tab;
+              endif;
+            
             endif;
-          ?>
-          
-          <li class="nav-tab-sub-<?php echo piklist::dashes($part['data']['page_slug']); ?>"><a <?php echo $part['url'] ? 'href="' . esc_url($part['url']) . '"' : null; ?> class="<?php echo $part['data']['active'] ? 'current' : null; ?>"><?php _e($part['data']['title']); ?></a> <?php echo $part === end($parts) ? null : '|'; ?></li>
-
-        <?php endforeach; ?>
+          endforeach;
+        ?>
+  
+        <?php do_action('piklist_workflow_flow_append', $tab['data']['flow_slug']); ?>
+  
+      </h2>
     
-      </ul>
+      <?php if (isset($active_tab['parts'])): ?>
+
+        <ul class="subsubsub">
+        
+          <?php 
+             $parts = $active_tab['parts']; 
+
+             foreach ($parts as $order => $part):
+            
+              if ($part['data']['active']):
+                $active_tab = $part;
+              endif;
+            ?>
+          
+            <li class="nav-tab-sub-<?php echo piklist::dashes($part['data']['page_slug']); ?>"><a <?php echo $part['url'] ? 'href="' . esc_url($part['url']) . '"' : null; ?> class="<?php echo $part['data']['active'] ? 'current' : null; ?>"><?php _e($part['data']['title']); ?></a> <?php echo $part === end($parts) ? null : '|'; ?></li>
+
+          <?php endforeach; ?>
+    
+        </ul>
       
-      <br class="clear"/>
+        <br class="clear"/>
+    
+      <?php endif; ?>
     
     <?php endif; ?>
     

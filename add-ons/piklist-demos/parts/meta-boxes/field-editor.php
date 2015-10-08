@@ -19,12 +19,16 @@ Sub Tab: Editor
     ,'options' => array(
       'wpautop' => true
       ,'media_buttons' => true
+      ,'shortcode_buttons' => true
       ,'tabindex' => ''
       ,'editor_css' => ''
       ,'editor_class' => ''
       ,'teeny' => false
       ,'dfw' => false
-      ,'tinymce' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
       ,'quicktags' => true
       ,'drag_drop_upload' => true
     )
@@ -41,10 +45,14 @@ Sub Tab: Editor
     ,'description' => __('This is the teeny editor used in an add-more repeater field.', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'options' => array (
-      'media_buttons' => true
+      'media_buttons' => false
       ,'teeny' => true
       ,'textarea_rows' => 5
-      ,'drag_drop_upload' => true
+      ,'drag_drop_upload' => false
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
     )
   ));
 

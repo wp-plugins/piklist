@@ -7,7 +7,7 @@ Sub Tab: Editor
 Setting: piklist_demo_fields
 Flow: Demo Workflow
 */
-
+  
   piklist('field', array(
     'type' => 'editor'
     ,'field' => 'post_content_settings'
@@ -22,7 +22,10 @@ Flow: Demo Workflow
       ,'editor_class' => ''
       ,'teeny' => false
       ,'dfw' => false
-      ,'tinymce' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
       ,'quicktags' => true
       ,'drag_drop_upload' => true
     )
@@ -40,6 +43,10 @@ Flow: Demo Workflow
       ,'teeny' => true
       ,'textarea_rows' => 5
       ,'drag_drop_upload' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
     )
   ));
 

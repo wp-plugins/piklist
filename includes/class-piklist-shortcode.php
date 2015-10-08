@@ -27,6 +27,12 @@ class Piklist_Shortcode
   private static $shortcode_editors = array('content');
 
   /**
+   * @var string The current editor being rendered
+   * @access private
+   */
+  private static $editor_current;
+
+  /**
    * @var array Blacklisted shortcodes to not have the UI applied to.
    * @access private
    */
@@ -280,6 +286,8 @@ class Piklist_Shortcode
       array_push(self::$shortcode_editors, $editor_id);
     }
 
+    self::$editor_current = $editor_id;
+    
     return $settings;
   }
 
@@ -299,7 +307,7 @@ class Piklist_Shortcode
   {
     foreach (self::$shortcodes as $shortcode)
     {
-      if ($shortcode['data']['editor'])
+      if ($shortcode['data']['editor'] && in_array(self::$editor_current, self::$shortcode_editors))
       {
         array_push($buttons, 'shortcode-' . $shortcode['data']['shortcode']);
       }
@@ -322,7 +330,10 @@ class Piklist_Shortcode
     */
    public static function mce_external_plugins($plugins)
    {
-     $plugins['piklist_shortcode'] = piklist::$addons['piklist']['url'] . '/parts/js/tinymce-shortcode.js';
+     if (in_array(self::$editor_current, self::$shortcode_editors))
+     {
+       $plugins['piklist_shortcode'] = piklist::$addons['piklist']['url'] . '/parts/js/tinymce-shortcode.js';
+     }
      
      return $plugins;
    }
@@ -341,14 +352,17 @@ class Piklist_Shortcode
    */
   public static function tiny_mce_before_init($mce_init)
   {
-    $content_css = piklist::$addons['piklist']['url'] . '/parts/css/tinymce-shortcode.css';
-
-    if (isset($mce_init['content_css']))
+    if (in_array(self::$editor_current, self::$shortcode_editors))
     {
-      $content_css .= ',' . $mce_init['content_css'];
-    }
+      $content_css = piklist::$addons['piklist']['url'] . '/parts/css/tinymce-shortcode.css';
 
-    $mce_init['content_css'] = $content_css;
+      if (isset($mce_init['content_css']))
+      {
+        $content_css .= ',' . $mce_init['content_css'];
+      }
+
+      $mce_init['content_css'] = $content_css;
+    }
 
     return $mce_init;
   }

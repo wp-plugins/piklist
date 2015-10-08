@@ -14,9 +14,6 @@ Default: true
 
   <p>
     <?php _e('Group fields are perfect for creating complex field layouts like Address fields.', 'piklist-demo');?>
-  </p>
-
-  <p>
     <?php _e('Assign a field name to a group field, and data from all the fields will be saved in one array for convenience. If you do not specify a field name, all field data will be save separtely.', 'piklist-demo');?>
   </p>
 

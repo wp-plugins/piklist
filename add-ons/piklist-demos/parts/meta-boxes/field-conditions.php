@@ -206,7 +206,7 @@ Flow: Demo Workflow
         'type' => 'update'
         ,'value' => ''
         ,'field' => 'update_multiple_1'
-        ,'update' => ''
+        ,'update' => null
       )
       ,array(
         'type' => 'update'
@@ -218,8 +218,8 @@ Flow: Demo Workflow
         'type' => 'update'
         ,'value' => ''
         ,'field' => 'update_multiple_2'
-        ,'update' => ''
-      )        
+        ,'update' => null
+      )
     )
   ));
 

@@ -137,7 +137,7 @@
                          </a>
                        </div>
                      </div>
-                     <button type="button" class="button-link check" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment_id; ?>" data-attachment-url="<?php echo esc_attr($image[0]); ?>" data-attachments="<?php echo piklist_form::get_field_name($arguments); ?>"><span class="media-modal-icon"></span><span class="screen-reader-text"><?php _e('Deselect'); ?></span></button>
+                     <button type="button" class="button-link check" data-attachment-save="<?php echo $options['save']; ?>" data-attachment-id="<?php echo $attachment['id']; ?>" data-attachment-url="<?php echo esc_attr($image[0]); ?>" data-attachments="<?php echo piklist_form::get_field_name($arguments); ?>"><span class="media-modal-icon"></span><span class="screen-reader-text"><?php _e('Deselect'); ?></span></button>
                    </div>
                  </li>
 

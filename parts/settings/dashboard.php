@@ -3,6 +3,8 @@
 Title: Dashboard
 Setting: piklist_core
 Order: 35
+Flow: Piklist Core Settings
+Tab: General
 */
 
   piklist('field', array(

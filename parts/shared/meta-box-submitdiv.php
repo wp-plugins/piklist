@@ -1,5 +1,5 @@
 
-<div id="major-publishing-actions">
+<div id="major-publishing-actions" class="piklist-major-publishing-actions">
 
   <div id="publishing-action">
 

@@ -68,52 +68,10 @@ Domain Path: /languages
       )
     );
 
-    $post_types['piklist_lite_demo'] = array(
-      'labels' => piklist('post_type_labels', 'Lite Demo')
-      ,'title' => __('Enter a new Demo Title')
-      ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-menu-icon.svg'
-      ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
-      ,'show_in_menu' => 'edit.php?post_type=piklist_demo'
-      ,'supports' => array(
-        'title'
-      )
-      ,'public' => true
-      ,'has_archive' => true
-      ,'capability_type' => 'post'
-      ,'edit_columns' => array(
-        'title' => __('Title')
-      )
-      ,'hide_meta_box' => array(
-        'slug'
-        ,'author'
-      )
-    );
-
     return $post_types;
   }
   
-  add_filter('piklist_relationships', 'piklist_demo_relationships');
-  function piklist_demo_relationships($relationships)
-  {
-    $relationships[] = array(
-      'name' => 'posts_to_posts'
-      ,'from' => array(
-        'scope' => 'post'
-        ,'query' => array(
-          'post_type' => 'post'
-        )
-      )
-      ,'to' => array(
-        'scope' => 'post'
-        ,'query' => array(
-          'post_type' => 'post'
-        )
-      )
-    );
-    
-    return $relationships;
-  }
-      
+
 
   add_filter('piklist_taxonomies', 'piklist_demo_taxonomies');
   function piklist_demo_taxonomies($taxonomies)
@@ -170,7 +128,7 @@ Domain Path: /languages
       ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-icon.png'
       ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
       ,'default_tab' => 'Basic'
-      // ,'layout' => 'container'
+      // ,'layout' => 'container' // NOTE: Uncomment this to use the meta box layout on this settings page!
       ,'save_text' => 'Save Demo Settings'
     );
 
@@ -287,12 +245,74 @@ Domain Path: /languages
     return $assets;
   }
   
+  function piklist_demo_get_states()
+  {
+    return   $states = array(
+      'AL' => 'AL'
+      ,'AK' => 'AK'
+      ,'AZ' => 'AZ'
+      ,'AR' => 'AR'
+      ,'CA' => 'CA'
+      ,'CO' => 'CO'
+      ,'CT' => 'CT'
+      ,'DE' => 'DE'
+      ,'DC' => 'DC'
+      ,'FL' => 'FL'
+      ,'GA' => 'GA'
+      ,'HI' => 'HI'
+      ,'ID' => 'ID'
+      ,'IL' => 'IL'
+      ,'IN' => 'IN'
+      ,'IA' => 'IA'
+      ,'KS' => 'KS'
+      ,'KY' => 'KY'
+      ,'LA' => 'LA'
+      ,'ME' => 'ME'
+      ,'MD' => 'MD'
+      ,'MA' => 'MA'
+      ,'MI' => 'MI'
+      ,'MN' => 'MN'
+      ,'MS' => 'MS'
+      ,'MO' => 'MO'
+      ,'MT' => 'MT'
+      ,'NE' => 'NE'
+      ,'NV' => 'NV'
+      ,'NH' => 'NH'
+      ,'NJ' => 'NJ'
+      ,'NM' => 'NM'
+      ,'NY' => 'NY'
+      ,'NC' => 'NC'
+      ,'ND' => 'ND'
+      ,'OH' => 'OH'
+      ,'OK' => 'OK'
+      ,'OR' => 'OR'
+      ,'PA' => 'PA'
+      ,'RI' => 'RI'
+      ,'SC' => 'SC'
+      ,'SD' => 'SD'
+      ,'TN' => 'TN'
+      ,'TX' => 'TX'
+      ,'UT' => 'UT'
+      ,'VT' => 'VT'
+      ,'VA' => 'VA'
+      ,'WA' => 'WA'
+      ,'WV' => 'WV'
+      ,'WI' => 'WI'
+      ,'WY' => 'WY'
+    );
+  }
+  
   $piklist_demo_thickbox_loaded = false;
   
-  add_filter('piklist_post_render_field', 'piklist_demo_post_render_field', 10, 2);
-  function piklist_demo_post_render_field($rendered_field, $field)
+  add_filter('piklist_pre_render_field', 'piklist_demo_pre_render_field', 10, 2);
+  function piklist_demo_pre_render_field($field)
   {
-    global $piklist_demo_thickbox_loaded;
+    global $pagenow, $typenow, $piklist_demo_thickbox_loaded;
+
+    if (!in_array($pagenow, array('user-edit.php', 'profile.php')) && $typenow != 'piklist_demo')
+    {
+      return $field;
+    }
 
     if (!$piklist_demo_thickbox_loaded)
     {
@@ -343,6 +363,15 @@ Domain Path: /languages
               {
                 $unique = !$field['add_more'];
                 
+                if (!$unique && $field['type'] == 'radio')
+                {
+                  $unique = true;
+                }
+                else if ($unique && $field['multiple'])
+                {
+                  $unique = false;
+                }
+                
                 array_push($codes, '$value = get_' . $type . '_meta(' . $field['object_id'] . ', \'' . $field['field'] . '\', ' . ($unique ? 'true' : 'false') . ');');
                 array_push($values, get_metadata($type, $field['object_id'], $field['field'], $unique));
               }
@@ -350,26 +379,68 @@ Domain Path: /languages
           }
        
         break;
+        
+        default:
+
+          if (!$field['group_field'])
+          {
+            if ($field['type'] == 'group')
+            {
+              if ($field['field'])
+              {
+                array_push($codes, '$option = get_option(' . $field['scope'] . ');<br>  $value = $option[\'' . $field['field'] . '\'];');
+                
+                $option = get_option($field['scope']);
+
+                if (isset($option[$field['field']]))
+                {
+                  array_push($values, $option[$field['field']]); 
+                }
+              }
+              else
+              {
+                $unique = !$field['add_more'];
+            
+                foreach ($field['fields'] as $column)
+                {
+                  array_push($codes, '$option = get_option(' . $field['scope'] . ');<br>  $value = $option[\'' . $column['field'] . '\'];');
+                
+                  $option = get_option($field['scope']);
+
+                  if (isset($option[$column['field']]))
+                  {
+                    array_push($values, $option[$column['field']]); 
+                  }
+                }
+              }
+            }
+            elseif (empty($field['conditions']))
+            {
+              array_push($codes, '$option = get_option(' . $field['scope'] . ');<br>  $value = $option[\'' . $field['field'] . '\'];');
+              
+              $option = get_option($field['scope']);
+
+              if (isset($option[$field['field']]))
+              {
+                array_push($values, $option[$field['field']]); 
+              }
+            }
+          }
+        
+        break;
       }
-    
+
       if (!empty($values[0]))
       {
-        piklist('field', array(
-          'type' => 'html'
-          ,'attributes' => array(
-            'class' => 'piklist-demo-field-value'
-          )
-          ,'value' => piklist('shared/field-value', array(
-                        'id' => piklist::unique_id()
-                        ,'codes' => $codes
-                        ,'values' => $values
-                        ,'type' => $type
-                        ,'field' => $field
-                        ,'return' => true
-                      ))
-        ));
+        $field['description'] .= piklist('shared/field-value', array(
+                                   'id' => piklist::unique_id()
+                                   ,'codes' => $codes
+                                   ,'values' => $values
+                                   ,'field' => $field
+                                   ,'return' => true
+                                 ));
       }
     }
     
-    return $rendered_field;
+    return $field;
   }

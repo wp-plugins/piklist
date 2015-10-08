@@ -276,11 +276,6 @@ class Piklist_CPT
         add_filter('admin_body_class', array('piklist_cpt', 'admin_body_class'), 10000);
       }
 
-      if (isset($configuration['edit_manage']) && !empty($configuration['edit_manage']))
-      {
-        add_action('restrict_manage_posts', array('piklist_cpt', 'restrict_manage_posts'));
-      }
-
       add_filter('post_updated_messages', array('piklist_cpt', 'post_updated_messages_filter'));
 
     }
@@ -706,21 +701,6 @@ class Piklist_CPT
     }
     
     return $classes;
-  }
-
-  /**
-   * restrict_manage_posts
-   * Insert description here
-   *
-   * @return
-   *
-   * @access
-   * @static
-   * @since 1.0
-   */
-  public static function restrict_manage_posts()
-  {
-    // NOTE: How to handle pre-existing printed info?  Callback function here?
   }
 
   /**

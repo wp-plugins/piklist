@@ -105,7 +105,10 @@
     .widget-content .notice ol {
       margin: 1em 0;
     }
-
+  
+  .piklist-major-publishing-actions {
+    margin: -7px -12px -12px -12px;
+  }
 
 
 /* --------------------------------------------------------------------------------

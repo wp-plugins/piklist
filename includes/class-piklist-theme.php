@@ -86,7 +86,11 @@ class Piklist_Theme
   {
     if (is_dir(get_stylesheet_directory() . '/piklist'))
     {
-      piklist::$addons['theme']['path'] = get_stylesheet_directory() . '/piklist';
+      piklist::$addons['theme'] = array(
+        'path' => get_stylesheet_directory() . '/piklist'
+        ,'url' => get_stylesheet_directory_uri() . '/piklist'
+      );
+
       piklist::$paths['theme'] = &piklist::$addons['theme']['path'];
 
       add_action('load-plugins.php', array('piklist_admin', 'deactivation_link'));
@@ -96,7 +100,11 @@ class Piklist_Theme
 
     if (get_template_directory() != get_stylesheet_directory() && is_dir(get_template_directory() . '/piklist'))
     {
-      piklist::$addons['parent-theme']['path'] = get_template_directory() . '/piklist';
+      piklist::$addons['parent-theme'] = array(
+        'path' => get_template_directory() . '/piklist'
+        ,'url' => get_template_directory_uri() . '/piklist'
+      );
+      
       piklist::$paths['parent-theme'] = &piklist::$addons['parent-theme']['path'];
     }
   }

@@ -24,15 +24,35 @@ Flow: Demo Workflow
 
   piklist('field', array(
     'type' => 'group'
-    ,'field' => 'demo_add_more_group_todo'
-    ,'label' => __('Todo\'s (Grouped)', 'piklist-demo')
+    ,'field' => 'demo_add_more_group_todo' // Including a field at this level saves all data in a serialized array.
+    ,'label' => __('Todo\'s (Serialized Group)', 'piklist-demo')
+    ,'description' => __('Saves all data in one serialized array.', 'piklist-demo')
     ,'add_more' => true
     ,'fields' => array(
       array(
+        'type' => 'editor'
+        ,'field' => 'task'
+        ,'label' => __('Task', 'piklist-demo')
+        ,'columns' => 12
+        ,'options' => array(
+          'drag_drop_upload' => true
+          ,'editor_height' => 100
+          ,'media_buttons' => false
+          ,'teeny' => true
+          ,'quicktags' => false
+          ,'tinymce' => array(
+            'autoresize_min_height' => 100
+            ,'toolbar1' => 'bold,italic,bullist,numlist,blockquote,link,unlink,undo,redo'
+            ,'resize' => false
+            ,'wp_autoresize_on' => true
+          )
+        )
+      )
+      ,array(
         'type' => 'select'
-        ,'field' => 'user'
+        ,'field' => 'user_id'
         ,'label' => __('Assigned to', 'piklist-demo')
-        ,'columns' => 4
+        ,'columns' => 12
         ,'choices' => piklist(
           get_users(
             array(
@@ -47,25 +67,39 @@ Flow: Demo Workflow
           )
         )
       )
-      ,array(
-        'type' => 'text'
-        ,'field' => 'task'
-        ,'label' => __('Task', 'piklist-demo')
-        ,'columns' => 8
-      )
     )
   ));
  
   piklist('field', array(
     'type' => 'group'
-    ,'label' => __('Todo\'s (Un-Grouped)', 'piklist-demo')
+    ,'label' => __('Todo\'s (Group)', 'piklist-demo')
+    ,'description' => __('Saves data as individual meta keys.', 'piklist-demo')
     ,'add_more' => true
     ,'fields' => array(
       array(
+        'type' => 'editor'
+        ,'field' => 'task'
+        ,'label' => __('Task', 'piklist-demo')
+        ,'columns' => 12
+        ,'options' => array(
+          'drag_drop_upload' => true
+          ,'editor_height' => 100
+          ,'media_buttons' => false
+          ,'teeny' => true
+          ,'quicktags' => false
+          ,'tinymce' => array(
+            'autoresize_min_height' => 100
+            ,'toolbar1' => 'bold,italic,bullist,numlist,blockquote,link,unlink,undo,redo'
+            ,'resize' => false
+            ,'wp_autoresize_on' => true
+          )
+        )
+      )
+      ,array(
         'type' => 'select'
-        ,'field' => 'demo_add_more_todo_user'
+        ,'field' => 'demo_add_more_todo_user_id'
         ,'label' => __('Assigned to', 'piklist-demo')
-        ,'columns' => 4
+        ,'columns' => 12
         ,'choices' => piklist(
            get_users(
              array(
@@ -79,12 +113,6 @@ Flow: Demo Workflow
              ,'display_name'
            )
           )
-        )
-        ,array(
-          'type' => 'text'
-          ,'field' => 'demo_add_more_todo_task'
-          ,'label' => __('Task', 'piklist-demo')
-          ,'columns' => 8
         )
     )
   ));
@@ -240,5 +268,5 @@ piklist('field', array(
   
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'User Section'
+    ,'type' => 'Media Section'
   ));

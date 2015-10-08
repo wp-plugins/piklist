@@ -5,6 +5,7 @@
   enctype="multipart/form-data"
   id="<?php echo $form_id; ?>"
   autocomplete="off"
+  data-piklist-form="true"
   class="piklist-form <?php echo is_admin() ? 'hidden' : null; ?>"
 >
   <?php

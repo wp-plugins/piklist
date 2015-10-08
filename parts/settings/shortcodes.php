@@ -3,6 +3,8 @@
 Title: Shortcodes
 Setting: piklist_core
 Order: 30
+Flow: Piklist Core Settings
+Tab: General
 */
   
   piklist('field', array(

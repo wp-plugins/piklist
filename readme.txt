@@ -141,17 +141,18 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 == Changelog ==
 
-= 0.9.9b =
+= 0.9.9.1 =
+* Fixes
+
+= 0.9.9 =
+* Tons of fixes and enhancements.
+* Started Unit Testing.
 * NEW: "Post Format" parameter for comment blocks.
+* ENHANCED: Changed how assigning sections to WorkFlows. Now they work like all other Piklist features.
 * ENHANCED: Data structure updated.
 * ENHANCED: Easily display post statuses in a select field. Demos updated as well.
 * ENHANCED: OPTGROUP support for Selects.
 * FIXED: Sometimes getimagesize can't get the image size.
-
-= 0.9.9a =
-* Tons of fixes and enhancements.
-* Started Unit Testing.
-* ENHANCED: Changed how assigning sections to WorkFlows. Now they work like all other Piklist features.
 
 
 = 0.9.5w =

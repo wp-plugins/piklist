@@ -28,7 +28,7 @@ Flow: Demo Workflow
   piklist('field', array(
     'type' => 'html'
     ,'label' => __('Display information from your database.', 'piklist-demo')
-    ,'value' => sprintf(__('Pull information and display it in the proper format. Does that sound good %s ?', 'piklist-demo'), $current_user->display_name)
+    ,'value' => sprintf(__('Pull information and display it in the proper format. Does that sound good %s?', 'piklist-demo'), $current_user->display_name)
   ));
 
   piklist('shared/code-locater', array(

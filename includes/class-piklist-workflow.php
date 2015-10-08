@@ -293,7 +293,7 @@ class Piklist_Workflow
    */
   public static function detect_workflow($folder)
   {
-    global $pagenow, $typenow, $post;
+    global $pagenow, $post;
 
     if (empty(self::$workflows))
     {
@@ -310,7 +310,7 @@ class Piklist_Workflow
       
       foreach ($workflows as $workflow)
       {
-        if ($workflow['data']['position'] && ($workflow['data']['page'] || $workflow['data']['post_type']))
+        if ($workflow['data']['position'] && ($workflow['data']['page'] || $workflow['data']['post_type'] || $workflow['data']['taxonomy']))
         {
           $has_data = $workflow;
 
@@ -323,51 +323,7 @@ class Piklist_Workflow
         $has_data = $workflows[0];
       }
       
-      $allowed = false;
-      
-      // Check to see if there is an active flow
-      if (isset($_REQUEST['flow']) && piklist::slug($flow) == $_REQUEST['flow'])
-      {
-        $allowed = true;
-      }
-      
-      // Check Pages
-      $pages = $has_data['data']['page'];
-      if (!empty($pages))
-      {
-        $allowed = in_array($pagenow, $pages) || (isset($_REQUEST['page']) && in_array($_REQUEST['page'], $pages));
-      }
-
-      // Check Post Types
-      if ($allowed && piklist_admin::is_post())
-      {
-        $post_types = $has_data['data']['post_type'];
-        $current_post_type = piklist_cpt::detect_post_type();
-
-        if (!empty($post_types))
-        {
-          $allowed = in_array($current_post_type, $post_types);
-        }
-      }
-
-      // Check which mode we are on for the term pages
-      if (piklist_admin::is_term())
-      {
-        $taxonomies = $has_data['data']['taxonomy'];
-        $current_taxonomy = isset($_REQUEST['taxonomy']) ? $_REQUEST['taxonomy'] : false;
-
-        if (!empty($taxonomies) && $current_taxonomy)
-        {
-          $allowed = in_array($current_taxonomy, $taxonomies);
-        }
-
-        if (piklist_admin::is_term() === 'new')
-        {
-          $allowed = false;
-        }
-      }
-      
-      if ($allowed)  
+      if (self::is_allowed($has_data))  
       {
         $default_workflow = null;
         $default_sub_workflow = null;
@@ -376,7 +332,7 @@ class Piklist_Workflow
 
         foreach ($workflows as $index => &$workflow)
         {
-          if (!empty($workflow['data']['page']) && !in_array($pagenow, $workflow['data']['page']) && (!isset($_REQUEST['page']) || (isset($_REQUEST['page']) && !in_array($_REQUEST['page'], $workflow['data']['page']))))
+          if (!self::is_allowed($workflow, false))
           {
             unset($workflows[$index]);
           }
@@ -386,9 +342,9 @@ class Piklist_Workflow
             {
               $default_workflow = &$workflow;
             }
-          
+
             $workflow['data'] = self::is_active($workflow['data']);
-          
+
             if ($workflow['data']['active'])
             {
               $workflow['data']['active'] = true;
@@ -403,7 +359,7 @@ class Piklist_Workflow
               $workflow['parts'] = self::$sub_workflows[$flow][$parent];
 
               uasort($workflow['parts'], array('piklist', 'sort_by_data_order'));
-            
+
               foreach ($workflow['parts'] as $sub_index => &$sub_workflow)
               {
                 if (!empty($sub_workflow['data']['page']) && !in_array($pagenow, $sub_workflow['data']['page']))
@@ -416,7 +372,7 @@ class Piklist_Workflow
                   {
                     $default_sub_workflow = &$sub_workflow;
                   }
-              
+
                   $sub_workflow['data'] = self::is_active($sub_workflow['data']);
 
                   if ($sub_workflow['data']['active'])
@@ -426,7 +382,7 @@ class Piklist_Workflow
                     $sub_tab = piklist::slug($sub_workflow['data']['title']);
                     $data = $workflow['data'];
                   }
-                  
+
                   if ($workflow['data']['active'] && is_null($sub_tab))
                   {
                     $default_sub_workflow['data']['active'] = true;
@@ -435,22 +391,22 @@ class Piklist_Workflow
                   }
                 }
               }
-              
+
               $workflow['parts'] = array_values($workflow['parts']);
             }
           }
         }
-        
+
         $workflows = array_values($workflows);
-        
+
         unset($workflow);
-        
+
         if (!$tab)
         {
           $default_workflow['data']['active'] = true;
           $tab = piklist::slug($default_workflow['data']['title']);
           $data = $default_workflow['data'];
-          
+
           if (!empty($default_workflow['parts']))
           {
             foreach ($default_workflow['parts'] as &$sub_workflow)
@@ -460,13 +416,13 @@ class Piklist_Workflow
                 $sub_workflow['data']['active'] = true;
                 $sub_tab = piklist::slug($sub_workflow['data']['title']);
                 $data = $sub_workflow['data'];
-                
+
                 break;
               }
             }
           }
         }
-        
+
         self::$workflow = array(
           'flow' => piklist::slug($flow)
           ,'tab' => $tab
@@ -477,6 +433,69 @@ class Piklist_Workflow
         );
       }
     }
+  }
+  
+  /**
+   * is_allowed
+   * Determines if a workflow tab is allowed to be shown.
+   *
+   * @param array $data The tab configuration object.
+   *
+   * @return array The statuse of whether its allowed.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function is_allowed($data, $strict = true)
+  {
+    global $pagenow;
+    
+    $allowed = !$strict;
+    
+    // Check to see if there is an active flow
+    if (isset($_REQUEST['flow']) && piklist::slug($flow) == $_REQUEST['flow'])
+    {
+      $allowed = true;
+    }
+    
+    // Check Pages
+    $pages = $data['data']['page'];
+    if (!empty($pages))
+    {
+      $allowed = in_array($pagenow, $pages) && (!isset($_REQUEST['page']) || (isset($_REQUEST['page']) && in_array($_REQUEST['page'], $pages)));
+    }
+
+    // Check Post Types
+    if ($allowed && piklist_admin::is_post())
+    {
+      $post_types = $data['data']['post_type'];
+      $current_post_type = piklist_cpt::detect_post_type();
+
+      if (!empty($post_types))
+      {
+        $allowed = in_array($current_post_type, $post_types);
+      }
+    }
+
+    // Check which mode we are on for the term pages
+    if (piklist_admin::is_term())
+    {
+      $taxonomies = $data['data']['taxonomy'];
+      $current_taxonomy = isset($_REQUEST['taxonomy']) ? $_REQUEST['taxonomy'] : false;
+
+      if (!empty($taxonomies) && $current_taxonomy)
+      {
+        $allowed = in_array($current_taxonomy, $taxonomies);
+      }
+
+      if (piklist_admin::is_term() === 'new')
+      {
+        $allowed = false;
+      }
+    }
+    
+    return $allowed;
   }
 
   /**
@@ -606,13 +625,12 @@ class Piklist_Workflow
     /**
      * piklist_workflow_part_exclude_folders
      * Insert description here
-     *
      * 
      * @since 1.0
      */
-    $exclude_folders = apply_filters('piklist_workflow_part_exclude_folders', array('widgets', 'shortcodes'));
-    
-    if (!self::$workflow || $part['add_on'] == 'piklist' || in_array($folder, $exclude_folders))
+    $exclude_folders = apply_filters('piklist_workflow_part_exclude_folders', array('notices', 'pointers', 'help', 'widgets', 'shortcodes'), $part, $folder);
+
+    if (!self::$workflow || in_array($folder, $exclude_folders))
     {
       return $part;
     }

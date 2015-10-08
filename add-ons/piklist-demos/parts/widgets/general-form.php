@@ -14,7 +14,10 @@
       ,'editor_class' => ''
       ,'teeny' => false
       ,'dfw' => false
-      ,'tinymce' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
       ,'quicktags' => true
     )
   ));
@@ -27,9 +30,17 @@
     ,'description' => __('This is the teeny editor with an add more.', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'options' => array(
-      'media_buttons' => true
+      'drag_drop_upload' => true
+      ,'editor_height' => 100
+      ,'media_buttons' => false
       ,'teeny' => true
-      ,'textarea_rows' => 5
+      ,'quicktags' => false
+      ,'tinymce' => array(
+        'autoresize_min_height' => 100
+        ,'toolbar1' => 'bold,italic,bullist,numlist,blockquote,link,unlink,undo,redo'
+        ,'resize' => false
+        ,'wp_autoresize_on' => true
+      )
     )
   ));
 

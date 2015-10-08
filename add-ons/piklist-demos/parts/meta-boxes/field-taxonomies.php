@@ -1,7 +1,7 @@
 <?php
 /*
 Title: Taxonomies
-Post Type: piklist_demo,piklist_lite_demo
+Post Type: piklist_demo
 Order: 20
 Priority: default
 Context: side

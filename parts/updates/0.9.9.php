@@ -314,39 +314,42 @@ if (!class_exists('Piklist_Update_0_9_9'))
                 $data = explode(':', $field['context']);
             
                 $widgets = get_option('widget_piklist-universal-widget-' . $data[0]);
-            
-                foreach ($widgets as $widget_number => &$widget)
-                {
-                  if (is_numeric($widget_number))
+
+                if(!empty($widgets))
+                {           
+                  foreach ($widgets as $widget_number => &$widget)
                   {
-                    foreach ($widget as $_field => &$_value)
+                    if (is_numeric($widget_number))
                     {
-                      if ($field['field'] == $_field)
+                      foreach ($widget as $_field => &$_value)
                       {
-                        $old = maybe_unserialize($_value);
-                        
-                        if ($this->needs_update($old))
+                        if ($field['field'] == $_field)
                         {
-                          $_value = maybe_serialize(piklist::object_format($old));
+                          $old = maybe_unserialize($_value);
+                          
+                          if ($this->needs_update($old))
+                          {
+                            $_value = maybe_serialize(piklist::object_format($old));
+                          }
                         }
-                      }
-                      elseif ($_field == 'widget')
-                      {
-                        $old = maybe_unserialize($_value);
-                        $add_on = piklist::slug($data[0]);
-                        
-                        if (is_array($old) && substr($old[0], 0, strlen($add_on)) != $add_on)
+                        elseif ($_field == 'widget')
                         {
-                          $_value = piklist::slug($data[0] . '_' . $old[0]);
+                          $old = maybe_unserialize($_value);
+                          $add_on = piklist::slug($data[0]);
+                          
+                          if (is_array($old) && substr($old[0], 0, strlen($add_on)) != $add_on)
+                          {
+                            $_value = piklist::slug($data[0] . '_' . $old[0]);
+                          }
                         }
                       }
                     }
                   }
-                }
-          
-                update_option('widget_piklist-universal-widget-' . $data[0], $widgets);
             
-                $output['message'] = __('Widgets Updated...');
+                  update_option('widget_piklist-universal-widget-' . $data[0], $widgets);
+            
+                  $output['message'] = __('Widgets Updated...');
+                }
             
               break;
             }

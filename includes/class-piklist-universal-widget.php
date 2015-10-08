@@ -166,13 +166,9 @@ class Piklist_Universal_Widget extends WP_Widget
   
         ob_end_clean();
         
-        $field_editor_settings = piklist_form::get('field_editor_settings');
-        
         wp_send_json(array(
           'form' => $output
           ,'widget' => $this->widgets[$widget]
-          ,'tiny_mce' => $field_editor_settings['tiny_mce']
-          ,'quicktags' => $field_editor_settings['quicktags']  
         ));
       }
     }

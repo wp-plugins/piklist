@@ -20,6 +20,8 @@ class Piklist_Validate
 
   private static $submission = array();
   
+  private static $checked = false;
+  
   private static $fields = array();
 
   private static $id = false;
@@ -47,7 +49,10 @@ class Piklist_Validate
     add_action('admin_head', array('piklist_validate', 'admin_head'));
     add_action('admin_notices', array('piklist_validate', 'notices'));
     add_action('piklist_notices', array('piklist_validate', 'notices'));
-
+    add_action('wp_ajax_piklist_validate', array('piklist_validate', 'ajax'));
+    add_action('wp_ajax_nopriv_piklist_validate', array('piklist_validate', 'ajax'));
+    
+    add_filter('piklist_assets_localize', array('piklist_validate', 'assets_localize'));
     add_filter('wp_redirect', array('piklist_validate', 'wp_redirect'), 10, 2);
     add_filter('piklist_validation_rules', array('piklist_validate', 'validation_rules'));
     add_filter('piklist_sanitization_rules', array('piklist_validate', 'sanitization_rules'));
@@ -147,6 +152,84 @@ class Piklist_Validate
   }
   
   /**
+   * ajax
+   * Provides some ajax methods for validation
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function ajax()
+  {
+    $method = isset($_REQUEST['method']) ? esc_attr($_REQUEST['method']) : false;
+    
+    switch ($method)
+    {
+      case 'check':
+
+        if (isset($_REQUEST['data']))
+        {
+          parse_str($_REQUEST['data'], $data);
+          
+          array_walk_recursive($data, array('piklist', 'array_values_strip_all_tags'));
+          
+          extract($data[piklist::$prefix]);
+          
+          if ($nonce && $fields && wp_verify_nonce($nonce, 'piklist-' . $fields))
+          {
+            if (self::check($data, $fields, true))
+            {
+              wp_send_json(array(
+                'success' => true
+              ));
+            }
+            else
+            {
+              $fields_data = get_transient(piklist::$prefix . $fields);
+              
+              $errors = array();
+              
+              foreach (self::$submission['errors'] as $scope => $fields)
+              {
+                $prefix = isset($data[piklist::$prefix . '']) ? piklist::$prefix : null;
+                
+                foreach ($fields as $field => $field_errors)
+                {
+                  foreach ($field_errors as $index => $field_errors)
+                  {
+                    $field_name = piklist_form::get_field_name($fields_data[$scope][$field]);
+                    $parts = array_reverse(explode('][', $field_name));
+
+                    foreach ($parts as &$part)
+                    {
+                      if (is_numeric($part))
+                      {
+                        $part = $index;
+
+                        break;
+                      }
+                    }
+
+                    array_push($errors, implode('][', array_reverse($parts)));
+                  }
+                }
+              }
+              
+              wp_send_json_error(array(
+                'errors' => $errors
+                ,'notice' => self::notices(null, true) 
+              ));
+            }
+          }
+        }
+
+      break;
+    }
+
+    wp_send_json_error();
+  }
+  
+  /**
    * notices
    * Render notices for each individual field that has errors.
    *
@@ -158,27 +241,47 @@ class Piklist_Validate
    * @static
    * @since 1.0
    */
-  public static function notices($form_id = null)
+  public static function notices($form_id = null, $fetch = false)
   {
     $submitted_form_id = piklist_form::get('form_id');
 
-    if ((($submitted_form_id && $form_id == $submitted_form_id) || !$submitted_form_id) && !empty(self::$submission['errors']))
+    if (((($submitted_form_id && $form_id == $submitted_form_id) || !$submitted_form_id) && !empty(self::$submission['errors'])) || $fetch)
     {
+      $rendered_errors = array();
+      
       $content = '<ul>';
+      
       foreach (self::$submission['errors'] as $type => $fields)
       {
         foreach ($fields as $field => $errors)
         {
-          $content .= '<li>' . current($errors) . '</li>';
+          $error = current($errors);
+          
+          if (!in_array($error, $rendered_errors))
+          {
+            $content .= '<li>' . $error . '</li>';
+          
+            array_push($rendered_errors, $error);
+          }
         }
       }
+      
       $content .= '</ul>';
       
-      piklist::render('shared/notice', array(
-        'id' => 'piklist_validation_error'
-        ,'notice_type' => 'error'
-        ,'content' => $content
-      ));
+      $arguments = array(
+                     'id' => 'piklist_validation_error'
+                     ,'notice_type' => 'error'
+                     ,'content' => $content
+                   );
+        
+      if ($fetch)
+      {
+        return piklist::render('shared/notice', $arguments, true);
+      }
+      else
+      {
+        piklist::render('shared/notice', $arguments);
+      }
     }
   }
   
@@ -194,55 +297,89 @@ class Piklist_Validate
    * @static
    * @since 1.0
    */
-  public static function check(&$stored_data = null)
+  public static function check($stored_data = null, $fields_id = null)
   {
-    $fields_id = isset($_REQUEST[piklist::$prefix]['fields']) ? esc_attr($_REQUEST[piklist::$prefix]['fields']) : null;
-
+    if (!$fields_id)
+    {
+      $fields_id = isset($_REQUEST[piklist::$prefix]['fields']) ? esc_attr($_REQUEST[piklist::$prefix]['fields']) : null;
+    }
+    
     if (!$fields_id || !$fields_data = get_transient(piklist::$prefix . $fields_id)) 
     {
       return false;
     }
-
+    
     foreach ($fields_data as $type => &$fields)
     {
       foreach ($fields as &$field)
       {
         if (!is_null($stored_data))
         {
-          $request_data = &$stored_data;
-        }
-        else
-        {
-          if (isset($_REQUEST['widget-id']) && isset($_REQUEST['multi_number']) && isset($_REQUEST['widget_number']))
+          if ($field['prefix'] && isset($stored_data[piklist::$prefix . $field['scope']]))
           {
-            $widget_index = !empty($_REQUEST['multi_number']) ? $_REQUEST['multi_number'] : $_REQUEST['widget_number'];
-            $request_data = &$_REQUEST[piklist::$prefix . $field['scope']][$widget_index];
+            $request_data = $stored_data[piklist::$prefix . $field['scope']];
           }
-          elseif ($field['scope'])
+          elseif (!$field['prefix'] && isset($stored_data[$field['scope']]))
           {
-            $request_data = &$_REQUEST[piklist::$prefix . $field['scope']];
+            $request_data = $stored_data[$field['scope']];
           }
           else
           {
-            $request_data = &$_REQUEST;
+            $request_data = $stored_data;
           }
         }
-        
+        else
+        {
+          if (isset($request['widget-id']) && isset($request['multi_number']) && isset($request['widget_number']))
+          {
+            $widget_index = !empty($_REQUEST['multi_number']) ? $_REQUEST['multi_number'] : $_REQUEST['widget_number'];
+            
+            $request_data = $_REQUEST[piklist::$prefix . $field['scope']][$widget_index];
+          }
+          elseif ($field['scope'] && isset($_REQUEST[piklist::$prefix . $field['scope']]))
+          {
+            $request_data = $_REQUEST[piklist::$prefix . $field['scope']];
+          }
+          else
+          {
+            $request_data = $_REQUEST;
+          }
+        }
+
         if ($request_data && $field['field'] && $field['type'] != 'html')
         {
           if (isset($request_data[$field['field']]))
           {
             $field['request_value'] = $request_data[$field['field']];
           }
+          elseif (strstr($field['field'], ':'))
+          {
+            $path = array_reverse(explode(':', $field['field']));
+            
+            foreach ($path as $key => $value)
+            {
+              unset($path[$key]);
+            
+              if (is_numeric($value))
+              {
+                break;
+              }
+            
+              $pluck_field = $value;
+            }
+            
+            $pluck = piklist::array_path_get($request_data, $path);
+            
+            if ($pluck)
+            {
+              $field['request_value'] = piklist::pluck($pluck, $pluck_field);
+            }            
+          }
           elseif (is_array($field['value']))
           {
             $field['request_value'] = piklist::pluck($request_data, $field['field']);
           }
-          elseif (strstr($field['field'], ':'))
-          {
-            $field['request_value'] = piklist::array_path_get($request_data, explode(':', $field['field']));
-          }
-          
+                    
           // Sanitization
           foreach ($field['sanitize'] as $sanitize)
           {
@@ -302,9 +439,29 @@ class Piklist_Validate
       }
     }
     
+    self::$checked = true;
+    
     self::set_data($fields_id);
     
     return !empty(self::$submission['errors']) ? false : $fields_data;
+  }
+  
+  /**
+   * assets_localize
+   * Add data to the local piklist variable
+   *
+   * @return array Current data.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function assets_localize($localize)
+  {
+    $localize['validate_check'] = !self::errors() && self::$checked;
+    $localize['validate'] = piklist::get_settings('piklist_core', 'form_validate_js') ? true : false;
+
+    return $localize;
   }
   
   /**
@@ -417,7 +574,7 @@ class Piklist_Validate
     }
     elseif (!empty($field['request_value']) && !preg_match($validation['rule'], $field['request_value']))
     {
-      self::add_error($field, $index, $validation['message']);
+      self::add_error($field, 0, $validation['message']);
     }
   }
   
@@ -485,7 +642,7 @@ class Piklist_Validate
     {
       self::$submission['errors'][$field['scope']][$field['field']] = array();
     }
-    
+
     self::$submission['errors'][$field['scope']][$field['field']][$index] = '<strong>' . $name . '</strong>' . "&nbsp;" . $message;
   }
   

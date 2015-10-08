@@ -157,6 +157,8 @@ class Piklist
     add_action('admin_head', array('piklist', 'process_parts_callback'), 1000);
     add_action('template_redirect', array('piklist', 'process_parts_callback'), 1000);
     add_action('piklist_widgets_post_register', array('piklist', 'process_parts_callback'), 1000);
+    
+    add_filter('piklist_workflow_part_exclude_folders', array('piklist', 'part_exclude_folders'), 10, 3);
   }
 
   /**
@@ -167,19 +169,24 @@ class Piklist
    * @static
    * @since 1.0
    */
-  public static function auto_load()
+  public static function auto_load($addon = 'piklist')
   {
-    $includes = self::get_directory_list(self::$addons['piklist']['path'] . '/includes');
-    foreach ($includes as $include)
+    if (isset(self::$addons[$addon]['path']))
     {
-      $class_name = str_replace(array('.php', 'class_'), array('', ''), self::slug($include));
-      if ($include != __FILE__)
+      $includes = self::get_directory_list(self::$addons[$addon]['path'] . '/includes');
+     
+      foreach ($includes as $include)
       {
-        include_once self::$addons['piklist']['path'] . '/includes/' . $include;
-
-        if (class_exists($class_name) && method_exists($class_name, '_construct') && !is_subclass_of($class_name, 'WP_Widget'))
+        $class_name = str_replace(array('.php', 'class_'), array('', ''), self::slug($include));
+     
+        if ($include != __FILE__)
         {
-          call_user_func(array($class_name, '_construct'));
+          include_once self::$addons[$addon]['path'] . '/includes/' . $include;
+
+          if (class_exists($class_name) && method_exists($class_name, '_construct') && !is_subclass_of($class_name, 'WP_Widget'))
+          {
+            call_user_func(array($class_name, '_construct'));
+          }
         }
       }
     }
@@ -271,6 +278,17 @@ class Piklist
 
     self::$addons[$type]['url'] = plugins_url() . substr($path, strrpos($path, '/'));
     self::$urls[$type] = &self::$addons[$type]['url'];
+
+    /**
+     * piklist_parts_process
+     * Signals that parts are in process.
+     *
+     * @param  array $processed parts so far.
+     * @param  var $folder the parts folder where the file is located.
+     *
+     * @since 1.0
+     */
+    do_action('piklist_plugin_loaded-' . $type);
   }
 
   /**
@@ -500,7 +518,7 @@ class Piklist
 
       ob_end_clean();
 
-      return $output;
+      return trim($output);
     }
   }
 
@@ -683,8 +701,26 @@ class Piklist
     uasort(self::$processed_parts[$folder]['parts'], array('piklist', 'sort_by_data_extend'));
     self::$processed_parts[$folder]['parts'] = array_values(self::$processed_parts[$folder]['parts']);
     
+    /**
+     * piklist_parts_process
+     * Signals that parts are in process.
+     *
+     * @param  array $processed parts so far.
+     * @param  var $folder the parts folder where the file is located.
+     *
+     * @since 1.0
+     */
     do_action('piklist_parts_process', $folder);
     
+    /**
+     * piklist_parts_process-FOLDER
+     * Signals that parts are in process.
+     *
+     * @param  array $processed parts so far.
+     * @param  var $folder the parts folder where the file is located.
+     *
+     * @since 1.0
+     */
     do_action("piklist_parts_process-{$folder}");
 
     if (is_null($callback))
@@ -1011,6 +1047,36 @@ class Piklist
 
       break;
     }
+  }
+  
+  /**
+   * part_exclude_folders
+   * Used to exclude core files from being affected by workflows
+   *
+   * @param mixed $output Information to output.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function part_exclude_folders($folders, $part, $folder)
+  {
+    if ($part['add_on'] == 'piklist')
+    {
+      $folders = array_merge($folders, array(
+        'dashboard'
+        ,'forms'
+        ,'help'
+        ,'media'
+        ,'meta-boxes'
+        ,'notices'
+        ,'pointers'
+        ,'terms'
+        ,'users'
+      ));
+    }
+
+    return $folders;
   }
 
   /**

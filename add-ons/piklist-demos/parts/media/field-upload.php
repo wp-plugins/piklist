@@ -26,7 +26,6 @@ Flow: Demo Workflow
     ,'label' => __('Basic Upload Field', 'piklist-demo')
     ,'options' => array(
       'basic' => true
-      ,'preview_size' => 'medium' // You can change the size of the preview thumbnail.
     )
   ));
   
@@ -38,11 +37,10 @@ Flow: Demo Workflow
     ,'options' => array(
       'modal_title' => __('Add File(s)', 'piklist-demo')
       ,'button' => __('Add', 'piklist-demo')
-      ,'preview_size' => 'medium' // You can change the size of the preview thumbnail.
     )
   ));
   
   piklist('shared/code-locater', array(
     'location' => __FILE__
-    ,'type' => 'User Section'
+    ,'type' => 'Media Section'
   ));

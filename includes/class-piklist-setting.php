@@ -20,6 +20,8 @@ if (!is_admin())
 class Piklist_Setting
 {
   private static $settings = array();
+
+  private static $meta_boxes = array();
   
   private static $active_section = null;
   
@@ -38,6 +40,7 @@ class Piklist_Setting
     if (is_admin())
     {
       add_action('admin_init', array('piklist_setting', 'register_settings'));
+      add_action('current_screen', array('piklist_setting', 'add_meta_boxes'));
       add_action('admin_enqueue_scripts', array('piklist_setting', 'admin_enqueue_scripts'));
       add_action('piklist_parts_processed-settings', array('piklist_setting', 'parts_processed'));
 
@@ -72,7 +75,7 @@ class Piklist_Setting
     );
     
     $pages[] = array(
-      'page_title' => __('Settings', 'piklist')
+      'page_title' => __('Piklist Settings', 'piklist')
       ,'menu_title' => __('Settings', 'piklist')
       ,'capability' => defined('PIKLIST_SETTINGS_CAP') ? PIKLIST_SETTINGS_CAP : 'manage_options'
       ,'sub_menu' => 'piklist'
@@ -84,7 +87,7 @@ class Piklist_Setting
     );
 
     $pages[] = array(
-      'page_title' => __('Add-ons', 'piklist')
+      'page_title' => __('Piklist Add-ons', 'piklist')
       ,'menu_title' => __('Add-ons', 'piklist')
       ,'capability' => defined('PIKLIST_SETTINGS_CAP') ? PIKLIST_SETTINGS_CAP : 'manage_options'
       ,'sub_menu' => 'piklist'
@@ -376,16 +379,29 @@ class Piklist_Setting
    */
   public static function render_setting($setting)
   {
-    piklist_form::render_field(wp_parse_args(
-      array(
+    $field = wp_parse_args(array(
         'scope' => $setting['section']['data']['setting']
         ,'prefix' => false
         ,'disable_label' => true
         ,'position' => false
         ,'value' => piklist_form::get_field_value($setting['section']['data']['setting'], $setting['field'], 'option')
       )
-      ,$setting['field']
-    ));
+      ,$setting['field']);
+
+    if ($field['type'] == 'group' && !$field['field'])
+    {
+      foreach ($field['fields'] as &$column)
+      {
+        if (!isset($column['value']))
+        {
+          $column['value'] = null;
+        }
+        
+        $column['value'] = piklist_form::get_field_value($setting['section']['data']['setting'], $column, 'option');
+      }
+    }
+
+    piklist_form::render_field($field);
   }
 
   /**
@@ -510,6 +526,8 @@ class Piklist_Setting
   
   public static function parts_processed($folder)
   {
+    $submitdiv = false;
+    
     foreach (self::$settings as $setting => $sections)
     {
       if ((isset($_REQUEST['page']) && $_REQUEST['page'] == $setting) || (isset($_REQUEST['option_page']) && $_REQUEST['option_page'] == $setting))
@@ -530,24 +548,49 @@ class Piklist_Setting
         $textdomain = isset(piklist_add_on::$available_add_ons[$section['add_on']]['TextDomain']) ? piklist_add_on::$available_add_ons[$section['add_on']]['TextDomain'] : null;
         $title = !empty($section['data']['title']) ? $section['data']['title'] : (!empty($id) ? $id : __('Settings', 'piklist'));
         $title = !empty($textdomain) ? __($title, $textdomain) : $title;
-          
+        
         if ($active && piklist_admin::$admin_page_layout == 'container')
         {
+          if (!$submitdiv)
+          {
+            $admin_pages = piklist_admin::get('admin_pages');
+      
+            foreach ($admin_pages as $page)
+            {
+              if (isset($page['setting']) && $page['setting'] == $setting)
+              {
+                break;
+              }
+            }
+            
+            array_push(self::$meta_boxes, array(
+              'submitdiv-' . $page['setting']
+              ,__('Actions')
+              ,array('piklist_admin', 'add_meta_box_submitdiv_callback')
+              ,null
+              ,'side'
+              ,'high'
+              ,$page
+            ));
+            
+            $submitdiv = true;
+          }
+          
           $context = empty($section['data']['context']) ? 'normal' : $section['data']['context'];
           $priority = empty($section['data']['priority']) ? 'low' : $section['data']['priority'];
 
-          add_meta_box(
+          array_push(self::$meta_boxes, array(
             $section['id']
             ,$title
             ,array('piklist_setting', 'add_meta_box_callback')
-            ,$current_screen
+            ,null
             ,$context
             ,$priority
             ,array(
               'id' => $section['id']
               ,'title' => __($section['data']['title'])
             )
-          );
+          ));
         }
         else
         {
@@ -582,6 +625,19 @@ class Piklist_Setting
     }
     
     return $part;
+  }
+  
+  public static function add_meta_boxes()
+  {
+    global $current_screen;
+    
+    if (!empty(self::$meta_boxes))
+    {
+      foreach (self::$meta_boxes as $meta_box)
+      {
+        add_meta_box($meta_box[0], $meta_box[1], $meta_box[2], $current_screen, $meta_box[4], $meta_box[5], $meta_box[6]);
+      }
+    }
   }
   
   /**

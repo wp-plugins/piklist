@@ -364,19 +364,6 @@ class Piklist_Admin
       {
         self::$admin_page_layout = $page['layout'];
 
-        if (self::$admin_page_layout == 'container')
-        {
-          add_meta_box(
-            'submitdiv'
-            ,__('Actions')
-            ,array('piklist_admin', 'add_meta_box_submitdiv_callback')
-            ,null
-            ,'side'
-            ,'high'
-            ,$page
-          );
-        }
-
         break;
       }
     }
@@ -885,6 +872,24 @@ class Piklist_Admin
                 || (isset($_REQUEST['action']) && $_REQUEST['action'] == 'piklist_form' && isset($_REQUEST['widget']))
                )
            );
+  }
+  
+  /**
+   * is_setting
+   * Checks if the current page action is for the Settings API
+   *
+   *
+   * @return
+   *
+   * @access
+   * @static
+   * @since 1.0
+   */
+  public static function is_setting()
+  {
+    global $pagenow;
+    
+    return isset($_REQUEST['option_page']) && isset($_REQUEST[$_REQUEST['option_page']]);
   }
 
   /**

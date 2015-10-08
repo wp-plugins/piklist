@@ -1,4 +1,5 @@
 <?php
+
   piklist('field', array(
     'type' => 'text'
     ,'field' => 'text_class_small'
@@ -91,31 +92,6 @@
         ,'field' => 'image'
         ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
-      )
-      ,array(
-        'type' => 'text'
-        ,'field' => 'url'
-        ,'label' => __('URL', 'piklist-demo')
-        ,'columns' => 12
-      )
-    )
-  ));
-
-  piklist('field', array(
-    'type' => 'group'
-    ,'field' => 'slides_basic'
-    ,'add_more' => true
-    ,'label' => __('Slide Images', 'piklist-demo')
-    ,'description' => __('Add the slides for the slideshow.  You can add as many slides as you want, and they can be drag-and-dropped into the order that you would like them to appear.', 'piklist-demo')
-    ,'fields'  => array(
-      array(
-        'type' => 'file'
-        ,'field' => 'image'
-        ,'label' => __('Slides', 'piklist-demo')
-        ,'columns' => 12
-        ,'options' => array(
-          'basic' => true
-        )
       )
       ,array(
         'type' => 'text'

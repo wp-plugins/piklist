@@ -8,60 +8,6 @@ Sub Tab: Field Groups
 Flow: Demo Workflow
 */
 
-  $states = array(
-    'AL' => 'AL'
-    ,'AK' => 'AK'
-    ,'AZ' => 'AZ'
-    ,'AR' => 'AR'
-    ,'CA' => 'CA'
-    ,'CO' => 'CO'
-    ,'CT' => 'CT'
-    ,'DE' => 'DE'
-    ,'DC' => 'DC'
-    ,'FL' => 'FL'
-    ,'GA' => 'GA'
-    ,'HI' => 'HI'
-    ,'ID' => 'ID'
-    ,'IL' => 'IL'
-    ,'IN' => 'IN'
-    ,'IA' => 'IA'
-    ,'KS' => 'KS'
-    ,'KY' => 'KY'
-    ,'LA' => 'LA'
-    ,'ME' => 'ME'
-    ,'MD' => 'MD'
-    ,'MA' => 'MA'
-    ,'MI' => 'MI'
-    ,'MN' => 'MN'
-    ,'MS' => 'MS'
-    ,'MO' => 'MO'
-    ,'MT' => 'MT'
-    ,'NE' => 'NE'
-    ,'NV' => 'NV'
-    ,'NH' => 'NH'
-    ,'NJ' => 'NJ'
-    ,'NM' => 'NM'
-    ,'NY' => 'NY'
-    ,'NC' => 'NC'
-    ,'ND' => 'ND'
-    ,'OH' => 'OH'
-    ,'OK' => 'OK'
-    ,'OR' => 'OR'
-    ,'PA' => 'PA'
-    ,'RI' => 'RI'
-    ,'SC' => 'SC'
-    ,'SD' => 'SD'
-    ,'TN' => 'TN'
-    ,'TX' => 'TX'
-    ,'UT' => 'UT'
-    ,'VT' => 'VT'
-    ,'VA' => 'VA'
-    ,'WA' => 'WA'
-    ,'WV' => 'WV'
-    ,'WI' => 'WI'
-    ,'WY' => 'WY'
-  );
-
   piklist('field', array(
     'type' => 'group'
     ,'field' => 'address_group'
@@ -102,7 +48,7 @@ Flow: Demo Workflow
         ,'field' => 'state'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -157,7 +103,7 @@ Flow: Demo Workflow
         ,'field' => 'state'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -217,7 +163,7 @@ Flow: Demo Workflow
         ,'field' => 'ungrouped_state'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'
@@ -267,7 +213,7 @@ Flow: Demo Workflow
         ,'field' => 'ungrouped_state_addmore'
         ,'label' => __('State', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => $states
+        ,'choices' => piklist_demo_get_states()
       )
       ,array(
         'type' => 'text'

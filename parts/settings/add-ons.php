@@ -19,5 +19,3 @@ Tab Order: 0
     ,'label' => __('Plugin Add-ons', 'piklist')
     ,'choices' => piklist(piklist_add_on::$available_add_ons, array('_key', 'Name'))
   ));
-  
-?>

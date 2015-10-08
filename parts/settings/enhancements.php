@@ -3,6 +3,8 @@
 Title: Enhancements
 Setting: piklist_core
 Order: 40
+Flow: Piklist Core Settings
+Tab: General
 */
 
   piklist('field', array(

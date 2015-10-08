@@ -16,24 +16,18 @@
   ));
 
   piklist('field', array(
-    'type' => 'group'
+    'type' => 'select'
     ,'field' => 'multiselect_add_more'
     ,'label' => __('Multiselect Add More', 'piklist-demo')
+    ,'value' => 'third'
     ,'add_more' => true
-    ,'description' => __('A grouped field. Data is not searchable, since it is saved in an array.', 'piklist-demo')
-    ,'fields' => array(
-      array(
-        'type' => 'select'
-        ,'field' => 'multiselect_add_more_field'
-        ,'choices' => array(
-          'first' => __('First Choice', 'piklist-demo')
-          ,'second' => __('Second Choice', 'piklist-demo')
-          ,'third' => __('Third Choice', 'piklist-demo')
-        )
-        ,'attributes' => array(
-          'multiple' => 'multiple'
-        )
-      )
+    ,'choices' => array(
+      'first' => __('First Choice', 'piklist-demo')
+      ,'second' => __('Second Choice', 'piklist-demo')
+      ,'third' => __('Third Choice', 'piklist-demo')
+    )
+    ,'attributes' => array(
+      'multiple' => 'multiple' // This changes a select field into a multi-select field
     )
   ));
 

@@ -70,18 +70,15 @@
   }
   
     .wpview-wrap.wpview-wrap-inline {
-      background-color: #ffffff;
-      border-color: #dedede;
+      background-color: #e8e8e8;
+      padding: 2px 4px;
+      border-color: #e8e8e8;
       box-shadow: none;
       cursor: pointer;
       padding-right: 0;
     
-      background-color: #ffffff;
-      border: 1px solid #dedede;
-      font-family: "Open Sans", sans-serif;
-      font-size: 13px;
-      color: #2b2b2b;
-      line-height: 19px;
+      font-family: Inconsolata, monospace;
+      color: #1a1a1a;
       text-align: left;
     
       -webkit-box-sizing: border-box;
@@ -91,3 +88,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+    
+      .wpview-wrap.wpview-wrap-inline .piklist-shortcode-inline-label {
+        font-weight: bold;
+      }

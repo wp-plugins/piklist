@@ -27,7 +27,7 @@
 
     <?php echo $list ? '<li>' : ''; ?>
     
-      <label class="piklist-field-list-item <?php echo in_array('piklist-error', $attributes['class']) ? 'piklist-error' : null; ?>">
+      <label class="piklist-field-list-item">
         
         <input 
           type="checkbox"

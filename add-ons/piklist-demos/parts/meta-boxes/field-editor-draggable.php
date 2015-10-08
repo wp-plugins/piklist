@@ -1,7 +1,7 @@
 <?php
 /*
 Title: Draggable Editor
-Post Type: piklist_demo,piklist_lite_demo
+Post Type: piklist_demo
 Order: 110
 Flow: Demo Workflow
 Tab: Common
@@ -17,12 +17,16 @@ Sub Tab: Editor
     ,'options' => array (
       'wpautop' => true
       ,'media_buttons' => true
+      ,'shortcode_buttons' => true
       ,'tabindex' => ''
       ,'editor_css' => ''
       ,'editor_class' => ''
       ,'teeny' => false
       ,'dfw' => false
-      ,'tinymce' => true
+      ,'tinymce' => array(
+        'resize' => false
+        ,'wp_autoresize_on' => true
+      )
       ,'quicktags' => true
       ,'drag_drop_upload' => true
     )
