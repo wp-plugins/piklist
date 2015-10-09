@@ -1933,6 +1933,9 @@ class Piklist
       return 1;
     }
 
+    $a['args']['order'] = !empty($a['args']['order']) ? $a['args']['order'] : 0;
+    $b['args']['order'] = !empty($b['args']['order']) ? $b['args']['order'] : 0;
+
     return $a['args']['order'] - $b['args']['order'];
   }
 

@@ -141,8 +141,13 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 == Changelog ==
 
+= 0.9.9.2 =
+* FIXED: Updates run normally.
+* FIXED: Set args_order to 0 if not set.
+
 = 0.9.9.1 =
 * Fixes
+* ENHANCED: Allow client-side and server-side validation to work together.
 
 = 0.9.9 =
 * Tons of fixes and enhancements.

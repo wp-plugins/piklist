@@ -774,7 +774,7 @@ class Piklist_Admin
    * @since 1.0
    */
   public static function get_update($file, $version, $current_version)
-  {
+  {  
     $updates_url = WP_PLUGIN_DIR . '/' . dirname($file) . '/parts/updates/';
     $updates = piklist::get_directory_list($updates_url);
 
@@ -787,13 +787,12 @@ class Piklist_Admin
       return;
     }
 
-    $operator = $current_version ? '=' : '>='; // Upgrade : Install
     $valid_updates = array();
     foreach ($updates as $update)
     {
       $update_version_number = rtrim($update, '.php');
 
-      if (version_compare($version, $update_version_number, $operator))
+      if (version_compare($current_version, $update_version_number, '<'))
       {
         $valid_updates[$update_version_number] = $updates_url . $update;
       }
