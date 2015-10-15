@@ -143,12 +143,12 @@ Code-based frameworks also allows you to version control your code, which is ver
 == Changelog ==
 
 = 0.9.9.3 =
-* ENHANCED: File field and Editor highight better when required.
+* ENHANCED: File field and Editor highlight better when required.
 * FIX: Settings tabs are now backwards compatible with the new Workflow system.
 * FIX: Piklist allows posts to save normally. Thanks Mehdi for letting us test on your site!
-* FIX: Validation rules within groups.
-* FIX: Validating certain fields within widgets.
-* FIX: Editors in add-mores not retain content markup.
+* FIX: Validation rules within groups work as expected.
+* FIX: Validating certain fields within widgets work as expected.
+* FIX: Editors in add-mores now retain content markup.
 * FIX: Multiple User Roles are now saving.
 
 = 0.9.9.2 =
