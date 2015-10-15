@@ -152,6 +152,7 @@ Flow: Demo Workflow
     ,'field' => 'validate_upload_media_limit'
     ,'label' => __('Add File(s)', 'piklist-demo')
     ,'description' => __('No more than one file is allowed', 'piklist-demo')
+    ,'required' => true
     ,'options' => array(
       'modal_title' => __('Add File(s)', 'piklist-demo')
       ,'button' => __('Add', 'piklist-demo')

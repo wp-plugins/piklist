@@ -75,6 +75,7 @@ class Piklist_Shortcode
     add_action('wp_ajax_piklist_shortcode', array('piklist_shortcode', 'ajax'));
     add_action('wp_ajax_nopriv_piklist_shortcode', array('piklist_shortcode', 'ajax'));
 
+    add_filter('admin_body_class', array('piklist_shortcode', 'admin_body_class'));
     add_filter('piklist_part_id-shortcodes', array('piklist_shortcode', 'part_id'), 10, 4);
     add_filter('piklist_part_process-shortcodes', array('piklist_shortcode', 'part_process'), 10, 2);
     add_filter('piklist_admin_pages', array('piklist_shortcode', 'admin_pages'));
@@ -433,7 +434,7 @@ class Piklist_Shortcode
       foreach ($shortcodes as $data)
       {
         $shortcode = $data['tag'];
-        $options = is_array($data['options']) ? $data['options'] : array();
+        $options = isset($data['options']) && is_array($data['options']) ? $data['options'] : array();
 
         if (!empty($shortcode) && isset(self::$shortcodes[$shortcode]))
         {
@@ -553,5 +554,27 @@ class Piklist_Shortcode
     }
     
     return null;
+  }
+  
+  /**
+   * admin_body_class
+   * Add custom classes to the admin body tag.
+   *
+   * @param string $classes Classes to add.
+   *
+   * @return string Updated classes.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function admin_body_class($classes)
+  {
+    if (isset($_REQUEST['page']) && $_REQUEST['page'] == 'shortcode_editor' && isset($_REQUEST[piklist::$prefix . 'shortcode_data']['name']) && isset(self::$shortcodes[$_REQUEST[piklist::$prefix . 'shortcode_data']['name']]))
+    {
+      $classes .= ' shortcode_editor-' . esc_attr($_REQUEST[piklist::$prefix . 'shortcode_data']['name']);
+    }
+    
+    return $classes;
   }
 }

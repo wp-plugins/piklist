@@ -4,15 +4,15 @@
     init: function(editor, url) 
     {
       // NOTE: This allows nested shortcodes with UI to be handled properly.
-      // editor.on('BeforeSetContent', function(event)
-      // {
-      //   if (!event.content)
-      //   {
-      //     return;
-      //   }
-      //
-      //   event.content = wp.mce.views.setMarkers(event.content);
-      // });
+      editor.on('BeforeSetContent', function(event)
+      {
+        if (!event.content)
+        {
+          return;
+        }
+
+        event.content = wp.mce.views.setMarkers(event.content);
+      });
 
       editor.on('PostProcess', function(event)
       {

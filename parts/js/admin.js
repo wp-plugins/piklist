@@ -314,7 +314,7 @@
           attributes = {
             page: 'shortcode_editor'
           };
-          
+
         if ($(this).hasClass('mce-btn'))
         {
           title = $(this).attr('aria-label');
@@ -505,8 +505,9 @@
                     {
                       var observer = new MutationObserver(function()
                       {
+                        preview.contents().find('img, link').load(resize);
+
                         resize();
-                        preview.contents().find('img,link').load(resize);
                       });
 
                       observer.observe(preview.contents()[0], {
@@ -642,11 +643,14 @@
               type: typeof match[6] != 'undefined' ? 'closed' : 'single'
             };
 
-            var editor_url = location.href.substr(0, location.href.indexOf('/wp-')) + '/wp-admin/admin.php',
+            var editor = typeof window.tinymce.activeEditor != 'undefined' ? window.tinymce.activeEditor : false,
+              editor_iframe = $(editor.getDoc()),
+              editor_url = location.href.substr(0, location.href.indexOf('/wp-')) + '/wp-admin/admin.php',
+              index = $(editor_iframe.find('div[data-wpview-type="' + this.type + '"]')).index(editor_iframe.find('div[data-wpview-type="' + this.type + '"][data-mce-selected="1"]')),
               attributes = {
                 'page': 'shortcode_editor'
               };
-
+              
             if (typeof pagenow != 'undefined' && $.inArray(pagenow, ['post', 'post-new']) > -1)
             {
               attributes[piklist.prefix + 'post[ID]'] = $('#post_ID').val();
@@ -661,6 +665,7 @@
 
             attributes[piklist.prefix + 'shortcode_data[name]'] = shortcode.tag;
             attributes[piklist.prefix + 'shortcode_data[action]'] = 'update';
+            attributes[piklist.prefix + 'shortcode_data[index]'] = index < 0 ? 0 : index;
 
             if (typeof shortcode.content != 'undefined')
             {
@@ -673,6 +678,21 @@
             
             $(window).trigger('resize');
           }
+        },
+        
+        indexesOf: function(string, regex) 
+        {
+          var match,
+            indexes = [];
+
+          regex = new RegExp(regex);
+
+          while (match = regex.exec(string)) 
+          {
+            indexes.push(match.index);
+          }
+
+          return indexes;
         }
       };
     },
@@ -1012,6 +1032,11 @@
             var id = $(this).attr('id'),
               command = tinymce.majorVersion == 3 ? 'mceRemoveControl' : 'mceRemoveEditor';
 
+            if (typeof switchEditors != 'undefined')
+            {
+              switchEditors.go(id, 'tmce');
+            }
+              
             tinyMCE.execCommand(command, false, id);
           }
         });

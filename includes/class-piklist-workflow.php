@@ -182,7 +182,7 @@ class Piklist_Workflow
       $tab = $data['tab'] ? current($data['tab']) : null;
 
       $data['flow_page'] = piklist::slug(($tab ? $tab . ' ' : null) . $data['title']);
-      $data['flow_slug'] = piklist::slug($flow);
+      $data['flow_slug'] = $flow == piklist::dashes($flow) ? $flow : piklist::slug($flow);
       
       if ((piklist_admin::is_user() || piklist_admin::is_term()) && $data['position'] == 'title')
       {
@@ -386,7 +386,7 @@ class Piklist_Workflow
                   if ($workflow['data']['active'] && is_null($sub_tab))
                   {
                     $default_sub_workflow['data']['active'] = true;
-                    $sub_tab = piklist::slug($default_sub_workflow['data']['title']);
+                    $sub_tab = !empty($default_sub_workflow['data']['title']) ? piklist::slug($default_sub_workflow['data']['title']) : null;
                     $data = $default_sub_workflow['data'];
                   }
                 }
@@ -424,7 +424,7 @@ class Piklist_Workflow
         }
 
         self::$workflow = array(
-          'flow' => piklist::slug($flow)
+          'flow' => $flow
           ,'tab' => $tab
           ,'sub_tab' => $sub_tab
           ,'data' => $data
@@ -463,7 +463,12 @@ class Piklist_Workflow
     $pages = $data['data']['page'];
     if (!empty($pages))
     {
-      $allowed = in_array($pagenow, $pages) && (!isset($_REQUEST['page']) || (isset($_REQUEST['page']) && in_array($_REQUEST['page'], $pages)));
+      $allowed = in_array($pagenow, $pages);
+      
+      if (isset($_REQUEST['page']))
+      {
+        $allowed = in_array($_REQUEST['page'], $pages); 
+      }
     }
 
     // Check Post Types
@@ -634,7 +639,7 @@ class Piklist_Workflow
     {
       return $part;
     }
-
+    
     if ((is_null($part['data']['flow']) || is_null($part['data']['tab'])) 
         || ((!in_array(self::$workflow['flow'], $part['data']['flow']) && !in_array('all', $part['data']['flow']))
             || (!in_array(self::$workflow['tab'], $part['data']['tab']) && !in_array('all', $part['data']['tab']))

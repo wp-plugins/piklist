@@ -27,9 +27,16 @@ if (!class_exists('Piklist_Update_0_9_9'))
         add_action('wp_ajax_' . $this->slug,  array($this, 'ajax'));
       
         add_filter('piklist_request_field', array($this, 'piklist_request_field'));
+        add_filter('piklist_get_meta_sql', array($this, 'piklist_get_meta_sql'), 9999, 9);
       }
       
       add_action('admin_notices', array($this, 'admin_notices'));
+    }
+    
+    public function piklist_get_meta_sql($enabled, $sql, $query, $type, $primary_table, $primary_id_column, $context, $parent_relation, $depth)
+    {
+      // This filter isn't for everyones install, so lets disable during our upgrade.
+      return false;
     }
     
     public function admin_notices()

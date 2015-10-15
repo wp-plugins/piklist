@@ -191,8 +191,10 @@ class Piklist_Universal_Widget extends WP_Widget
    */
   public function update($new_instance, $old_instance)
   {
-    if (false !== ($fields = piklist_validate::check($new_instance)))
-    { 
+    $check = piklist_validate::check();
+    
+    if (false !== $check['valid'])
+    {
       $instance = array();
     
       foreach ($new_instance as $key => $value)

@@ -1,7 +1,12 @@
 
 <?php if ($field || (!$field && $type == 'group')): ?>
   
-  <div id="<?php echo piklist_form::get_field_id($arguments); ?>"  class="piklist-field-display">
+  <?php array_push($attributes['class'], 'piklist-field-display piklist-field-part'); ?>
+  
+  <div 
+    <?php echo piklist_form::attributes_to_string($attributes); ?>
+    id="<?php echo piklist_form::get_field_id($arguments); ?>" 
+    name="<?php echo piklist_form::get_field_name($arguments); ?>">
 
     <?php
       if ((!$field && $type == 'group')):
@@ -71,18 +76,6 @@
       <?php echo $type == 'editor' ? wpautop($value) : $value ; ?>
 
     <?php endif; ?>
-
-    <?php 
-      $arguments['scope'] = false;
-      
-      piklist('field', array(
-        'type' => 'hidden'
-        ,'scope' => piklist::$prefix
-        ,'field' => 'ignore' . ($scope ? '_' . $scope: '')
-        ,'index' => rand()
-        ,'value' => piklist_form::get_field_name($arguments)
-      ));
-    ?>
 
   </div>
 

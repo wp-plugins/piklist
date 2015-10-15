@@ -11,18 +11,23 @@ Message: Shortcode Updated.
   
   ksort($shortcodes);
   
-  $action = isset($shortcode_data['action']) ? $shortcode_data['action'] : false;
   $name = isset($shortcode_data['name']) ? $shortcode_data['name'] : false;
-
+  $action = isset($shortcode_data['action']) ? $shortcode_data['action'] : false;
+  $index = isset($shortcode_data['index']) ? $shortcode_data['index'] : false;
+  
   if (in_array($action, array('insert', 'update'))):
     
     $forms = array();
     if (isset($shortcodes[$name])):
 
       foreach ($shortcodes[$name]['render'] as $render):
+        
         if (strstr($render, '-form.php')):
+       
           array_push($forms, $render);
+      
         endif;
+        
       endforeach;
 
     endif;
@@ -30,12 +35,17 @@ Message: Shortcode Updated.
     if (!empty($forms)):
       
       foreach ($forms as $form):
-        piklist::render($form);
+        
+        piklist::render($form, array(
+          'shortcode' => $shortcode_data
+        ));
+      
       endforeach;
       
     elseif ($shortcode):
         
       foreach ($shortcode as $attribute => $value):
+        
         piklist('field', array(
           'type' => 'text'
           ,'scope' => 'shortcode'
@@ -45,6 +55,7 @@ Message: Shortcode Updated.
             'class' => 'large-text'
           )
         ));
+      
       endforeach;
 
     endif;
@@ -61,6 +72,9 @@ Message: Shortcode Updated.
             ,'field' => $attribute
             ,'label' => __('Shortcode Content', 'piklist')
             ,'description' => __('This is the content that the shortcode is wrapped around.', 'piklist')
+            ,'options' => array(
+              'shortcode_buttons' => true
+            )
           ));
 
         break;

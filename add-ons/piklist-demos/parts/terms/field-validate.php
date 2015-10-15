@@ -29,12 +29,12 @@ Flow: Demo Workflow
   ));
 
   piklist('field', array(
-    'type'    => 'group'
-    ,'field'   => 'validate_group_required'
-    ,'label'   => __('Group Required', 'piklist-demo')
+    'type' => 'group'
+    ,'field' => 'validate_group_required'
+    ,'label' => __('Group Required', 'piklist-demo')
     ,'description' =>__('Only the checkbox is required', 'piklist-demo')
     ,'add_more'=> true
-    ,'fields'  => array(
+    ,'fields' => array(
       array(
         'type' => 'text'
         ,'field' => 'name'
@@ -148,6 +148,7 @@ Flow: Demo Workflow
     ,'field' => 'validate_upload_media_limit'
     ,'label' => __('Add File(s)', 'piklist-demo')
     ,'description' => __('No more than one file is allowed', 'piklist-demo')
+    ,'required' => true
     ,'options' => array(
       'modal_title' => __('Add File(s)', 'piklist-demo')
       ,'button' => __('Add', 'piklist-demo')

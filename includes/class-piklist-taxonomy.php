@@ -245,13 +245,18 @@ class Piklist_Taxonomy
   {
     if ($taxonomy)
     {
+      $close = false;
+      
       foreach (self::$meta_boxes[$taxonomy] as $taxonomy => $meta_box)
       {
         piklist::render('shared/meta-box-seperator', array(
           'meta_box' => $meta_box
           ,'wrapper' => 'term_meta'
+          ,'close' => $close
         ), false);
-                
+        
+        $close = true;
+        
         foreach ($meta_box['render'] as $render)
         {
           piklist::render($render, array(

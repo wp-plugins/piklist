@@ -92,6 +92,45 @@
         ,'field' => 'image'
         ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
+        ,'validate' => array(
+          array(
+            'type' => 'limit'
+            ,'options' => array(
+              'min' => 1
+              ,'max' => 1
+            )
+          )
+        )
+      )
+      ,array(
+        'type' => 'text'
+        ,'field' => 'url'
+        ,'label' => __('URL', 'piklist-demo')
+        ,'columns' => 12
+      )
+    )
+  ));
+
+  piklist('field', array(
+    'type' => 'group'
+    ,'field' => 'slides_basic'
+    ,'add_more' => true
+    ,'label' => __('Slide Images with Basic uploader', 'piklist-demo')
+    ,'description' => __('This is the same field as above, except it is using the Basic uploader.', 'piklist-demo')
+    ,'fields'  => array(
+      array(
+        'type' => 'file'
+        ,'field' => 'image'
+        ,'label' => __('Slides', 'piklist-demo')
+        ,'columns' => 12
+        ,'options' => array(
+          'basic' => true
+        )
+        ,'validate' => array(
+          array(
+            'type' => 'image'
+          )
+        )
       )
       ,array(
         'type' => 'text'

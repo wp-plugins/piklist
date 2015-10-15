@@ -93,7 +93,7 @@
         ,'field' => 'user'
         ,'label' => __('Assigned to', 'piklist-demo')
         ,'columns' => 4
-        ,'choices' => array (
+        ,'choices' => array(
           'adam' => __('Adam', 'piklist-demo')
           ,'bill' => __('Bill', 'piklist-demo')
           ,'carol' => __('Carol', 'piklist-demo')
@@ -143,7 +143,7 @@
             ,'field' => 'post_id'
             ,'label' => __('Grade', 'piklist-demo')
             ,'columns' => 12
-            ,'choices' => array (
+            ,'choices' => array(
               'a' => 'A'
               ,'b' => 'B'
               ,'c' => 'C'

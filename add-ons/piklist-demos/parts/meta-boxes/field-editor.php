@@ -13,8 +13,9 @@ Sub Tab: Editor
     'type' => 'editor'
     ,'field' => 'post_content'
     ,'scope' => 'post'
+    ,'required' => true
     ,'label' => __('Post Content', 'piklist-demo')
-    ,'description' => __('This is the standard WordPress Editor, placed in a Metabox, which is placed in a Piklist WorkFlow tab. By default, Piklist formats the editor like any other field with a label to the left.', 'piklist-demo')
+    ,'description' => __('This is a replacement for the post_content editor', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     ,'options' => array(
       'wpautop' => true
@@ -44,7 +45,7 @@ Sub Tab: Editor
     ,'add_more' => true
     ,'description' => __('This is the teeny editor used in an add-more repeater field.', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    ,'options' => array (
+    ,'options' => array(
       'media_buttons' => false
       ,'teeny' => true
       ,'textarea_rows' => 5

@@ -27,7 +27,7 @@
 
     <a
       href="#"
-      class="button piklist-upload-file-button piklist-field-part"
+      class="button piklist-upload-file-button piklist-field-part <?php echo $errors ? 'piklist-error' : null; ?>"
       title="<?php _e($options['modal_title']); ?>"
     >
       <?php _e($options['button']); ?>
@@ -35,7 +35,7 @@
 
   <?php endif; ?>
 
-  <div class="piklist-upload-file-preview piklist-field-preview <?php echo $errors ? 'piklist-error' : null; ?>">
+  <div class="piklist-upload-file-preview piklist-field-preview">
 
   <?php
     $value = is_array($value) ? $value : array($value);

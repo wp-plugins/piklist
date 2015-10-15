@@ -12,6 +12,7 @@ Tags: piklist,framework,cms,admin,admin pages,settings,settings pages,content ty
 Piklist is the most powerful framework available for WordPress.
 Easy for beginners... built for developers. Piklist helps you build things - fast.
 
+
 == Description ==
 
 **CURRENTLY IN BETA**
@@ -140,6 +141,15 @@ Code-based frameworks also allows you to version control your code, which is ver
 4. Ask questions on our <a href="https://piklist.com/support/">Support Forum</a>. (We love hearing from our users)
 
 == Changelog ==
+
+= 0.9.9.3 =
+* ENHANCED: File field and Editor highight better when required.
+* FIX: Settings tabs are now backwards compatible with the new Workflow system.
+* FIX: Piklist allows posts to save normally. Thanks Mehdi for letting us test on your site!
+* FIX: Validation rules within groups.
+* FIX: Validating certain fields within widgets.
+* FIX: Editors in add-mores not retain content markup.
+* FIX: Multiple User Roles are now saving.
 
 = 0.9.9.2 =
 * FIXED: Updates run normally.

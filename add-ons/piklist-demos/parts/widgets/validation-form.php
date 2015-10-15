@@ -130,6 +130,7 @@
     'type' => 'file'
     ,'field' => 'upload_media'
     ,'label' => __('Add File(s)', 'piklist-demo')
+    ,'required' => true
     ,'options' => array(
       'modal_title' => __('Add File(s)', 'piklist-demo')
       ,'button' => __('Add', 'piklist-demo')

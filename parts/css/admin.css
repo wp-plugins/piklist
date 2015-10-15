@@ -115,7 +115,18 @@
   Styles for Piklist
 --------------------------------------------------------------------------------- */
 
-  .piklist-workflow {
+  .piklist-workflow {}
+  
+    .wp-admin.post-php .piklist-workflow,
+    .wp-admin.post-new-php .piklist-workflow {
+      margin: 0;
+    }
+  
+    .wrap > .piklist-workflow {
+      margin: 0;
+    }
+  
+  .piklist-workflow-position-header {
     padding: 10px 20px 0 2px;
   }
   
@@ -834,6 +845,7 @@
   #poststuff h3.nav-tab-wrapper {
     padding-bottom: 0px;
     padding-left: 10px;
+    padding-top: 5px;
   }
   
     #poststuff > #post-body > #post-body-content > h3,
@@ -843,11 +855,11 @@
       margin: 1em 0;
     }
 
-  .piklist-nav-tab-wrapper {
+  .piklist-workflow-tab-wrapper {
     clear: right;
   }
   
-  .nav-tab-wrapper.piklist-nav-tab-wrapper {
+  .nav-tab-wrapper.piklist-workflow-tab-wrapper {
     margin-bottom: 0px;
   }
 
@@ -1036,35 +1048,17 @@
     clear: right;
   }
 
-    
-    
+
+
 /* --------------------------------------------------------------------------------
-  Piklist Field Classes
+  Workflow Updates for WordPress Class
 ---------------------------------------------------------------------------------- */
 
-  /* .piklist-inline-edit */
-  input[type="text"].piklist-inline-edit {
-    border: none;
-    margin: 1px;
-    box-shadow: none;
-    text-decoration: underline;
-    color: #0074A2;
-    cursor: pointer;
+  body.piklist-workflow-active.edit-tags-php h1,
+  body.piklist-workflow-active.user-edit-php #profile-page h1,
+  body.piklist-workflow-active.profile-php #profile-page h1 {
+    display: none;
   }
-
-    input[type="text"].piklist-inline-edit:focus {
-      border: 1px solid #DDDDDD;
-      text-decoration: none;
-      color: #000;
-      margin: 0;
-    }
-
-    input[type="text"].piklist-inline-edit:disabled {
-      color: #000;
-      text-decoration: none;
-      cursor: initial;
-    }
-    
     
     
     

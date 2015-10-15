@@ -18,7 +18,6 @@ Flow: Demo Workflow
         'type' => 'text'
         ,'field' => 'address_1'
         ,'label' => __('Street Address', 'piklist-demo')
-        ,'required' => true
         ,'columns' => 12
         ,'attributes' => array(
           'placeholder' => 'Street Address'
@@ -64,6 +63,7 @@ Flow: Demo Workflow
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
         ,'columns' => 12
+        ,'required' => true
       )
 
     )
@@ -113,6 +113,7 @@ Flow: Demo Workflow
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
         ,'columns' => 12
+        ,'required' => true
       )
     )
   ));
@@ -170,6 +171,7 @@ Flow: Demo Workflow
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
         ,'columns' => 12
+        ,'required' => true
       )
     )
   ));
@@ -217,6 +219,7 @@ Flow: Demo Workflow
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
         ,'columns' => 12
+        ,'required' => true
       )
     )
   ));

@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 /**
  * Piklist_WordPress
- * Modifications and upgrades to WordPress.
+ * Modifications and upgrades to WordPress, most of these are fixes for some of the inconsistencies in WordPress.
  *
  * @package     Piklist
  * @subpackage  WordPress
@@ -100,7 +100,9 @@ class Piklist_WordPress
     add_action('posts_where', array('piklist_wordpress', 'relation_taxonomy'));
     add_action('wp_scheduled_delete', array('piklist_wordpress', 'garbage_collection'));
     add_action('pre_get_posts', array('piklist_wordpress', 'pre_get_posts'));
-    
+    add_action('piklist_pre_render_workflow', array('piklist_wordpress', 'pre_render_workflow'));
+      
+    add_filter('piklist_part_data', array('piklist_wordpress', 'part_data'), 10, 2);
     add_filter('get_meta_sql', array('piklist_wordpress', 'get_meta_sql'), 101, 6);
   }
 
@@ -155,7 +157,7 @@ class Piklist_WordPress
      * 
      * @since 1.0
      */
-    if (piklist::get_settings('piklist_core', 'meta_queries') !== 'true' || !apply_filters_ref_array('piklist_get_meta_sql', array(true, $sql, $query, $type, $primary_table, $primary_id_column, $context, $parent_relation, $depth)))
+    if (piklist::get_settings('piklist_core', 'meta_queries') !== 'true' || !apply_filters('piklist_get_meta_sql', true, $sql, $query, $type, $primary_table, $primary_id_column, $context, $parent_relation, $depth))
     {
       return $sql;
     }
@@ -663,5 +665,59 @@ class Piklist_WordPress
     }
 
     return $meta_type;
+  }
+  
+  /**
+   * pre_render_workflow
+   * Handle the poorly built admin forms when being extended with Workflows.
+   *
+   * @param string $type The active tab.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function pre_render_workflow($active_tab)
+  {
+    global $pagenow;
+    
+    if (isset($active_tab['data']['default_form']) && !$active_tab['data']['default_form'])
+    {
+      $type = null;
+      
+      if (in_array($pagenow, array('user-edit.php', 'profile.php')))
+      {
+        $type = 'user';
+      }
+      elseif ($pagenow == 'edit-tags.php')
+      {
+        $type = 'term';
+      }
+      
+      if ($type)
+      {
+        piklist::render('shared/wordpress-form-hide', array(
+          'type' => $type
+        ));
+      }
+    }
+  }
+  
+  /**
+   * part_data
+   * Adds tab to all part types for easy association
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function part_data($data, $folder)
+  {
+    if ($folder == 'workflows')
+    {
+      $data['default_form'] = 'Default Form';
+    }
+      
+    return $data;
   }
 }

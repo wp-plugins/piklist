@@ -160,6 +160,15 @@ piklist('field', array(
         ,'field' => 'image'
         ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
+        ,'validate' => array(
+          array(
+            'type' => 'limit'
+            ,'options' => array(
+              'min' => 1
+              ,'max' => 1
+            )
+          )
+        )
       )
       ,array(
         'type' => 'text'
@@ -185,6 +194,11 @@ piklist('field', array(
         ,'options' => array(
           'basic' => true
         )
+        ,'validate' => array(
+          array(
+          'type' => 'image'
+          )
+        )
       )
       ,array(
         'type' => 'text'
@@ -195,7 +209,7 @@ piklist('field', array(
     )
   ));
 
-piklist('field', array(
+  piklist('field', array(
     'type' => 'group'
     ,'label' => __('Newsletter Signup', 'piklist-demo')
     ,'field' => 'newsletter_signup'

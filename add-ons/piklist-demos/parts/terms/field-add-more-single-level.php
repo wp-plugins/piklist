@@ -129,6 +129,15 @@ Flow: Demo Workflow
         ,'field' => 'image'
         ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
+        ,'validate' => array(
+          array(
+            'type' => 'limit'
+            ,'options' => array(
+              'min' => 1
+              ,'max' => 1
+            )
+          )
+        )
       )
       ,array(
         'type' => 'text'
@@ -153,6 +162,11 @@ Flow: Demo Workflow
         ,'columns' => 12
         ,'options' => array(
           'basic' => true
+        )
+        ,'validate' => array(
+          array(
+            'type' => 'image'
+          )
         )
       )
       ,array(

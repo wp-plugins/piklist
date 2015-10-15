@@ -22,6 +22,7 @@ Flow: Demo Workflow
     ,'field' => 'demo_add_more_date'
     ,'label' => __('Date Picker', 'piklist-demo')
     ,'add_more' => true
+    ,'required' => true
   ));
 
   piklist('field', array(
@@ -162,6 +163,15 @@ Flow: Demo Workflow
         ,'field' => 'image'
         ,'label' => __('Slides', 'piklist-demo')
         ,'columns' => 12
+        ,'validate' => array(
+          array(
+            'type' => 'limit'
+            ,'options' => array(
+              'min' => 1
+              ,'max' => 1
+            )
+          )
+        )
       )
       ,array(
         'type' => 'text'
@@ -186,6 +196,11 @@ Flow: Demo Workflow
         ,'columns' => 12
         ,'options' => array(
           'basic' => true
+        )
+        ,'validate' => array(
+          array(
+            'type' => 'image'
+          )
         )
       )
       ,array(

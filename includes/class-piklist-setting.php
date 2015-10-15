@@ -290,12 +290,17 @@ class Piklist_Setting
    */
   public static function pre_update_option($new, $old = false)
   {
-    if (false !== ($field_data = piklist_validate::check($new)))
+    $check = piklist_validate::check();
+    
+    if (false !== $check['valid'])
     {
+      $fields_data = $check['fields_data'];
+      
       $setting = $_REQUEST['option_page'];
+      
       $_old = $old;
       
-      foreach ($field_data[$setting] as $field => &$data)
+      foreach ($fields_data[$setting] as $field => &$data)
       {
         if (!isset($data['display']) || (isset($data['display']) && !$data['display']))
         {
@@ -520,7 +525,7 @@ class Piklist_Setting
         }
       }
     }
-    
+
     return $parts;
   }
   

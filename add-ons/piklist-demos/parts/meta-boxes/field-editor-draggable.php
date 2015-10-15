@@ -14,7 +14,7 @@ Sub Tab: Editor
     ,'scope' => 'post_meta'
     ,'template' => 'field'
     ,'value' => sprintf(__('You can remove the left label when displaying the editor by defining %1$s in the field parameters. This will make it look like the default WordPress editor. To learn about replacing the WordPress editor %2$sread our Tutorial%2$s.', 'piklist-demo'), '<code>\'template\'=>\'field\'</code>', '<a href="http://piklist.com/user-guide/tutorials/replacing-wordpress-post-editor/">', '</a>')
-    ,'options' => array (
+    ,'options' => array(
       'wpautop' => true
       ,'media_buttons' => true
       ,'shortcode_buttons' => true

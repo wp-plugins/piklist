@@ -14,7 +14,7 @@
   {
     $(document).ready(function()
     {
-      $('select[name="_status"]').replaceWith('<?php echo $field; ?>');
+      $('select[name="_status"]').replaceWith('<?php echo preg_replace('/[ \t]+/', ' ', preg_replace('/[\r\n]+/', '', $field)); ?>');
     });
   })(jQuery);
 

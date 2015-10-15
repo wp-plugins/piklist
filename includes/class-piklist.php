@@ -1823,7 +1823,7 @@ class Piklist
   }
 
   /**
-   * is_associative_array
+   * is_associative
    * Check if an array is associative.
    *
    * @param array $array Array to check.
@@ -1834,7 +1834,7 @@ class Piklist
    * @static
    * @since 1.0
    */
-  public static function is_associative_array($array)
+  public static function is_associative($array)
   {
     return array_keys($array) !== range(0, count($array) - 1);
   }
@@ -2480,7 +2480,7 @@ function piklist($option, $arguments = array())
 
         $return = isset($arguments['return']) ? $arguments['return'] : false;
         $loop = isset($arguments['loop']) ? $arguments['loop'] : null;
-
+        
         unset($arguments['return']);
         unset($arguments['loop']);
 

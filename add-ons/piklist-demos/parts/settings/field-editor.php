@@ -38,7 +38,7 @@ Flow: Demo Workflow
     ,'add_more' => true
     ,'description' => __('This is the teeny editor used in an add-more repeater field.', 'piklist-demo')
     ,'value' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    ,'options' => array (
+    ,'options' => array(
       'media_buttons' => true
       ,'teeny' => true
       ,'textarea_rows' => 5

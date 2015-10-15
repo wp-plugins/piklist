@@ -547,10 +547,10 @@ class Piklist_Meta
     {
       if (($meta = self::get_meta_properties($meta_type)) !== false)
       {
-        $group_keys = $wpdb->get_col("SELECT DISTINCT meta_key FROM " . $meta['table'] . " WHERE meta_key LIKE '\_\\" . piklist::$prefix . "%'");
+        $group_keys = $wpdb->get_col("SELECT DISTINCT meta_key FROM $meta->table WHERE meta_key LIKE '\_\\" . piklist::$prefix . "%'");
         foreach ($group_keys as $group_key)
         {
-          $key = $wpdb->get_var($wpdb->prepare("SELECT DISTINCT meta_key FROM " . $meta['table'] . " WHERE meta_key = %s", str_replace('_' . piklist::$prefix, '', $group_key)));
+          $key = $wpdb->get_var($wpdb->prepare("SELECT DISTINCT meta_key FROM $meta->table WHERE meta_key = %s", str_replace('_' . piklist::$prefix, '', $group_key)));
 
           if ($key)
           {
@@ -735,7 +735,7 @@ class Piklist_Meta
         {
           foreach ($group as &$meta_id)
           {
-            $meta_id = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM " . $meta['table'] . " WHERE " . $meta['id_field'] . " = %d", $meta_id));
+            $meta_id = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM $meta->table WHERE $meta->id = %d", $meta_id));
           }
         }
         
@@ -772,8 +772,8 @@ class Piklist_Meta
         
         $meta = array(
           'table' => $wpdb->postmeta
-          ,'id_field' => 'meta_id'
-          ,'id' => 'post_id'
+          ,'id' => 'meta_id'
+          ,'object_id' => 'post_id'
         );
       
       break;
@@ -782,8 +782,8 @@ class Piklist_Meta
       
         $meta = !isset($wpdb->termmeta) ? false : array(
           'table' => $wpdb->termmeta
-          ,'id_field' => 'meta_id'
-          ,'id' => 'term_id'
+          ,'id' => 'meta_id'
+          ,'object_id' => 'term_id'
         );
       
       break;
@@ -792,8 +792,8 @@ class Piklist_Meta
         
         $meta = array(
           'table' => $wpdb->usermeta
-          ,'id_field' => 'umeta_id'
-          ,'id' => 'user_id'
+          ,'id' => 'umeta_id'
+          ,'object_id' => 'user_id'
         );
       
       break;
@@ -802,14 +802,14 @@ class Piklist_Meta
         
         $meta = array(
           'table' => $wpdb->commentmeta
-          ,'id_field' => 'meta_id'
-          ,'id' => 'comment_id'
+          ,'id' => 'meta_id'
+          ,'object_id' => 'comment_id'
         );
       
       break;
     }
     
-    return $meta;
+    return (object) $meta;
   }
   
   /**
@@ -870,7 +870,7 @@ class Piklist_Meta
     {
       $meta = self::get_meta_properties('post');
         
-      $value = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM " . $meta['table'] . " WHERE " . $meta['id'] . " = %d AND meta_key = %s", $object_id, $meta_key));
+      $value = $wpdb->get_var($wpdb->prepare("SELECT meta_value FROM $meta->table WHERE $meta->object_id = %d AND meta_key = %s", $object_id, $meta_key));
       $value = maybe_serialize($value);
     }
     

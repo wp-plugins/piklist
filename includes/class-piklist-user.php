@@ -206,8 +206,8 @@ class Piklist_User
   {
     global $wpdb, $wp_roles, $current_user, $pagenow;
     
-    $roles = $roles ? $roles : (isset($_POST['roles']) && isset($_POST['roles'][0]) ? $_POST['roles'][0] : false);
-
+    $roles = $roles ? $roles : (isset($_POST['roles']) ? $_POST['roles'] : false);
+    
     if ($roles && current_user_can('edit_user', $current_user->ID))
     {      
       $editable_roles = get_editable_roles();
@@ -269,7 +269,7 @@ class Piklist_User
     if (in_array($pagenow, array('user-edit.php', 'user-new.php')))
     {
       $editable_roles = get_editable_roles();
-
+      
       if ($user_id)
       {
         $user = get_user_to_edit($user_id);

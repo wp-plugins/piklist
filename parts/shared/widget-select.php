@@ -33,8 +33,9 @@
         )
         ,'position' => 'wrap'
         ,'choices' => $choices
+        ,'value' => $widget
       ));
-    
+      
       $data_attributes = '';
       
       if (isset($widget_data)):

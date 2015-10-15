@@ -32,7 +32,7 @@
         .parents('.form-field')
         .removeClass('form-field');
       
-      field.replaceWith('<?php echo $fields; ?>');
+      field.replaceWith('<?php echo preg_replace('/[ \t]+/', ' ', preg_replace('/[\r\n]+/', '', $fields)); ?>');
     });
   })(jQuery);
 

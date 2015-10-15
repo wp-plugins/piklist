@@ -251,7 +251,8 @@
   }
   
     .piklist-field-addmore-wrapper.ui-sortable,
-    .piklist-field-addmore-wrapper.ui-sortable-handle {
+    .piklist-field-addmore-wrapper.ui-sortable-handle,
+    .piklist-field-addmore-wrapper .wp-editor-container {
       cursor: default;
     }
     

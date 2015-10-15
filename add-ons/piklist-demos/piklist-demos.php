@@ -28,7 +28,7 @@ Domain Path: /languages
         ,'post-formats'
       )
       ,'public' => true
-      ,'admin_body_class' => array (
+      ,'admin_body_class' => array(
         'piklist-demonstration'
         ,'piklist-sample'
       )
@@ -208,27 +208,6 @@ Domain Path: /languages
     }
 
     return $show;
-  }
-
-  add_action('the_content', 'piklist_demo_meta_field_insert');
-  function piklist_demo_meta_field_insert($content)
-  {
-    if (get_post_type() == 'piklist_demo')
-    {
-      global $post;
-
-      $meta = piklist('post_custom', $post->ID);
-
-      foreach ($meta as $key => $value)
-      {
-        if (!empty($value) && substr($key, 0, 1) != '_')
-        {
-          $content .= '<br /><strong>' . $key . ':</strong> ' . (is_array($value) ? var_export($value, true) : $value);
-        }
-      }
-    }
-
-    return $content;
   }
 
   add_filter('piklist_assets', 'piklist_demo_assets');
