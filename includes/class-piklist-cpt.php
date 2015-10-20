@@ -723,8 +723,9 @@ class Piklist_CPT
     {
       $current_status = $post->post_status;
       $post_statuses = self::get_post_statuses_for_type();
-    
-      $states = !empty($post_statuses[$current_status]->label) ? $post_statuses[$current_status]->label : $post_statuses[$current_status]['label'];
+      $status = isset($post_statuses[$current_status]) ? $post_statuses[$current_status] : current($post_statuses);
+      
+      $states = !empty($status->label) ? $status->label : $status['label'];
       $states = $states == 'Published' ? '' : array($states);
     }
 

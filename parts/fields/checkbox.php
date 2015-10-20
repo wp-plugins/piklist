@@ -2,7 +2,7 @@
 <?php if ($list): ?>
   
   <<?php echo isset($list_type) ? $list_type : 'ul'; ?> class="piklist-field-list">
-
+  
 <?php endif; ?>
   
 <?php if ($choices): ?>
@@ -24,8 +24,8 @@
       $_arguments = $arguments;
       $_arguments['index'] = $_index;
   ?>
-
-    <?php echo $list ? '<li>' : ''; ?>
+  
+    <?php echo $list || $list_item_type ? ('<' . ($list_item_type ? $list_item_type : 'li') . '>') : ''; ?>
     
       <label class="piklist-field-list-item">
         
@@ -44,18 +44,18 @@
             type="hidden"
             id="<?php echo piklist_form::get_field_id($_arguments); ?>" 
             name="<?php echo piklist_form::get_field_name($arguments); ?>"
-            value=""
+            value="<?php echo isset($options['unset_value']) ? $options['unset_value'] : null; ?>"
           />
       
         <?php endif; ?>
         
         <span class="piklist-list-item-label">
-          <?php echo $choices[$values[$_index]]; ?>
+          <?php _e($choices[$values[$_index]]); ?>
         </span>
     
       </label>
   
-    <?php echo $list ? '</li>' : ''; ?>
+    <?php echo $list || $list_item_type ? ('</' . ($list_item_type ? $list_item_type : 'li') . '>') : ''; ?>
 
   <?php endfor; ?>
   

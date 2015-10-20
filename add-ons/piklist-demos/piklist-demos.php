@@ -71,8 +71,6 @@ Domain Path: /languages
     return $post_types;
   }
   
-
-
   add_filter('piklist_taxonomies', 'piklist_demo_taxonomies');
   function piklist_demo_taxonomies($taxonomies)
   {
@@ -128,10 +126,20 @@ Domain Path: /languages
       ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-icon.png'
       ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
       ,'default_tab' => 'Basic'
-      // ,'layout' => 'container' // NOTE: Uncomment this to use the meta box layout on this settings page!
+      // ,'layout' => 'meta-boxes' // NOTE: Uncomment this to use the meta box layout on this settings page!
       ,'save_text' => 'Save Demo Settings'
     );
 
+    $pages[] = array(
+      'page_title' => __('Reading Settings')
+      ,'menu_title' => __('Demo Reading', 'piklist-demo')
+      ,'sub_menu' => 'edit.php?post_type=piklist_demo'
+      ,'capability' => 'manage_options'
+      ,'menu_slug' => 'piklist_demo_options'
+      ,'menu_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-icon.png'
+      ,'page_icon' => piklist::$addons['piklist']['url'] . '/parts/img/piklist-page-icon-32.png'
+    );
+    
     return $pages;
   }
 
@@ -423,3 +431,39 @@ Domain Path: /languages
     
     return $field;
   }
+
+  function piklist_demo_workflow_bar($flow)
+  {
+    if ($flow == 'demo_workflow')
+    {
+      $domain = $_SERVER['HTTP_HOST'];
+
+      $url = 'http://' . $domain . $_SERVER['REQUEST_URI'];
+
+      if (isset($_GET['demo_workflow']))
+      {
+        // remove  demo_workflow parameter
+        $url = preg_replace('/(.*)(?|&)demo_workflow=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
+        
+        echo '<ul class="alignright"><li><a href="' . $url . '"><strong>' . __('View as Tabs', 'piklist-demo') . '</strong></a></li></ul>';
+      }
+      else
+      {
+        echo '<a href="' . $url . '&demo_workflow=bar" class="alignright button button-secondary">' . __('View as Bar', 'piklist-demo') . '</a>';
+      }
+    }
+    
+  }
+  add_action('piklist_workflow_flow_append', 'piklist_demo_workflow_bar');
+
+
+  function piklist_demo_change_workflow_layout($_part)
+  {
+    if (isset($_GET['demo_workflow']) && $_GET['demo_workflow'] == 'bar')
+    {
+      $_part['data']['layout'] = 'bar';
+    }
+
+    return $_part;
+  }
+  add_action('piklist_part_process-workflows', 'piklist_demo_change_workflow_layout');

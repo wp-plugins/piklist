@@ -191,4 +191,35 @@ class Piklist_Add_On
 
     return false;
   }
+  
+  /**
+   * current
+   * Get the current add-on
+   *
+   * @return string The slug of the current add-on.
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function current()
+  {
+    $backtrace = debug_backtrace();
+    
+    foreach ($backtrace as $trace)
+    {
+      if (strstr($trace['file'], '/parts/'))
+      {
+        $add_on = substr($trace['file'], 0, strpos($trace['file'], '/parts/'));
+        $add_on = substr($add_on, strrpos($add_on, '/') + 1);
+
+        if (isset(piklist::$addons[$add_on]))
+        {
+          return $add_on;
+        }
+      }
+    }
+
+    return false;
+  }
 }

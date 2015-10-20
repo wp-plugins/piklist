@@ -143,6 +143,7 @@ class Piklist_Workflow
               ,'disable' => 'Disable'
               ,'position' => 'Position'
               ,'default' => 'Default'
+              ,'layout' => 'Layout'
               ,'clear' => 'Clear'
             );
             
@@ -580,6 +581,7 @@ class Piklist_Workflow
     if (self::$workflow)
     {
       $position = self::$workflow['workflows'][0]['data']['position'];
+      
       $backtrace = debug_backtrace();
       
       foreach ($backtrace as $trace)
@@ -587,6 +589,7 @@ class Piklist_Workflow
         if ($trace['function'] == 'do_action' && isset($trace['args'][0]) && array_search($trace['args'][0], self::$after_positions) == $position)
         {
           self::$workflow['position'] = $position;
+          self::$workflow['layout'] = self::$workflow['workflows'][0]['data']['layout'];
         
           piklist::render('shared/admin-workflow', self::$workflow);
           

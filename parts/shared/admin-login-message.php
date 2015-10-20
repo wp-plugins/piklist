@@ -1,5 +1,5 @@
 
-<div class="message piklist-notice-<?php echo $type; ?>">
+<div class="message piklist-notice-<?php echo $type; ?> piklist-notice">
 
   <?php if (is_array($notices)): ?>
     

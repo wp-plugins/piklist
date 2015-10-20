@@ -30,7 +30,7 @@
 
         <?php settings_fields($setting); ?>
         
-        <?php if ($layout == 'container'): ?>
+        <?php if ($layout == 'meta-boxes'): ?>
           
           <?php wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false); ?>
           
@@ -44,7 +44,7 @@
 
     <?php endif; ?>            
 
-    <?php if ($layout == 'container'): ?>
+    <?php if ($layout == 'meta-boxes'): ?>
       
       <?php piklist_setting::do_settings_sections($setting); ?>
     
@@ -54,7 +54,7 @@
     
     <?php endif; ?>
     
-    <?php if ($layout == 'container'): ?>
+    <?php if ($layout == 'meta-boxes'): ?>
       
       <div id="postbox-container-1" class="postbox-container">
         
@@ -74,7 +74,7 @@
       
     <?php if ($save): ?>
     
-        <?php if ($layout == 'container'): ?>
+        <?php if ($layout == 'meta-boxes'): ?>
           
             </div>
             
@@ -86,7 +86,7 @@
         
         <?php do_action('piklist_settings_form'); ?>
        
-        <?php if ($layout != 'container'): ?>
+        <?php if ($layout != 'meta-boxes'): ?>
           
           <?php submit_button(esc_html__($save_text)); ?>
             

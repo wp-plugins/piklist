@@ -15,6 +15,8 @@ Message: User Profile Saved.
  * If your form is in a THEME (i.e. wp-content/themes/my-theme/piklist/parts/forms/my-form.php)
  * Use [piklist_form form="my-form" add_on="theme"]
  *
+ * The "form" parameter is the file name of your form without ".php".
+ *
  */
 
 /** 
@@ -24,7 +26,7 @@ Message: User Profile Saved.
 
 ?>
 
-<h3><?php _e('Name'); ?></h3>
+<h1><?php _e('Edit your profile.', 'piklist-demo'); ?></h1>
 
 <?php
  
@@ -109,6 +111,12 @@ Message: User Profile Saved.
       array(
         'type' => 'email_exists'
       )
+      ,array(
+        'type' => 'email'
+      )
+      ,array(
+        'type' => 'email_domain'
+      )
     )
   ));
 
@@ -117,10 +125,15 @@ Message: User Profile Saved.
     ,'scope' => 'user'// scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'user_url'
     ,'label' => __('Website', 'piklist-demo')
+    ,'validate' => array(
+      array(
+        'type' => 'url'
+      )
+    )
   ));
 
   piklist('field', array(
-    'type' => 'text'
+    'type' => 'textarea'
     ,'scope' => 'user_meta'// scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'description'
     ,'label' => __('Biographical Info', 'piklist-demo')

@@ -62,7 +62,6 @@ Flow: Demo Workflow
         ,'field' => 'phone'
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
-        ,'columns' => 12
         ,'required' => true
       )
 
@@ -112,7 +111,6 @@ Flow: Demo Workflow
         ,'field' => 'phone'
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
-        ,'columns' => 12
         ,'required' => true
       )
     )
@@ -170,7 +168,6 @@ Flow: Demo Workflow
         ,'field' => 'ungrouped_phone'
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
-        ,'columns' => 12
         ,'required' => true
       )
     )
@@ -218,7 +215,6 @@ Flow: Demo Workflow
         ,'field' => 'ungrouped_phone_addmore'
         ,'label' => __('Phone', 'piklist-demo')
         ,'template' => 'post_meta'
-        ,'columns' => 12
         ,'required' => true
       )
     )

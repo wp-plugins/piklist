@@ -406,8 +406,11 @@ class Piklist_WordPress
             {
               $meta_value_string = '%s';
             }
-
-            $meta_value_string = $wpdb->prepare("CAST(meta_value AS {$meta_type}) {$meta_compare} {$meta_value_string}", $meta_value);
+            
+            if ($meta_value || (!$meta_value && in_array($meta_compare, array('=', '!='))))
+            {
+              $meta_value_string = $wpdb->prepare("CAST(meta_value AS {$meta_type}) {$meta_compare} {$meta_value_string}", $meta_value);
+            }
             
             $meta_orderby_string = "ORDER BY CAST(meta_value AS {$meta_type}) " . $meta_order_string;
           }

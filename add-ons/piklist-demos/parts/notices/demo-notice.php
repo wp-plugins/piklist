@@ -9,4 +9,14 @@ Tab: All
 */
 ?>
 
-Some example notice with no paragraph tag.
+	<p>
+
+		<?php _e('Piklist makes it super simple to add admin notices that are dismissable.', 'piklist-demo'); ?>
+	</p>
+
+<?php
+
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Admin notice'
+  ));

@@ -10,7 +10,7 @@
         {
           return;
         }
-
+        
         event.content = wp.mce.views.setMarkers(event.content);
       });
 
@@ -93,9 +93,9 @@
     return content.replace(/<span[^>]+data-wpview-text="([^"]+)"[^>]*>(?:[\s\S]+?wpview-selection-after[^>]+>[^<>]*<\/p>\s*|\.)<\/span>/g, reset_views_callback);
   }
   
-  function empty_view_nodes(rootNode) 
+  function empty_view_nodes(root) 
   {
-    $('span[data-wpview-text]', rootNode).each(function(i, node) 
+    $('span[data-wpview-text], p[data-wpview-marker]', root).each(function(i, node) 
     {
       node.innerHTML = '.';
     });

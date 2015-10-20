@@ -4,7 +4,9 @@
                array(
                  'textarea_name' => piklist_form::get_field_name($arguments)
                  ,'editor_height' => 180
-                 ,'quicktags' => true
+                 ,'quicktags' => false
+                 ,'teeny' => true
+                 ,'media_buttons' => false
                  ,'textarea_rows' => 5
                  ,'editor_class' => implode(' ', $attributes['class'])
                )

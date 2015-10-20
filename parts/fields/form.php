@@ -1,26 +1,30 @@
 
 <form 
-  method="<?php echo strtolower($method); ?>" 
-  action="<?php echo $filter ? home_url() . $action : null; ?>" 
+  method="<?php echo strtolower($data['method']); ?>" 
+  action="<?php echo $data['filter'] ? home_url() . $data['action'] : null; ?>" 
   enctype="multipart/form-data"
-  id="<?php echo $form_id; ?>"
+  id="<?php echo $id; ?>"
   autocomplete="off"
   data-piklist-form="true"
   class="piklist-form <?php echo is_admin() ? 'hidden' : null; ?>"
 >
   <?php
-    do_action('piklist_notices', $form_id);
+    do_action('piklist_notices', $id);
   
-    piklist::render($form);
-  
+    foreach ($render as $form):
+
+      piklist::render($form, $data);
+
+    endforeach;
+      
     piklist('field', array(
       'type' => 'hidden'
       ,'scope' => piklist::$prefix
       ,'field' => 'form_id'
-      ,'value' => $form_id
+      ,'value' => $id
     ));
     
-    if ($filter):
+    if ($data['filter']):
 
       piklist('field', array(
         'type' => 'hidden'
@@ -31,18 +35,18 @@
 
     endif;
     
-    if (!empty($redirect)):
+    if ($data['redirect']):
 
       piklist('field', array(
         'type' => 'hidden'
         ,'scope' => piklist::$prefix
         ,'field' => 'redirect'
-        ,'value' => $redirect
+        ,'value' => $data['redirect']
       ));
 
     endif;
     
-    if ($hide_admin_ui):
+    if (piklist_admin::hide_ui()):
 
       piklist('field', array(
         'type' => 'hidden'

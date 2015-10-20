@@ -164,7 +164,7 @@ class Piklist_Widget
   public static function widget()
   {
     global $wp_widget_factory;
-
+    
     return isset($wp_widget_factory->widgets[self::$current_widget]) ? $wp_widget_factory->widgets[self::$current_widget] : null;
   }
 

@@ -10,6 +10,28 @@ Flow: Demo Workflow
 */
 
   piklist('field', array(
+    'type' => 'text'
+    ,'field' => 'validate_text_required'
+    ,'label' => __('Text Required', 'piklist-demo')
+    ,'description' => "required => true"
+    ,'attributes' => array(
+      'class' => 'large-text'
+      ,'placeholder' => __('Enter text or this page won\'t save.', 'piklist-demo')
+    )
+    ,'required' => true
+    ,'validate' => array(
+      array(
+        'type' => 'limit'
+        ,'options' => array(
+          'min' => 2
+          ,'max' => 6
+          ,'count' => 'characters'
+        )
+      )
+    )
+  ));
+
+  piklist('field', array(
     'type' => 'group'
     ,'field' => 'menu_section'
     ,'label' => __('Menu', 'piklist-demo')
@@ -70,7 +92,6 @@ Flow: Demo Workflow
       )
     )
   ));
-
 
   piklist('field', array(
     'type' => 'group'

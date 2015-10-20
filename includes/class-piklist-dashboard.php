@@ -32,7 +32,7 @@ class Piklist_Dashboard
   {
     global $pagenow;
     
-    if (is_admin() && $pagenow == 'index.php')
+    if (is_admin())
     {
       add_filter('piklist_part_process-dashboard', array('piklist_dashboard', 'part_process'), 5);
       add_filter('piklist_part_process-dashboard', array('piklist_meta', 'part_process'), 10);
@@ -58,7 +58,7 @@ class Piklist_Dashboard
               ,'role' => 'Role'
               ,'network' => 'Network'
             );
-            
+
     piklist::process_parts('dashboard', $data, array('piklist_dashboard', 'register_dashboard_widgets_callback'));
   }
 
@@ -76,7 +76,7 @@ class Piklist_Dashboard
   {
     extract($arguments);
     
-  	$screen = get_current_screen();
+    $screen = get_current_screen();
     
     self::$widgets[$id] = $arguments;
     

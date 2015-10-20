@@ -1,79 +1,15 @@
 <?php
-/*  
-Title: Post Submit
-Method: post
-Message: Data saved in Piklist Demos, under the Validation tab.
-Logged in: true
+/*
+Title: Validation Fields
+Post Type: piklist_demo
+Order: 10
+Tab: Validation
+Sub Tab: Basic
+Flow: Demo Workflow
 */
 
-/**
- * Piklist forms automatically generate a shortcode:
- *
- * If your form is in a PLUGIN (i.e. wp-content/plugins/my-plugin/parts/forms/my-form.php)
- * 
- * Use [piklist_form form="my-form" add_on="my-plugin"]
- *
- * If your form is in a THEME (i.e. wp-content/themes/my-theme/piklist/parts/forms/my-form.php)
- * Use [piklist_form form="my-form" add_on="theme"]
- */
-
-/** 
- * The shortcode for this form is:
- * [piklist_form form="new-post-with-validation" add_on="piklist-demos"]
- */
-
-/**
- * The fields in this form are exactly like the fields in piklist-demos/parts/meta-boxes/field-validate.php
- * Only the 'scope' paramater needed to be added.
- */
-
-  // Where to save this form
-  piklist('field', array(
-    'type' => 'hidden'
-    ,'scope' => 'post'
-    ,'field' => 'post_type'
-    ,'value' => 'piklist_demo'
-  ));
-
-
   piklist('field', array(
     'type' => 'text'
-    ,'scope' => 'post' // post_title is in the wp_posts table, so scope is: post
-    ,'field' => 'post_title'
-    ,'label' => __('Title', 'piklist-demo')
-    ,'attributes' => array(
-      'style' => 'width: 100%'
-    )
-  ));
-
-  // Allows user to choose their own post status.
-  $statuses = piklist_cpt::get_post_statuses_for_type('piklist_demo', false);
-
-  piklist('field', array(
-    'type' => 'select'
-    ,'scope' => 'post'
-    ,'field' => 'post_status'
-    ,'label' => __('Post Status', 'piklist-demo')
-    ,'choices' => $statuses
-  ));
-
-  /**
-   * To automatically set the post status:
-   *** Remove the field above since it's letting the user choose their status
-   *** Uncomment this field
-   *** Set your default post status by changing the "value" parameter.
-   */
-  // piklist('field', array(
-  //   'type' => 'hidden'
-  //   ,'scope' => 'post'
-  //   ,'field' => 'post_status'
-  //   ,'value' => 'pending'
-  // ));
-  // 
-
-  piklist('field', array(
-    'type' => 'text'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_text_required'
     ,'label' => __('Text Required', 'piklist-demo')
     ,'description' => "required => true"
@@ -96,7 +32,6 @@ Logged in: true
 
   piklist('field', array(
     'type'    => 'group'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field'   => 'validate_group_required'
     ,'label'   => __('Group Required', 'piklist-demo')
     ,'description' =>__('Only the checkbox is required', 'piklist-demo')
@@ -109,6 +44,11 @@ Logged in: true
         ,'columns' => 8
         ,'attributes' => array(
           'placeholder' => 'Name'
+        )
+        ,'sanitize' => array(
+          array(
+            'type' => 'text_field'
+          )
         )
       )
       ,array(
@@ -126,7 +66,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'text'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'label' => __('File Name', 'piklist-demo')
     ,'field' => 'sanitize_file_name'
     ,'description' => __('Converts multiple words to a valid file name', 'piklist-demo')
@@ -142,7 +81,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'text'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_emaildomain'
     ,'label' => __('Email address', 'piklist-demo')
     ,'description' => __('Validate Email and Email Domain', 'piklist-demo')
@@ -161,7 +99,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'text'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_file_exists'
     ,'label' => __('File exists?', 'piklist-demo')
     ,'description' => sprintf(__('Test with: %s', 'piklist-demo'), 'http://wordpress.org/plugins/about/readme.txt')
@@ -177,7 +114,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'text'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_image'
     ,'label' => __('Image')
     ,'description' => sprintf(__('Test with: %s', 'piklist-demo'), 'http://piklist.com/wp-content/themes/piklistcom-base/images/piklist-logo@2x.png')
@@ -193,7 +129,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'checkbox'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_checkbox_limit'
     ,'label' => __('Checkbox', 'piklist-demo')
     ,'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
@@ -217,7 +152,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'file'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_upload_media_limit'
     ,'label' => __('Add File(s)', 'piklist-demo')
     ,'description' => __('No more than one file is allowed', 'piklist-demo')
@@ -242,7 +176,6 @@ Logged in: true
 
   piklist('field', array(
     'type' => 'group'
-    ,'scope' => 'post_meta' // scope needs to be set on EVERY field for front-end forms.
     ,'field' => 'validate_group_add_more_limit'
     ,'add_more' => true
     ,'label' => __('Grouped/Add-More with Limit', 'piklist-demo')
@@ -272,9 +205,7 @@ Logged in: true
     )
   ));
 
-  // Submit button
-  piklist('field', array(
-    'type' => 'submit'
-    ,'field' => 'submit'
-    ,'value' => 'Submit'
+  piklist('shared/code-locater', array(
+    'location' => __FILE__
+    ,'type' => 'Meta Box'
   ));

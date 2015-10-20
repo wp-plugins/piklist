@@ -18,6 +18,7 @@
     break;
     
     case 'Help tab':
+    case 'Admin notice':
     
       $arguments['template'] = 'field';
     

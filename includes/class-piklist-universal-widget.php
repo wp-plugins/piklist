@@ -79,7 +79,7 @@ class Piklist_Universal_Widget extends WP_Widget
   public function setup($widget)
   {
     $this->register_widgets();
-    
+
     piklist_widget::$current_widget = $widget;
   }
   
@@ -149,9 +149,9 @@ class Piklist_Universal_Widget extends WP_Widget
       if (isset($this->widgets[$widget]))
       {
         ob_start();
-        
+                
         do_action('piklist_notices');
-      
+
         foreach ($this->widgets[$widget]['render'] as $render)
         {
           if (strstr($render, '-form.php'))
@@ -159,7 +159,7 @@ class Piklist_Universal_Widget extends WP_Widget
              piklist::render($render);
           }
         }
-        
+
         piklist_form::save_fields();
 
         $output = ob_get_contents();
@@ -191,7 +191,17 @@ class Piklist_Universal_Widget extends WP_Widget
    */
   public function update($new_instance, $old_instance)
   {
-    $check = piklist_validate::check();
+    if (!isset($_REQUEST['id_base']))
+    {
+      return $old_instance;
+    }
+    
+    $widget_index = !empty($_REQUEST['multi_number']) ? $_REQUEST['multi_number'] : $_REQUEST['widget_number'];
+    $request_data = $_REQUEST['widget-' . $_REQUEST['id_base']][$widget_index];
+      
+    $this->setup(piklist::slug($_REQUEST['id_base']));
+    
+    $check = piklist_validate::check($request_data);
     
     if (false !== $check['valid'])
     {
@@ -213,7 +223,7 @@ class Piklist_Universal_Widget extends WP_Widget
         'widget' => $new_instance['widget']
       );
     }
-    
+
     $old_instance['widget'] = $new_instance['widget'];
     
     return $old_instance;

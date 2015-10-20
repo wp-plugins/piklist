@@ -97,6 +97,7 @@
           id="<?php echo piklist_form::get_field_id($arguments); ?>"
           name="<?php echo piklist_form::get_field_name($arguments); ?>"
           <?php echo piklist_form::attributes_to_string($attributes); ?>
+          value="<?php echo isset($options['unset_value']) ? $options['unset_value'] : null; ?>"
         />
 
     <?php

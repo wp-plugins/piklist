@@ -26,7 +26,6 @@ Tab: General
         'type' => 'checkbox'
         ,'label' => 'Options'
         ,'field' => 'options'
-        ,'list' => false
         ,'columns' => 8
         ,'choices' => array(
           'preview' => 'Preview'

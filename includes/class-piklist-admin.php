@@ -484,7 +484,7 @@ class Piklist_Admin
    */
   public static function screen_options_show_screen($show_screen, $screen)
   {
-    if (self::$admin_page_layout == 'container')
+    if (self::$admin_page_layout == 'meta-boxes')
     {
       add_screen_option('layout_columns', array('max' => 2, 'default' => 2));
 
@@ -824,29 +824,6 @@ class Piklist_Admin
       $execute = new $class();
     }
   }
-
-  /**
-   * responsive_admin
-   * Checks for WP 3.8 or above, which has a responsive admin.
-   *
-   * @return bool Whether admin is responsive or not.
-   *
-   * @access public
-   * @static
-   * @since 1.0
-   */
-  public static function responsive_admin()
-  {
-    if (version_compare($GLOBALS['wp_version'], '3.8', '>=' ))
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
 
   /**
    * is_widget

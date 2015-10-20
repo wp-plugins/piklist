@@ -1,11 +1,20 @@
 <?php
 /*
-Title: Object Relationships
-Post Type: page
-Order: 10
-Priority: high
-Context: normal
+Title: Post Relationships
+Post Type: piklist_demo
+Flow: Demo Workflow
+Tab: Relate
+Sub Tab: Advanced
 */
+?>
+
+<div class="piklist-demo-highlight">
+
+  <?php _e('This form will allow you to create brand new Post, User and Comment, that are all related to this Demo Post.', 'piklist-demo');?>
+  
+</div>
+
+<?php
   
   piklist('field', array(
     'type' => 'group'

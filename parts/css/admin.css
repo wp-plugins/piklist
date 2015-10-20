@@ -121,6 +121,10 @@
     .wp-admin.post-new-php .piklist-workflow {
       margin: 0;
     }
+    
+    .piklist-workflow .wp-filter {
+      margin-bottom: 0;
+    }
   
     .wrap > .piklist-workflow {
       margin: 0;
@@ -223,13 +227,17 @@
       color: #2ea2cc;
     }
 
-    #side-sortables .piklist-field {
+  #side-sortables .piklist-field {
     padding: 0.6667% 0 1% 0;
+    margin: 0;
     width: 100%;
+    float: none;
   }
 
     #side-sortables .piklist-field-container { 
-      display: block;
+      padding: 0;
+      margin-bottom: 10px;
+      display: block !important;
     }
 
     #side-sortables .piklist-field-container select {
@@ -263,21 +271,7 @@
     #side-sortables .form-table td textarea {
       max-width: 100%;
     }
-      
-  .widget-content .piklist-field {
-    padding: 0.6667% 0 1% 0;
-    width: auto;
-    float: none;
-  }
-  
-    .widget-content .piklist-label-container {
-      display: block;
-      float: none;
-      width: auto;
-      padding: 6px 0 0 0;
-      margin: 0;
-    }
-      
+
 
 
 /* --------------------------------------------------------------------------------
@@ -392,12 +386,17 @@
       .piklist-meta-message a {
         font-weight: 600;
       }
-
-       .widgets-holder-wrap .piklist-field {
-         line-height: 1.6667;
-         padding: 0.3334em 0 0.3334em 1px;
-         margin: 0;
-       }
+      
+        .widgets-holder-wrap .piklist-field-container {
+          padding-right: 0;
+        }
+        
+          .widgets-holder-wrap .piklist-label-container,
+          .widgets-holder-wrap .piklist-field {
+            line-height: 1.6667;
+            padding: 0.3334em 0 0.3334em 1px;
+            margin: 0;
+          }
 
 
       
@@ -648,9 +647,12 @@
       margin-bottom: 0.5em;
     }
     
-  
+  #side-sortables .piklist-field-addmore-wrapper {
+    min-width: 0;
+  }
 
-  
+
+
 /* --------------------------------------------------------------------------------
   Updates to WP-Tab Classes
   - These should be submitted as patches to the core 
@@ -958,9 +960,9 @@
   
   @media only screen and (max-width: 782px) {
     
-    #normal-sortables ul.piklist-field-list li,
-    #advanced-sortables ul.piklist-field-list li {
-      height: 30px;
+    ul.piklist-field-list li,
+    ul.piklist-field-list li {
+      min-height: 30px;
     }
     
     .piklist-label, .piklist-child-label {
@@ -973,41 +975,6 @@
       top: 0 !important;
       left: 0 !important;
       margin: 0 !important;
-    }
-  }
-
-  @media only screen and (max-width: 600px) {
-
-    #normal-sortables .piklist-field-container,
-    #advanced-sortables .piklist-field-container { 
-      display: block;
-    }
-
-      #normal-sortables .piklist-field-container select,
-      #advanced-sortables .piklist-field-container select {
-        max-width: 100%;
-      }
-
-      #normal-sortables .piklist-label-container,
-      #advanced-sortables .piklist-label-container {
-        display: block;
-        position: static;
-        float: none;
-        width: auto;
-        padding: 1% 1.5% 1% 0;
-        margin: 0;
-        border: none;
-      }
-
-      #normal-sortables .piklist-field,
-      #advanced-sortables .piklist-field {
-        padding: 0.6667% 0 1% 0;
-        width: 100%;
-      }
-
-    #normal-sortables .piklist-field-addmore-wrapper,
-    #advanced-sortables .piklist-field-addmore-wrapper {
-      min-width: 0;
     }
   }
 
@@ -1059,8 +1026,3 @@
   body.piklist-workflow-active.profile-php #profile-page h1 {
     display: none;
   }
-    
-    
-    
-    
-    

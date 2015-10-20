@@ -8,6 +8,8 @@ Header: true
 Position: title
 */
 
+// WORKFLOW TABS/BAR: to change a Workflow to a bar, set Layout: Bar
+
 // NOTE: Piklist hides the titles of the user/term pages when workflows are applied there 
 //       since they are out of context, so here we add our own and super charge them a bit...
 

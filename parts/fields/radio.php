@@ -13,7 +13,7 @@
       $_arguments['index'] = $_index;
   ?>
   
-    <?php echo $list ? '<li>' : ''; ?>
+    <?php echo $list || $list_item_type ? ('<' . ($list_item_type ? $list_item_type : 'li') . '>') : ''; ?>
 
       <label class="piklist-field-list-item">
 
@@ -27,12 +27,12 @@
         />
   
         <span class="piklist-list-item-label">
-          <?php echo $choice; ?>
+          <?php _e($choice); ?>
         </span>
     
       </label>
 
-    <?php echo $list ? '</li>' : ''; ?>
+    <?php echo $list || $list_item_type ? ('</' . ($list_item_type ? $list_item_type : 'li') . '>') : ''; ?>
   
     <?php $_index++; ?>
   

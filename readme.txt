@@ -1,7 +1,7 @@
 === PIKLIST | Rapid development framework ===
 Contributors: piklist, p51labs, sbruner
 Tested up to: 4.3
-Requires at least: 3.7
+Requires at least: 4.0
 Stable tag: 0.9.4.29
 Donate link: http://piklist.com/get-involved/
 License: GPLv2 or later
@@ -141,6 +141,17 @@ Code-based frameworks also allows you to version control your code, which is ver
 4. Ask questions on our <a href="https://piklist.com/support/">Support Forum</a>. (We love hearing from our users)
 
 == Changelog ==
+
+= 0.9.9.4 =
+* Requires WordPress v4.0.
+* NEW: WorkFlow Bar!
+* NEW: Save individual Options, not just serialized Settings.
+* NEW: Validation rule: 'disabled', to make a field disabled.
+* NEW: unset_value option for checkboxes.
+* ENHANCED: Removed old responsive_admin() function.
+* ENHANCED: Dragging the editor in add-mores is easier.
+* ENHANCED: Validation and Sanitization updates.
+* FIX: Validation and Sanitiztion in multi-level grouped add-mores.
 
 = 0.9.9.3 =
 * ENHANCED: File field and Editor highlight better when required.

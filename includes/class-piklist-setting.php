@@ -290,7 +290,7 @@ class Piklist_Setting
    */
   public static function pre_update_option($new, $old = false)
   {
-    $check = piklist_validate::check();
+    $check = piklist_validate::check($new);
     
     if (false !== $check['valid'])
     {
@@ -554,7 +554,7 @@ class Piklist_Setting
         $title = !empty($section['data']['title']) ? $section['data']['title'] : (!empty($id) ? $id : __('Settings', 'piklist'));
         $title = !empty($textdomain) ? __($title, $textdomain) : $title;
         
-        if ($active && piklist_admin::$admin_page_layout == 'container')
+        if ($active && piklist_admin::$admin_page_layout == 'meta-boxes')
         {
           if (!$submitdiv)
           {

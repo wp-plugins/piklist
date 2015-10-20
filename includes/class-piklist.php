@@ -163,7 +163,7 @@ class Piklist
 
   /**
    * auto_load
-   * Auto load all classes in the includes directory of this plugin.
+   * Auto load all classes in the includes directory of a plugin.
    *
    * @access public
    * @static
@@ -181,12 +181,16 @@ class Piklist
      
         if ($include != __FILE__)
         {
-          include_once self::$addons[$addon]['path'] . '/includes/' . $include;
-
-          if (class_exists($class_name) && method_exists($class_name, '_construct') && !is_subclass_of($class_name, 'WP_Widget'))
+          if (!class_exists($class_name))
           {
-            call_user_func(array($class_name, '_construct'));
+            include_once self::$addons[$addon]['path'] . '/includes/' . $include;
+
+            if (method_exists($class_name, '_construct') && !is_subclass_of($class_name, 'WP_Widget'))
+            {
+              call_user_func(array($class_name, '_construct'));
+            }
           }
+
         }
       }
     }
@@ -1023,11 +1027,11 @@ class Piklist
 
         if (isset($current_screen) && $current_screen->id == 'dashboard-network')
         {
-          return in_array($value, array('true', 'only'));
+          return $value || $value == 'only';
         }
         elseif (isset($current_screen) && $current_screen->id == 'dashboard')
         {
-          return $value != 'only';
+          return $value === true;
         }
 
       break;
@@ -1501,6 +1505,44 @@ class Piklist
   }
 
   /**
+   * array_paths
+   * Get the array paths in an object
+   *
+   * @param array $array Array to search.
+   * @param array $path Path searching.
+   * @param string $delimiter Delimeter for path keys.
+   *
+   * @return array Map of paths
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function array_paths($array, $path = array(), $delimiter = ':') 
+  {
+    $map = array();
+   
+    if (!empty($array))
+    {
+      foreach ($array as $key => $value)
+      {
+        $current_path = array_merge($path, array($key));
+      
+        if (is_array($value)) 
+        {
+          $map = array_merge($map, self::array_paths($value, $current_path, $delimiter));
+        } 
+        else 
+        {
+          $map[] = join($delimiter, $current_path);
+        }
+      }
+    }
+    
+    return $map;
+  }
+
+  /**
    * array_path
    * Given a value and an array, find the key path to said value.
    *
@@ -1566,7 +1608,7 @@ class Piklist
 
     foreach ($map as $part)
     {
-      if (!isset($found[$part]))
+      if (!array_key_exists($part, $found))
       {
         return null;
       }
@@ -1755,6 +1797,69 @@ class Piklist
     return $output;
   }
 
+  /**
+   * has_block_level_tags
+   * Checks if html string contains block level tags
+   *
+   * @param string $string The html string to check.
+   *
+   * @return bool Whether the string contains block level elements
+   *
+   * @access public
+   * @static
+   * @since 1.0
+   */
+  public static function has_block_level_tags($string)
+  {
+    $block_level_tags = array(
+      'address'
+      ,'article'
+      ,'aside'
+      ,'blockquote'
+      ,'canvas'
+      ,'dd'
+      ,'div'
+      ,'dl'
+      ,'fieldset'
+      ,'figcaption'
+      ,'figure'
+      ,'footer'
+      ,'form'
+      ,'h1'
+      ,'h2'
+      ,'h3'
+      ,'h4'
+      ,'h5'
+      ,'h6'
+      ,'header'
+      ,'hgroup'
+      ,'hr'
+      ,'main'
+      ,'nav'
+      ,'noscript'
+      ,'ol'
+      ,'output'
+      ,'p'
+      ,'pre'
+      ,'section'
+      ,'table'
+      ,'tfoot'
+      ,'ul'
+      ,'video'
+    );
+    
+    preg_match_all('~<([^/][^>]*?)>~', $string, $matches, PREG_PATTERN_ORDER); 
+    
+    if (isset($matches[1]) && !empty($matches[1]))
+    {
+      $found = array_intersect($block_level_tags, array_unique($matches[1]));
+
+      return !empty($found);
+    }
+    
+    return false;
+  }
+  
   /**
    * directory_empty
    * Check if a directory is empty.
@@ -2367,6 +2472,12 @@ function piklist($option, $arguments = array())
         }
 
       break;
+      
+      case 'form':
+        
+        return piklist_form::render_form($arguments['form'], isset($arguments['add_on']) ? $arguments['add_on'] : null);
+        
+      break;
 
       case 'list_table':
 
@@ -2469,10 +2580,10 @@ function piklist($option, $arguments = array())
 
       case 'include_meta_boxes':
 
-      piklist::render('shared/notice', array(
-        'content' => sprintf(__('This page is using the old Piklist WorkFlow system. Please update your code to the %snew WorkFlow system%s.', 'piklist'),'<a href="https://piklist.com/user-guide/docs/building-workflows-piklist-v0-9-9/" target="_blank">', '</a>')
-        ,'notice_type' => 'error'
-      ));
+        piklist::render('shared/notice', array(
+          'content' => sprintf(__('This page is using the old Piklist WorkFlow system. Please update your code to the %snew WorkFlow system%s.', 'piklist'), '<a href="https://piklist.com/user-guide/docs/building-workflows-piklist-v0-9-9/" target="_blank">', '</a>')
+          ,'notice_type' => 'error'
+        ));
 
       break;
 

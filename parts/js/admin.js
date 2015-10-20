@@ -354,7 +354,7 @@
         $(window, parent).trigger('resize');
       });
       
-      if ($('form#' + piklist.prefix + 'shortcode').length > 0)
+      if ($('body.admin_page_shortcode_editor').length > 0)
       {
         if (piklist.validate_check)
         {
@@ -610,11 +610,11 @@
                   '<p class="wpview-selection-after">\u00a0</p>' +
                 '</div>'
               );        
-
+              
               editor.$(node).replaceWith($view_node);
             }
 
-            if (selected && typeof editor.wp != 'undefined' && typeof editor.wp.setViewCursor != 'undefined') 
+            if (selected && typeof editor.wp != 'undefined' && typeof editor.wp.setViewCursor != 'undefined')
             {
               editor.wp.setViewCursor(false, $view_node[0]);
             }
@@ -1052,15 +1052,15 @@
           {
             var id = $(this).attr('id'),
               command = tinymce.majorVersion == 3 ? 'mceAddControl' : 'mceAddEditor';
-
+              
             tinyMCE.execCommand(command, false, id);
           }
         });
       }
     });
-    
-    
-      
+
+
+
   /* --------------------------------------------------------------------------------
     WP Tabs - Updates or enhancements to existing WordPress Functionality
   -------------------------------------------------------------------------------- */
