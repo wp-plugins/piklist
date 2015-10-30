@@ -142,6 +142,13 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 == Changelog ==
 
+= 0.9.9.5 =
+* ENHANCED: Added default editor style and removed theme style from non post content editors.
+* ENHANCED: Tightened save method to POST only.
+* FIX: Slashes issue with text fields.
+* FIX: Typo in setting name, shortocde_ui.
+* FIX: Lots of little fixes.
+
 = 0.9.9.4 =
 * Requires WordPress v4.0.
 * NEW: WorkFlow Bar!
