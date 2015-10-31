@@ -1,5 +1,5 @@
 
-&nbsp;<a href="#TB_inline?width=600&height=550&inlineId=<?php echo $id; ?>" class="thickbox piklist-demo-field-value-button" title="<?php _e('Getting the field value is easy!', 'piklsit-demo'); ?>"><?php _e('Get value'); ?></a>
+<a href="#TB_inline?width=600&height=550&inlineId=<?php echo $id; ?>" class="thickbox piklist-demo-field-value-button" title="<?php _e('Getting the field value is easy!', 'piklsit-demo'); ?>"><?php _e('Get value'); ?></a>
 
 <div id="<?php echo $id; ?>" style="display: none;">
   

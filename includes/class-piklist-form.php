@@ -440,12 +440,12 @@ class Piklist_Form
                        <div class="piklist-field-container-row">
                          <div class="piklist-label-container">
                            [field_label]
-                         </div>
-                         <div class="piklist-field">
-                           [field]
                            [field_description_wrapper]
                              <p class="piklist-field-description description">[field_description]</p>
                            [/field_description_wrapper]
+                         </div>
+                         <div class="piklist-field">
+                           [field]
                          </div>
                        </div>
                      </div>
@@ -483,6 +483,15 @@ class Piklist_Form
       'name' => __('Label and Field', 'piklist')
       ,'description' => __('Displays a label then the field.', 'piklist')
       ,'template' => '[field_label][field]'
+    );
+    
+    $templates['field_description'] = array(
+      'name' => __('Field and Description', 'piklist')
+      ,'description' => __('Displays a field then the description.', 'piklist')
+      ,'template' => '[field]
+                      [field_description_wrapper]
+                        <p class="piklist-theme-field-description">[field_description]</p>
+                      [/field_description_wrapper]'
     );
     
     // Core
@@ -2353,14 +2362,21 @@ class Piklist_Form
             for ($index = 0; $index < count($values); $index++)
             {
               $clone['index'] = $index;
-              
+
+              if ($clone['group_field'] && $index > 0)
+              {
+                $clone['label_tag'] = $clone['label_tag'] ? $clone['label_tag'] : $label_tag;
+
+                $content .= self::template_label($clone);
+              }
+
               if ($clone['errors'] && array_key_exists($clone['index'], $clone['errors']))
               {
                 array_push($clone['attributes']['class'], 'piklist-error');
               }
 
               $clone['value'] = $values[$clone['index']];
-
+              
               $content .= self::template_field($type, $clone);
             }
           }
@@ -2616,7 +2632,7 @@ class Piklist_Form
 
           if (is_array($column['value']) && (!$column['multiple'] || ($column['multiple'] && !piklist::is_flat($column['value']))))
           {
-            $column['value'] = $column['value'][$column['index']];
+            $column['value'] = array_key_exists($column['index'], $column['value']) ? $column['value'][$column['index']] : null;
           }
         }
 

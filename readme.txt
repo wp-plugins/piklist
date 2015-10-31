@@ -142,6 +142,10 @@ Code-based frameworks also allows you to version control your code, which is ver
 
 == Changelog ==
 
+= 0.9.9.6 =
+* FIX: Sanitization plays nice with Validation.
+* ENHANCED: CSS updates.
+
 = 0.9.9.5 =
 * ENHANCED: Added default editor style and removed theme style from non post content editors.
 * ENHANCED: Tightened save method to POST only.

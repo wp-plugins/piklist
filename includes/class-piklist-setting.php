@@ -321,6 +321,11 @@ class Piklist_Setting
       {
         if (!isset($data['display']) || (isset($data['display']) && !$data['display']))
         {
+          if (isset($new[$field]))
+          {
+            $new[$field] = $data['request_value'];
+          }
+          
           if (!isset($new[$field]) && isset($_old[$field]))
           {
             unset($_old[$field]);

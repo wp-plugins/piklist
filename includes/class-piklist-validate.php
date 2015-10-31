@@ -484,7 +484,7 @@ class Piklist_Validate
               if (isset($sanitization['callback']))
               {
                 $field = self::sanitize_value_callback($field, $sanitization);
-                
+
                 if (strstr($field['field'], ':'))
                 {
                   $path = explode(':', $field['field']);

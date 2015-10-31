@@ -149,7 +149,7 @@ Domain Path: /languages
     
     return $pages;
   }
-
+  
   add_filter('piklist_field_templates', 'piklist_demo_field_templates');
   function piklist_demo_field_templates($templates)
   {

@@ -221,12 +221,19 @@ class Piklist_Universal_Widget extends WP_Widget
     if (false !== $check['valid'] && $check['type'] == 'POST')
     {
       $instance = array();
-    
-      foreach ($new_instance as $key => $value)
+      
+      $fields_data = array_shift($check['fields_data']);
+      
+      foreach ($new_instance as $field => $value)
       {
+        if (isset($fields_data[$field]))
+        {
+          $value = $fields_data[$field]['request_value'];
+        }
+        
         if (!empty($value))
         {
-          $instance[$key] = is_array($value) ? maybe_serialize($value) : stripslashes($value);
+          $instance[$field] = is_array($value) ? maybe_serialize($value) : stripslashes($value);
         }
       }
       
