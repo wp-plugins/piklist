@@ -1,6 +1,6 @@
 === PIKLIST | Rapid development framework ===
 Contributors: piklist, p51labs, sbruner
-Tested up to: 4.3
+Tested up to: 4.4
 Requires at least: 4.0
 Stable tag: 0.9.4.29
 Donate link: http://piklist.com/get-involved/
@@ -141,6 +141,10 @@ Code-based frameworks also allows you to version control your code, which is ver
 4. Ask questions on our <a href="https://piklist.com/support/">Support Forum</a>. (We love hearing from our users)
 
 == Changelog ==
+
+= 0.9.9.7 =
+* FIXED: Updated upgrade script.
+
 
 = 0.9.9.6 =
 * FIX: Sanitization plays nice with Validation.

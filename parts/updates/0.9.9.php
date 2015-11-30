@@ -159,15 +159,16 @@ if (!class_exists('Piklist_Update_0_9_9'))
             if (!$current_related || ($current_related && !in_array($relate['has_post_id'], $current_related)))
             {
               add_metadata('post', $relate['post_id'], $meta_key, $relate['has_post_id']);
+              add_metadata('post', $relate['has_post_id'], $meta_key, $relate['post_id']);
             }
           }
         
           $output['message'] = 'Post Relationships Updated...';
           
-          // $relate_table = $wpdb->prefix . 'post_relationships';
-          // $wpdb->query("DROP TABLE IF EXISTS {$relate_table}");
+          $relate_table = $wpdb->prefix . 'post_relationships';
+          $wpdb->query("DROP TABLE IF EXISTS {$relate_table}");
 
-          // $output['message'] = 'Legacy post_relationships Table Deleted...';
+          $output['message'] = 'Legacy post_relationships Table Deleted...';
           
         break;
         
@@ -278,7 +279,7 @@ if (!class_exists('Piklist_Update_0_9_9'))
               case 'users':
               case 'terms':
             
-                $keys = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE meta_key = %s", $field), ARRAY_A);
+                $keys = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE meta_key = %s", $field['field']), ARRAY_A);
             
                 foreach ($keys as $key)
                 {
@@ -288,6 +289,7 @@ if (!class_exists('Piklist_Update_0_9_9'))
                     if ($this->needs_update($old))
                     {
                       $new = piklist::object_format($old);
+                      $new = isset($field['add_more']) && $field['add_more'] == true ? $new : current($new);
 
                       if ($old != $new)
                       {
@@ -305,13 +307,13 @@ if (!class_exists('Piklist_Update_0_9_9'))
                 
                 $option = get_option($field['context']);
                 
-                if (isset($option[$field['field']]) && $this->needs_update($option[$field['field']]))
+                if (isset($option[$field['field']['field']]) && $this->needs_update($option[$field['field']['field']]))
                 {
-                  $option[$field['field']] = piklist::object_format($option[$field['field']]);
+                  $option[$field['field']['field']] = piklist::object_format($option[$field['field']['field']]);
                   
                   // Helpers Dashboard Widgets field
-                  $option[$field['field']] = isset($field['add_more']) && $field['add_more'] == true ? $option[$field['field']] : current($option[$field['field']]);
-                  
+                  $option[$field['field']['field']] = isset($field['field']['add_more']) && $field['field']['add_more'] == true ? $option[$field['field']['field']] : current($option[$field['field']['field']]);
+
                   update_option($field['context'], $option);
                 }
            
@@ -333,7 +335,7 @@ if (!class_exists('Piklist_Update_0_9_9'))
                     {
                       foreach ($widget as $_field => &$_value)
                       {
-                        if ($field['field'] == $_field)
+                        if ($field['field']['field'] == $_field)
                         {
                           $old = maybe_unserialize($_value);
                           
@@ -370,7 +372,7 @@ if (!class_exists('Piklist_Update_0_9_9'))
           {
             if (is_array($field))
             {
-              array_push($output['fields'], $field['context'] . ' - ' . $field['field']);
+              array_push($output['fields'], (isset($field['context']) ? $field['context'] . ' - ' : null) . (is_array($field['field']) ? $field['field']['field'] : $field['field']));
             }
             else
             {
@@ -397,19 +399,19 @@ if (!class_exists('Piklist_Update_0_9_9'))
         {
           array_push($this->fields, array(
             'context' => $this->setting
-            ,'field' => $field['field']
+            ,'field' => $field
           ));
         }
         elseif ($this->widget)
         {
           array_push($this->fields, array(
             'context' => $this->widget
-            ,'field' => $field['field']
+            ,'field' => $field
           ));
         }
         else
         {
-          array_push($this->fields, $field['field']);
+          array_push($this->fields, $field);
         }
       }
       
